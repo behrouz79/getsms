@@ -4,29 +4,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.util.Log;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.getsms.API.SMS_InterFace;
+import com.example.getsms.roomDB.DataBase;
+import com.example.getsms.roomDB.SmsRecord;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class ReceiveSms extends BroadcastReceiver {
-    String url = "https://smartfixer.ir/test/";
-
-    RequestQueue queue = null;
+    String url = "https://smartfixer.ir/";
+    Context cxt;
+    DataBase db;
 
     private static final Pattern sPattern
             = Pattern.compile("^([0-9]{11})$");
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        queue = Volley.newRequestQueue(context.getApplicationContext());
+        cxt = context;
+        db = DataBase.getDbInstance(cxt);
 
         if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
             Bundle bundle = intent.getExtras();
@@ -51,25 +55,37 @@ public class ReceiveSms extends BroadcastReceiver {
     }
 
     private void sendRequest(String msg_from) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        SMS_InterFace request = retrofit.create(SMS_InterFace.class);
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("text", msg_from);
+        request.sendSMS(params).enqueue(
+                new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        SmsRecord record = new SmsRecord();
+                        record.title = msg_from;
+                        Calendar c = Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm yyyy-MM-dd");
+                        record.date = sdf.format(c.getTime());
+                        record.status = response.code();
+                        db.smsDao().insertRecord(record);
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Error
-                Log.d("ERROR_TAG", error.getMessage().toString());
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("text", msg_from);
-                return params;
-            }
-        };
-        queue.add(stringRequest);
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        SmsRecord record = new SmsRecord();
+                        record.title = msg_from;
+                        Calendar c = Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm yyyy-MM-dd");
+                        record.date = sdf.format(c.getTime());
+                        record.status = 500;
+                        db.smsDao().insertRecord(record);
+                    }
+                }
+        );
     }
 }
