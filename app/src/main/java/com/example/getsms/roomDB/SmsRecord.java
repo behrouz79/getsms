@@ -12,6 +12,9 @@ public class SmsRecord {
     @ColumnInfo(name = "title")
     public String title;
 
+    @ColumnInfo(name = "body")
+    public String body;
+
     @ColumnInfo(name = "date")
     public String date;
 

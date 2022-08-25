@@ -1,11 +1,11 @@
 package com.example.getsms.API;
-import java.util.HashMap;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.POST;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface SMS_InterFace {
-    @POST("test/")
-    Call<ResponseBody> sendSMS(@Body HashMap sms);
+    @GET("?")
+    Call<ResponseBody> sendSMS(@Query("from") String from,
+                               @Query("message") String message);
 }

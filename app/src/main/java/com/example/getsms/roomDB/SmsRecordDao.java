@@ -14,8 +14,8 @@ public interface SmsRecordDao {
     @Insert
     void insertRecord(SmsRecord...smsRecords);
 
-    @Query("UPDATE smsrecord SET title=:title,date=:date,status=:status WHERE uid=:uid")
-    int updateRecord(String title, String date, int status, int uid);
+    @Query("UPDATE smsrecord SET title=:title,body=:body,date=:date,status=:status WHERE uid=:uid")
+    int updateRecord(String title, String body, String date, int status, int uid);
 
     @Delete
     void deleteRecord(SmsRecord smsRecords);
