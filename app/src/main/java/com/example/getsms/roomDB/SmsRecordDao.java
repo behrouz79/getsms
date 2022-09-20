@@ -11,6 +11,9 @@ public interface SmsRecordDao {
     @Query("SELECT * FROM smsrecord ORDER BY uid DESC")
     List<SmsRecord> getAllRecord();
 
+    @Query("SELECT * FROM smsrecord ORDER BY uid ASC LIMIT 2")
+    List<SmsRecord> getLastOlderMonth();
+
     @Insert
     void insertRecord(SmsRecord...smsRecords);
 

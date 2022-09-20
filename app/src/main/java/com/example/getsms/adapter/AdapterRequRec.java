@@ -9,7 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.getsms.API.SMS_InterFace;
+import com.example.getsms.api.SMS_InterFace;
 import com.example.getsms.R;
 import com.example.getsms.modul.Response;
 import com.example.getsms.roomDB.DataBase;

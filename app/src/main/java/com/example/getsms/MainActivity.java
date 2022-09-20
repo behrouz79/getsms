@@ -4,7 +4,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +11,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.example.getsms.adapter.AdapterRequRec;
 import com.example.getsms.modul.Response;
 import com.example.getsms.roomDB.DataBase;
@@ -28,11 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private AdapterRequRec adapter;
     private List<Response> dataList = new ArrayList<>();
     private DataBase db;
+
+    private Button btnDelete;
     EditText UrlText;
     SharedPreferences sharedPref ;
-    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 1;
+//    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 1;
 
-    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,18 +50,17 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPref.contains("Url")) {
             UrlText.setText(sharedPref.getString("Url", ""));
         }
-        checkForSmsPermission();
-    }
 
-
-    private void checkForSmsPermission() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SEND_SMS},
-                    MY_PERMISSIONS_REQUEST_SEND_SMS);
-        }
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db = DataBase.getDbInstance(MainActivity.this);
+                List<SmsRecord> data = db.smsDao().getLastOlderMonth();
+                for(int i=0;i< data.size(); i++){
+                    db.smsDao().deleteRecord(data.get(i));
+                }
+            }
+        });
     }
 
     private void getData() {
@@ -100,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void findView() {
         recRequ = findViewById(R.id.recRequ);
+        btnDelete = findViewById(R.id.btnDelete);
     }
 
     private void setRecRequ() {

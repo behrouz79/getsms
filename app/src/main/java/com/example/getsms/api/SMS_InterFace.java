@@ -1,4 +1,4 @@
-package com.example.getsms.API;
+package com.example.getsms.api;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;

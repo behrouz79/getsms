@@ -10,22 +10,42 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnStart4"
-        android:layout_width="97dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="8dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/btn_primary"
-        android:fontFamily="@font/shabnam"
-        android:onClick="saveUrl"
-        android:text="ذخیره"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editTextUrl"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        android:weightSum="3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        android:id="@+id/baseUrl">
+
+        <Button
+            android:id="@+id/btnStart4"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="0.8"
+            android:background="@drawable/btn_primary"
+            android:fontFamily="@font/shabnam"
+            android:onClick="saveUrl"
+            android:text="ذخیره"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <EditText
+            android:layout_weight="2.2"
+            android:id="@+id/editTextUrl"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:paddingEnd="12dp"
+            android:paddingStart="12dp"
+            android:background="@drawable/et_url"
+            android:ems="10"
+            android:hint="BaseUrl"
+            android:inputType="textPersonName" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -41,7 +61,7 @@
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="4dp"
+            android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:background="@drawable/btn_primary"
             android:fontFamily="@font/shabnam"
@@ -67,35 +87,48 @@
         android:id="@+id/recRequ"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.937"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnRefresh" />
+        app:layout_constraintTop_toBottomOf="@+id/btns" />
 
-    <Button
-        android:id="@+id/btnRefresh"
+    <LinearLayout
+        android:id="@+id/btns"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:background="@drawable/btn_primary"
-        android:fontFamily="@font/shabnam"
-        android:onClick="refresh"
-        android:text="بروزرسانی"
-        android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/btnStart4"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintTop_toBottomOf="@+id/baseUrl"
+        tools:layout_editor_absoluteX="16dp">
 
-    <EditText
-        android:id="@+id/editTextUrl"
-        android:layout_width="259dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="BaseUrl"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_primary"
+            android:fontFamily="@font/shabnam"
+            android:onClick="refresh"
+            android:text="بروزرسانی"
+            android:textColor="@color/white" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_primary"
+            android:fontFamily="@font/shabnam"
+            android:text="پاکسازی"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
