@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.getsms">
+    xmlns:tools="http://schemas.android.com/tools">
 
-<!--    <uses-permission android:name="android.permission.SEND_SMS" />-->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Foreground service permissions (Android 9+) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
+        android:minSdkVersion="34" />
+
+    <!-- Notification permission (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".App"
@@ -18,25 +26,50 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GetSMS"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-         <receiver
-             android:name=".ReceiveSms"
-             android:exported="true">
-             <intent-filter>
-                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-             </intent-filter>
-         </receiver>
-        <service android:name=".EndlessService" />
+
+        <!-- Rules Management Activity -->
+        <activity
+            android:name=".RulesActivity"
+            android:label="SMS Rules"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
+
+        <!-- Rule Editor Activity -->
+        <activity
+            android:name=".RuleEditorActivity"
+            android:label="Edit Rule"
+            android:parentActivityName=".RulesActivity"
+            android:exported="false" />
+
+
+
+        <!-- SMS Receiver -->
+        <receiver
+            android:name=".ReceiveSms"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Foreground Service -->
+        <service
+            android:name=".EndlessService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
     </application>
 
 </manifest>

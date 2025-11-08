@@ -1,25 +1,34 @@
 package com.example.getsms;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.example.getsms.adapter.AdapterRequRec;
 import com.example.getsms.modul.Response;
 import com.example.getsms.roomDB.DataBase;
 import com.example.getsms.roomDB.SmsRecord;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,58 +36,186 @@ public class MainActivity extends AppCompatActivity {
     private AdapterRequRec adapter;
     private List<Response> dataList = new ArrayList<>();
     private DataBase db;
-
     private Button btnDelete;
-    EditText UrlText;
-    SharedPreferences sharedPref ;
-//    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 1;
+    private EditText UrlText;
+    private SharedPreferences sharedPref;
+    private ExecutorService executorService;
 
+    // Permission launchers for Android 13+
+    private final ActivityResultLauncher<String> requestNotificationPermission =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    checkSmsPermission();
+                } else {
+                    showPermissionRationale("Notification permission is required for foreground service");
+                }
+            });
+
+    private final ActivityResultLauncher<String> requestSmsPermission =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Toast.makeText(this, "SMS permission granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    showPermissionRationale("SMS permission is required to receive messages");
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        UrlText = (EditText) findViewById(R.id.editTextUrl);
-        sharedPref = MainActivity.this.getSharedPreferences("BaseUrl",Context.MODE_PRIVATE);
+
+        executorService = Executors.newSingleThreadExecutor();
 
         adapter = new AdapterRequRec(getApplicationContext(), dataList);
 
         findView();
-        getData();
         setRecRequ();
-        adapter.notifyItemChanged(dataList.size());
-        if (sharedPref.contains("Url")) {
-            UrlText.setText(sharedPref.getString("Url", ""));
+
+        // Load data in background thread
+        loadDataAsync();
+
+        // Check permissions on startup
+        checkPermissions();
+
+        btnDelete.setOnClickListener(view -> deleteOldRecords());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.READ_PHONE_STATE
+            }, 100);
         }
 
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                db = DataBase.getDbInstance(MainActivity.this);
-                List<SmsRecord> data = db.smsDao().getLastOlderMonth();
-                for(int i=0;i< data.size(); i++){
-                    db.smsDao().deleteRecord(data.get(i));
+        Button btnOpenRules = findViewById(R.id.btnOpenRules);
+        btnOpenRules.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RulesActivity.class);
+            startActivity(intent);
+        });
+
+        requestPermissions();
+
+    }
+
+    private void requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] permissions = {
+                    Manifest.permission.RECEIVE_SMS,
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.READ_PHONE_STATE
+            };
+
+            List<String> permissionsToRequest = new ArrayList<>();
+            for (String permission : permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    permissionsToRequest.add(permission);
                 }
             }
+
+            if (!permissionsToRequest.isEmpty()) {
+                requestPermissions(
+                        permissionsToRequest.toArray(new String[0]),
+                        100
+                );
+            }
+        }
+    }
+
+
+    private void checkPermissions() {
+        // For Android 13+ (API 33+), check notification permission first
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+                return;
+            }
+        }
+        checkSmsPermission();
+    }
+
+    private void checkSmsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestSmsPermission.launch(Manifest.permission.RECEIVE_SMS);
+        }
+    }
+
+    private void showPermissionRationale(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Permission Required")
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void loadDataAsync() {
+        executorService.execute(() -> {
+            db = DataBase.getDbInstance(MainActivity.this);
+            List<SmsRecord> data = db.smsDao().getAllRecord();
+
+            List<Response> tempList = new ArrayList<>();
+            for (SmsRecord record : data) {
+                tempList.add(new Response(
+                        record.uid,
+                        record.title,
+                        record.date,
+                        record.status,
+                        record.body
+                ));
+            }
+
+            runOnUiThread(() -> {
+                dataList.clear();
+                dataList.addAll(tempList);
+                adapter.notifyDataSetChanged();
+            });
         });
     }
 
-    private void getData() {
-        db = DataBase.getDbInstance(MainActivity.this);
-        List<SmsRecord> data = db.smsDao().getAllRecord();
-        for(int i=0;i< data.size(); i++){
-            dataList.add(new Response(data.get(i).uid, data.get(i).title, data.get(i).date, data.get(i).status, data.get(i).body));
-        }
-        adapter.notifyItemChanged(dataList.size());
+    private void deleteOldRecords() {
+        executorService.execute(() -> {
+            db = DataBase.getDbInstance(MainActivity.this);
+            List<SmsRecord> data = db.smsDao().getLastOlderMonth();
+            for (SmsRecord record : data) {
+                db.smsDao().deleteRecord(record);
+            }
+
+            runOnUiThread(() -> {
+                Toast.makeText(MainActivity.this, "Old records deleted", Toast.LENGTH_SHORT).show();
+                loadDataAsync();
+            });
+        });
     }
 
     public void startService(View v) {
+        // Check notification permission before starting service (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Notification permission required", Toast.LENGTH_SHORT).show();
+                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+                return;
+            }
+        }
+
         Intent serviceIntent = new Intent(this, EndlessService.class);
-        startService(serviceIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
     }
 
     public void saveUrl(View v) {
         String url = UrlText.getText().toString();
+        if (url.isEmpty()) {
+            Toast.makeText(this, "Please enter a valid URL", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("Url", url);
         editor.apply();
@@ -86,16 +223,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refresh(View v) {
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
+        loadDataAsync();
     }
 
     public void stopService(View v) {
         Intent serviceIntent = new Intent(this, EndlessService.class);
         stopService(serviceIntent);
+        Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
     }
-
 
     private void findView() {
         recRequ = findViewById(R.id.recRequ);
@@ -106,8 +241,14 @@ public class MainActivity extends AppCompatActivity {
         recRequ.setLayoutManager(
                 new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false)
         );
-
         recRequ.setAdapter(adapter);
-        adapter.notifyItemChanged(dataList.size());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
 }
