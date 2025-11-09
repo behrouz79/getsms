@@ -18,12 +18,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.getsms.adapter.AdapterRequRec;
+import com.example.getsms.credit.CreditManager;
 import com.example.getsms.modul.Response;
 import com.example.getsms.roomDB.DataBase;
 import com.example.getsms.roomDB.SmsRecord;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText UrlText;
     private SharedPreferences sharedPref;
     private ExecutorService executorService;
+
+    // Credit system
+    private CreditManager creditManager;
+    private TextView tvCreditsDisplay;
 
     // Permission launchers for Android 13+
     private final ActivityResultLauncher<String> requestNotificationPermission =
@@ -67,6 +74,13 @@ public class MainActivity extends AppCompatActivity {
 
         executorService = Executors.newSingleThreadExecutor();
 
+        // Initialize AdMob
+        MobileAds.initialize(this, initializationStatus -> {});
+
+        // Initialize credit manager
+        creditManager = new CreditManager(this);
+        creditManager.setBackendUrl("https://your-django-backend.com/api/");
+
         adapter = new AdapterRequRec(getApplicationContext(), dataList);
 
         findView();
@@ -93,8 +107,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // NEW: Credits button
+        Button btnCredits = findViewById(R.id.btnCredits);
+        btnCredits.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CreditsActivity.class);
+            startActivity(intent);
+        });
+
         requestPermissions();
 
+        // Update credits display
+        updateCreditsDisplay();
+    }
+
+    private void updateCreditsDisplay() {
+        if (tvCreditsDisplay != null) {
+            int credits = creditManager.getCredits();
+            tvCreditsDisplay.setText("Credits: " + credits);
+
+            // Show warning if low credits
+            if (credits < 10) {
+                tvCreditsDisplay.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            } else {
+                tvCreditsDisplay.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+            }
+        }
     }
 
     private void requestPermissions() {
@@ -121,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private void checkPermissions() {
         // For Android 13+ (API 33+), check notification permission first
@@ -200,6 +236,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // Check if user has credits
+        if (!creditManager.hasEnoughCredits(1)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Low Credits")
+                    .setMessage("You don't have enough credits to use the service. Please watch ads or purchase credits.")
+                    .setPositiveButton("Get Credits", (dialog, which) -> {
+                        Intent intent = new Intent(MainActivity.this, CreditsActivity.class);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            return;
+        }
+
         Intent serviceIntent = new Intent(this, EndlessService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent);
@@ -224,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void refresh(View v) {
         loadDataAsync();
+        updateCreditsDisplay();
     }
 
     public void stopService(View v) {
@@ -235,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
     private void findView() {
         recRequ = findViewById(R.id.recRequ);
         btnDelete = findViewById(R.id.btnDelete);
+        tvCreditsDisplay = findViewById(R.id.tvCreditsDisplay);
     }
 
     private void setRecRequ() {
@@ -242,6 +294,12 @@ public class MainActivity extends AppCompatActivity {
                 new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false)
         );
         recRequ.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCreditsDisplay();
     }
 
     @Override

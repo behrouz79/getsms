@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.getsms.credit.CreditManager;
 import com.example.getsms.model.Action;
 import com.example.getsms.model.Rule;
 import com.example.getsms.model.SmsMessage;
@@ -19,10 +20,12 @@ public class RuleEngine {
     private static final String TAG = "RuleEngine";
     private final Context context;
     private final Gson gson;
+    private final CreditManager creditManager;
 
     public RuleEngine(Context context) {
         this.context = context;
         this.gson = new Gson();
+        this.creditManager = new CreditManager(context);
     }
 
     /**
@@ -138,6 +141,19 @@ public class RuleEngine {
                     continue;
                 }
 
+                // CHECK CREDITS BEFORE EXECUTING ACTION
+                int requiredCredits = getCreditCostForAction(action.type);
+
+                if (!creditManager.hasEnoughCredits(requiredCredits)) {
+                    Log.e(TAG, "Insufficient credits for action: " + action.type +
+                            ". Required: " + requiredCredits +
+                            ", Available: " + creditManager.getCredits());
+
+                    // Optionally send a notification to user about low credits
+                    notifyLowCredits();
+                    continue; // Skip this action
+                }
+
                 // Apply transformation FIRST if enabled (on original SMS body)
                 String transformedBody = sms.getBody();
                 if (action.enableTransform) {
@@ -148,7 +164,6 @@ public class RuleEngine {
                 }
 
                 // THEN process template with variables (using transformed body)
-                // Create temporary SMS object with transformed body for template processing
                 SmsMessage transformedSms = new SmsMessage(
                         sms.getSender(),
                         transformedBody,
@@ -159,11 +174,49 @@ public class RuleEngine {
 
                 String processedMessage = processTemplate(action.template, transformedSms);
 
-                executeAction(action, processedMessage, sms);
+                // DEDUCT CREDITS BEFORE EXECUTING
+                if (creditManager.deductCredits(requiredCredits,
+                        "Action: " + action.type + " for rule: " + rule.name)) {
+
+                    Log.d(TAG, "Credits deducted: " + requiredCredits +
+                            ", Remaining: " + creditManager.getCredits());
+
+                    // Execute the action
+                    executeAction(action, processedMessage, sms);
+                } else {
+                    Log.e(TAG, "Failed to deduct credits for action: " + action.type);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error executing rule: " + rule.name, e);
         }
+    }
+
+    /**
+     * Get credit cost based on action type
+     */
+    private int getCreditCostForAction(Action.ActionType type) {
+        switch (type) {
+            case SMS:
+                return CreditManager.COST_PER_SMS;
+            case WEBHOOK:
+                return CreditManager.COST_PER_WEBHOOK;
+            case TELEGRAM:
+                return CreditManager.COST_PER_TELEGRAM;
+            case WHATSAPP:
+                return CreditManager.COST_PER_TELEGRAM; // Same as Telegram
+            default:
+                return 1;
+        }
+    }
+
+    /**
+     * Notify user about low credits
+     */
+    private void notifyLowCredits() {
+        // TODO: Implement notification to user
+        // You can use Android Notifications or save a flag to show dialog in MainActivity
+        Log.w(TAG, "Low credits warning - user should be notified");
     }
 
     /**
