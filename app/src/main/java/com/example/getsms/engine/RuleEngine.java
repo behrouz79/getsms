@@ -138,11 +138,55 @@ public class RuleEngine {
                     continue;
                 }
 
-                String processedMessage = processTemplate(action.template, sms);
+                // Apply transformation FIRST if enabled (on original SMS body)
+                String transformedBody = sms.getBody();
+                if (action.enableTransform) {
+                    transformedBody = applyTransformation(sms.getBody(), action);
+                    Log.d(TAG, "Message transformed for action: " + action.type);
+                    Log.d(TAG, "Original: " + sms.getBody());
+                    Log.d(TAG, "Transformed: " + transformedBody);
+                }
+
+                // THEN process template with variables (using transformed body)
+                // Create temporary SMS object with transformed body for template processing
+                SmsMessage transformedSms = new SmsMessage(
+                        sms.getSender(),
+                        transformedBody,
+                        sms.getSimSlot(),
+                        sms.getTimestamp(),
+                        sms.getSubscriptionId()
+                );
+
+                String processedMessage = processTemplate(action.template, transformedSms);
+
                 executeAction(action, processedMessage, sms);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error executing rule: " + rule.name, e);
+        }
+    }
+
+    /**
+     * Apply message transformation based on action settings
+     */
+    private String applyTransformation(String message, Action action) {
+        try {
+            // Check if using chain transforms
+            if (action.transformChain != null && !action.transformChain.isEmpty()) {
+                List<MessageTransformer.Transform> transforms = gson.fromJson(
+                        action.transformChain,
+                        new TypeToken<List<MessageTransformer.Transform>>(){}.getType()
+                );
+                return MessageTransformer.chainTransforms(message, transforms);
+            }
+
+            // Single transformation
+            MessageTransformer.TransformType type = action.getTransformType();
+            return MessageTransformer.transform(message, type, action.transformPattern);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error applying transformation", e);
+            return message; // Return original on error
         }
     }
 

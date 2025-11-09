@@ -44,7 +44,7 @@
                 android:hint="e.g., Bank Alerts"
                 android:inputType="text" />
 
-            <!-- Divider -->
+            <!-- CONDITIONS SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
                 android:hint="e.g., OTP or credited"
                 android:inputType="text" />
 
-            <!-- Divider -->
+            <!-- ACTIONS SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Added Actions List -->
+            <!-- Current Actions List -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,19 +134,6 @@
                 android:textStyle="bold"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp" />
-
-            <!-- Empty state -->
-            <TextView
-                android:id="@+id/tvNoActions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No actions added yet. Add an action below."
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
-                android:textStyle="italic"
-                android:padding="16dp"
-                android:gravity="center"
-                android:visibility="gone" />
 
             <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
@@ -219,6 +206,7 @@
                     android:inputType="textMultiLine"
                     android:lines="3" />
 
+                <!-- TELEGRAM FIELDS -->
                 <LinearLayout
                     android:id="@+id/telegramFields"
                     android:layout_width="match_parent"
@@ -256,6 +244,91 @@
                         android:hint="987654321"
                         android:inputType="text" />
                 </LinearLayout>
+
+                <!-- ============================================ -->
+                <!-- NEW: MESSAGE TRANSFORMATION SECTION -->
+                <!-- ============================================ -->
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#CCCCCC" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchEnableTransform"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Enable Message Transformation"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/purple_500" />
+
+                <LinearLayout
+                    android:id="@+id/transformSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:background="#EEEEEE"
+                    android:padding="12dp"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Transform Type"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp" />
+
+                    <Spinner
+                        android:id="@+id/spinnerTransformType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Transform Pattern/Value"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="12dp" />
+
+                    <EditText
+                        android:id="@+id/etTransformPattern"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="See examples below"
+                        android:inputType="text" />
+
+                    <!-- Help text -->
+                    <TextView
+                        android:id="@+id/tvTransformHelp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/darker_gray"
+                        android:background="#FFFFFF"
+                        android:padding="8dp"
+                        android:text="Select a transform type to see examples." />
+
+                    <!-- Test transformation button -->
+                    <Button
+                        android:id="@+id/btnTestTransform"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Test Transformation"
+                        android:textSize="14sp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                </LinearLayout>
+
+                <!-- END TRANSFORMATION SECTION -->
 
                 <LinearLayout
                     android:layout_width="match_parent"

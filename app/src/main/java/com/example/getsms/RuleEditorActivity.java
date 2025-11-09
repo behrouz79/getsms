@@ -1,20 +1,24 @@
 package com.example.getsms;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.getsms.adapter.ActionsAdapter;
+import com.example.getsms.engine.MessageTransformer;
 import com.example.getsms.model.Action;
 import com.example.getsms.model.Rule;
 import com.example.getsms.roomDB.DataBase;
@@ -44,6 +48,14 @@ public class RuleEditorActivity extends AppCompatActivity {
     private EditText etChatId;
     private LinearLayout telegramFields;
 
+    // Transform fields
+    private SwitchCompat switchEnableTransform;
+    private LinearLayout transformSettings;
+    private Spinner spinnerTransformType;
+    private EditText etTransformPattern;
+    private TextView tvTransformHelp;
+    private Button btnTestTransform;
+
     private Button btnSave;
     private Button btnAddAction;
     private Button btnCancelAction;
@@ -58,7 +70,7 @@ public class RuleEditorActivity extends AppCompatActivity {
     private List<Action> actions = new ArrayList<>();
     private Gson gson = new Gson();
 
-    private int editingActionPosition = -1; // -1 means adding new, >= 0 means editing
+    private int editingActionPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +101,12 @@ public class RuleEditorActivity extends AppCompatActivity {
             editingActionPosition = -1;
         });
 
-        // Listen to action type changes to show/hide fields
+        // Transform switch listener
+        switchEnableTransform.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            transformSettings.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
+
+        // Action type listener
         spinnerActionType.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
@@ -100,6 +117,21 @@ public class RuleEditorActivity extends AppCompatActivity {
             public void onNothingSelected(android.widget.AdapterView<?> parent) {
             }
         });
+
+        // Transform type listener - update help text
+        spinnerTransformType.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                updateTransformHelp();
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            }
+        });
+
+        // Test transform button
+        btnTestTransform.setOnClickListener(v -> showTransformTestDialog());
     }
 
     private void initViews() {
@@ -117,6 +149,14 @@ public class RuleEditorActivity extends AppCompatActivity {
         etBotToken = findViewById(R.id.etBotToken);
         etChatId = findViewById(R.id.etChatId);
         telegramFields = findViewById(R.id.telegramFields);
+
+        // Transform views
+        switchEnableTransform = findViewById(R.id.switchEnableTransform);
+        transformSettings = findViewById(R.id.transformSettings);
+        spinnerTransformType = findViewById(R.id.spinnerTransformType);
+        etTransformPattern = findViewById(R.id.etTransformPattern);
+        tvTransformHelp = findViewById(R.id.tvTransformHelp);
+        btnTestTransform = findViewById(R.id.btnTestTransform);
 
         btnSave = findViewById(R.id.btnSave);
         btnAddAction = findViewById(R.id.btnAddAction);
@@ -150,10 +190,132 @@ public class RuleEditorActivity extends AppCompatActivity {
         // Action Type
         ArrayAdapter<String> actionAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
-//                new String[]{"WEBHOOK", "SMS", "TELEGRAM", "WHATSAPP"});
                 new String[]{"WEBHOOK", "SMS", "TELEGRAM"});
         actionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerActionType.setAdapter(actionAdapter);
+
+        // Transform Type
+        ArrayAdapter<String> transformAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"EXTRACT_LINES", "REMOVE_LINES", "EXTRACT_PATTERN",
+                        "REMOVE_PATTERN", "REPLACE_PATTERN", "KEEP_UNTIL",
+                        "KEEP_AFTER", "REMOVE_AFTER"});
+        transformAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTransformType.setAdapter(transformAdapter);
+    }
+
+    private void updateTransformHelp() {
+        String type = spinnerTransformType.getSelectedItem().toString();
+        String helpText = getTransformHelpText(type);
+        tvTransformHelp.setText(helpText);
+    }
+
+    private String getTransformHelpText(String type) {
+        switch (type) {
+            case "EXTRACT_LINES":
+                return "Extract specific lines.\nExample: 1,2,3 (extracts lines 1, 2, and 3)\n\nYour example:\nReceive: Line1\\nLine2\\nLine3\\nLine4\nPattern: 1,2\nResult: Line1\\nLine2";
+
+            case "REMOVE_LINES":
+                return "Remove specific lines.\nExample: 3,4 (removes lines 3 and 4)\n\nYour example:\nReceive: Line1\\nLine2\\nموجودی: 757\\nLine4\nPattern: 3\nResult: Line1\\nLine2\\nLine4";
+
+            case "EXTRACT_PATTERN":
+                return "Extract text matching regex.\nExample: حساب\\d+ (extracts account number)\n\nYour example:\nReceive: حساب5694541931\\nبرداشت100,000\nPattern: حساب\\d+|برداشت[\\d,]+\nResult: حساب5694541931\\nبرداشت100,000";
+
+            case "REMOVE_PATTERN":
+                return "Remove text matching regex.\nExample: موجودی:.* (removes balance line)\n\nYour example:\nReceive: بلو\\nانتقال پل\\nموجودی: 757 ریال\nPattern: موجودی:.*\nResult: بلو\\nانتقال پل";
+
+            case "REPLACE_PATTERN":
+                return "Replace text matching regex.\nFormat: pattern|replacement\nExample: موجودی:.*| (replaces balance with nothing)";
+
+            case "KEEP_UNTIL":
+                return "Keep text until pattern found.\nExample: موجودی (keeps everything before موجودی)";
+
+            case "KEEP_AFTER":
+                return "Keep text after pattern found.\nExample: حساب (keeps from حساب onwards)";
+
+            case "REMOVE_AFTER":
+                return "Remove text after pattern found.\nExample: موجودی (removes from موجودی onwards)\n\nYour example:\nReceive: بلو\\nانتقال پل\\nموجودی: 757\nPattern: موجودی\nResult: بلو\\nانتقال پل";
+
+            default:
+                return "Select a transform type to see examples.";
+        }
+    }
+
+    private void showTransformTestDialog() {
+        // Create dialog with input for test message
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Test Transformation");
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 40, 50, 10);
+
+        TextView label = new TextView(this);
+        label.setText("Enter test message:");
+        layout.addView(label);
+
+        final EditText input = new EditText(this);
+        input.setHint("Example:\nحساب5694541931\nبرداشت100,000\nمانده7,865,949");
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        input.setLines(5);
+        layout.addView(input);
+
+        builder.setView(layout);
+
+        builder.setPositiveButton("Test", (dialog, which) -> {
+            String testMessage = input.getText().toString();
+            if (testMessage.isEmpty()) {
+                Toast.makeText(this, "Please enter test message", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Apply transformation
+            String type = spinnerTransformType.getSelectedItem().toString();
+            String pattern = etTransformPattern.getText().toString();
+
+            MessageTransformer.TransformType transformType = MessageTransformer.TransformType.valueOf(type);
+            String result = MessageTransformer.transform(testMessage, transformType, pattern);
+
+            // Show result
+            showTransformResult(testMessage, result);
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void showTransformResult(String original, String transformed) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Transformation Result");
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 40, 50, 10);
+
+        TextView originalLabel = new TextView(this);
+        originalLabel.setText("Original:");
+        originalLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+        layout.addView(originalLabel);
+
+        TextView originalText = new TextView(this);
+        originalText.setText(original);
+        originalText.setPadding(0, 10, 0, 20);
+        layout.addView(originalText);
+
+        TextView transformedLabel = new TextView(this);
+        transformedLabel.setText("Transformed:");
+        transformedLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+        layout.addView(transformedLabel);
+
+        TextView transformedText = new TextView(this);
+        transformedText.setText(transformed);
+        transformedText.setPadding(0, 10, 0, 20);
+        transformedText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        layout.addView(transformedText);
+
+        builder.setView(layout);
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
 
     private void setupActionsRecyclerView() {
@@ -182,7 +344,7 @@ public class RuleEditorActivity extends AppCompatActivity {
         } else if ("WEBHOOK".equals(selectedType)) {
             telegramFields.setVisibility(View.GONE);
             etActionDestination.setHint("e.g., https://api.example.com/webhook");
-        } else if ("SMS".equals(selectedType) || "WHATSAPP".equals(selectedType)) {
+        } else if ("SMS".equals(selectedType)) {
             telegramFields.setVisibility(View.GONE);
             etActionDestination.setHint("e.g., +1234567890");
         }
@@ -243,6 +405,13 @@ public class RuleEditorActivity extends AppCompatActivity {
             etChatId.setText(action.chatId);
         }
 
+        // Populate transform settings
+        switchEnableTransform.setChecked(action.enableTransform);
+        if (action.enableTransform) {
+            setSpinnerValue(spinnerTransformType, action.transformType);
+            etTransformPattern.setText(action.transformPattern);
+        }
+
         // Change button text
         btnAddAction.setText("Update Action");
         btnCancelAction.setVisibility(View.VISIBLE);
@@ -268,6 +437,7 @@ public class RuleEditorActivity extends AppCompatActivity {
             Action action = createAction(type, chatId, template);
             action.botToken = botToken;
             action.chatId = chatId;
+            applyTransformSettings(action);
 
             addOrUpdateAction(action);
             return true;
@@ -278,8 +448,18 @@ public class RuleEditorActivity extends AppCompatActivity {
             }
 
             Action action = createAction(type, destination, template);
+            applyTransformSettings(action);
+
             addOrUpdateAction(action);
             return true;
+        }
+    }
+
+    private void applyTransformSettings(Action action) {
+        action.enableTransform = switchEnableTransform.isChecked();
+        if (action.enableTransform) {
+            action.transformType = spinnerTransformType.getSelectedItem().toString();
+            action.transformPattern = etTransformPattern.getText().toString().trim();
         }
     }
 
@@ -294,11 +474,9 @@ public class RuleEditorActivity extends AppCompatActivity {
 
     private void addOrUpdateAction(Action action) {
         if (editingActionPosition >= 0) {
-            // Update existing action
             actions.set(editingActionPosition, action);
             Toast.makeText(this, "Action updated", Toast.LENGTH_SHORT).show();
         } else {
-            // Add new action
             actions.add(action);
             Toast.makeText(this, "Action added: " + action.type, Toast.LENGTH_SHORT).show();
         }
@@ -311,7 +489,10 @@ public class RuleEditorActivity extends AppCompatActivity {
         etActionTemplate.setText("");
         etBotToken.setText("");
         etChatId.setText("");
+        switchEnableTransform.setChecked(false);
+        etTransformPattern.setText("");
         spinnerActionType.setSelection(0);
+        spinnerTransformType.setSelection(0);
         btnAddAction.setText("Add Action");
         btnCancelAction.setVisibility(View.GONE);
         editingActionPosition = -1;
