@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize credit manager
         creditManager = new CreditManager(this);
-        creditManager.setBackendUrl("https://your-django-backend.com/api/");
+        creditManager.setBackendUrl("https://smsforwarder.amiriprog.ir/api/");
 
         adapter = new AdapterRequRec(getApplicationContext(), dataList);
 

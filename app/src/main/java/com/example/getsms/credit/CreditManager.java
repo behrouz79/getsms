@@ -20,16 +20,17 @@ import okhttp3.Response;
 
 /**
  * Manages user credits for the SMS forwarding app
- * Credits are required to send SMS/webhooks
+ * Credits are stored locally and managed client-side
+ * Backend is only used for token validation and manual credit purchases
  */
 public class CreditManager {
 
     private static final String TAG = "CreditManager";
     private static final String PREFS_NAME = "credit_prefs";
     private static final String KEY_CREDITS = "user_credits";
-    private static final String KEY_USER_ID = "user_id";
     private static final String KEY_DEVICE_ID = "device_id";
-    private static final String KEY_LAST_SYNC = "last_sync_time";
+    private static final String KEY_TOTAL_ADS_WATCHED = "total_ads_watched";
+    private static final String KEY_LAST_AD_TIME = "last_ad_time";
 
     // Credit costs
     public static final int COST_PER_SMS = 1;
@@ -38,15 +39,19 @@ public class CreditManager {
 
     // Credit rewards
     public static final int REWARD_PER_AD_VIEW = 5;
-    public static final int REWARD_PER_AD_CLICK = 10;
+    public static final int INITIAL_FREE_CREDITS = 20; // Free credits on first install
+
+    // Ad watch limits (optional - prevent abuse)
+    private static final int MAX_ADS_PER_DAY = 50;
+    private static final long AD_COOLDOWN_MS = 30000; // 30 seconds between ads
 
     private final Context context;
     private final SharedPreferences prefs;
     private final Gson gson;
     private final OkHttpClient client;
 
-    // Backend configuration
-    private String backendUrl = "https://your-django-backend.com/api/";
+    // Backend configuration (only for token redemption)
+    private String backendUrl = "https://smsforwarder.amiriprog.ir/api/";
 
     public interface CreditCallback {
         void onSuccess(int credits);
@@ -61,6 +66,19 @@ public class CreditManager {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build();
+
+        // Give initial free credits on first launch
+        initializeCredits();
+    }
+
+    /**
+     * Initialize credits on first launch
+     */
+    private void initializeCredits() {
+        if (!prefs.contains(KEY_CREDITS)) {
+            prefs.edit().putInt(KEY_CREDITS, INITIAL_FREE_CREDITS).apply();
+            Log.d(TAG, "First launch - Added " + INITIAL_FREE_CREDITS + " free credits");
+        }
     }
 
     /**
@@ -78,17 +96,14 @@ public class CreditManager {
     }
 
     /**
-     * Add credits locally and sync with backend
+     * Add credits locally (for ad rewards)
      */
-    public void addCredits(int amount, String source, CreditCallback callback) {
+    public void addCredits(int amount, String source) {
         int currentCredits = getCredits();
         int newCredits = currentCredits + amount;
 
         prefs.edit().putInt(KEY_CREDITS, newCredits).apply();
-        Log.d(TAG, "Credits added: " + amount + " (Source: " + source + "), Total: " + newCredits);
-
-        // Sync with backend
-        syncCreditsWithBackend(amount, source, callback);
+        Log.d(TAG, "Credits added: +" + amount + " (Source: " + source + "), Total: " + newCredits);
     }
 
     /**
@@ -104,10 +119,7 @@ public class CreditManager {
 
         int newCredits = currentCredits - amount;
         prefs.edit().putInt(KEY_CREDITS, newCredits).apply();
-        Log.d(TAG, "Credits deducted: " + amount + " (Reason: " + reason + "), Remaining: " + newCredits);
-
-        // Log transaction to backend
-        logCreditTransaction(amount, reason, "DEBIT");
+        Log.d(TAG, "Credits deducted: -" + amount + " (Reason: " + reason + "), Remaining: " + newCredits);
 
         return true;
     }
@@ -120,17 +132,63 @@ public class CreditManager {
     }
 
     /**
-     * Reward user for watching ad
+     * Check if user can watch another ad (rate limiting)
      */
-    public void rewardForAdView(CreditCallback callback) {
-        addCredits(REWARD_PER_AD_VIEW, "ad_view", callback);
+    public boolean canWatchAd() {
+        long lastAdTime = prefs.getLong(KEY_LAST_AD_TIME, 0);
+        long currentTime = System.currentTimeMillis();
+
+        // Check cooldown
+        if (currentTime - lastAdTime < AD_COOLDOWN_MS) {
+            long remainingSeconds = (AD_COOLDOWN_MS - (currentTime - lastAdTime)) / 1000;
+            Log.d(TAG, "Ad cooldown active. Wait " + remainingSeconds + " seconds");
+            return false;
+        }
+
+        // Check daily limit
+        int adsToday = getAdsWatchedToday();
+        if (adsToday >= MAX_ADS_PER_DAY) {
+            Log.d(TAG, "Daily ad limit reached: " + adsToday);
+            return false;
+        }
+
+        return true;
     }
 
     /**
-     * Reward user for clicking ad
+     * Get number of ads watched today
      */
-    public void rewardForAdClick(CreditCallback callback) {
-        addCredits(REWARD_PER_AD_CLICK, "ad_click", callback);
+    private int getAdsWatchedToday() {
+        // Simple implementation - resets at midnight would be better
+        return prefs.getInt(KEY_TOTAL_ADS_WATCHED, 0) % MAX_ADS_PER_DAY;
+    }
+
+    /**
+     * Reward user for watching ad
+     */
+    public void rewardForAdView(CreditCallback callback) {
+        if (!canWatchAd()) {
+            if (callback != null) {
+                callback.onError("Please wait before watching another ad");
+            }
+            return;
+        }
+
+        // Add credits locally
+        addCredits(REWARD_PER_AD_VIEW, "ad_view");
+
+        // Update ad watch tracking
+        int totalAds = prefs.getInt(KEY_TOTAL_ADS_WATCHED, 0);
+        prefs.edit()
+                .putInt(KEY_TOTAL_ADS_WATCHED, totalAds + 1)
+                .putLong(KEY_LAST_AD_TIME, System.currentTimeMillis())
+                .apply();
+
+        Log.d(TAG, "User rewarded: +" + REWARD_PER_AD_VIEW + " credits for watching ad");
+
+        if (callback != null) {
+            callback.onSuccess(getCredits());
+        }
     }
 
     /**
@@ -146,31 +204,25 @@ public class CreditManager {
     }
 
     /**
-     * Set user ID after authentication
+     * Get time until next ad can be watched
      */
-    public void setUserId(String userId) {
-        prefs.edit().putString(KEY_USER_ID, userId).apply();
+    public long getAdCooldownRemaining() {
+        long lastAdTime = prefs.getLong(KEY_LAST_AD_TIME, 0);
+        long currentTime = System.currentTimeMillis();
+        long remaining = AD_COOLDOWN_MS - (currentTime - lastAdTime);
+        return Math.max(0, remaining);
     }
 
     /**
-     * Get user ID
+     * Redeem purchase token from backend
+     * This is the ONLY backend interaction - validates token and returns credit amount
      */
-    public String getUserId() {
-        return prefs.getString(KEY_USER_ID, getDeviceId());
-    }
-
-    /**
-     * Sync credits with backend
-     */
-    public void syncCreditsWithBackend(int amount, String source, CreditCallback callback) {
+    public void redeemToken(String token, CreditCallback callback) {
         new Thread(() -> {
             try {
                 JsonObject payload = new JsonObject();
-                payload.addProperty("user_id", getUserId());
                 payload.addProperty("device_id", getDeviceId());
-                payload.addProperty("amount", amount);
-                payload.addProperty("source", source);
-                payload.addProperty("timestamp", System.currentTimeMillis());
+                payload.addProperty("token", token);
 
                 String jsonPayload = gson.toJson(payload);
 
@@ -180,176 +232,16 @@ public class CreditManager {
                 );
 
                 Request request = new Request.Builder()
-                        .url(backendUrl + "credits/add/")
+                        .url(backendUrl + "credits/redeem/")
                         .post(body)
                         .build();
 
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.e(TAG, "Failed to sync credits", e);
+                        Log.e(TAG, "Token redemption failed", e);
                         if (callback != null) {
-                            callback.onError("Failed to sync: " + e.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            String responseBody = response.body().string();
-                            JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
-
-                            if (jsonResponse.has("total_credits")) {
-                                int serverCredits = jsonResponse.get("total_credits").getAsInt();
-                                prefs.edit()
-                                        .putInt(KEY_CREDITS, serverCredits)
-                                        .putLong(KEY_LAST_SYNC, System.currentTimeMillis())
-                                        .apply();
-
-                                Log.d(TAG, "Credits synced with server: " + serverCredits);
-
-                                if (callback != null) {
-                                    callback.onSuccess(serverCredits);
-                                }
-                            }
-                        } else {
-                            Log.e(TAG, "Backend sync failed: " + response.code());
-                            if (callback != null) {
-                                callback.onError("Sync failed: " + response.code());
-                            }
-                        }
-                    }
-                });
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error syncing credits", e);
-                if (callback != null) {
-                    callback.onError("Error: " + e.getMessage());
-                }
-            }
-        }).start();
-    }
-
-    /**
-     * Log credit transaction to backend
-     */
-    private void logCreditTransaction(int amount, String reason, String type) {
-        new Thread(() -> {
-            try {
-                JsonObject payload = new JsonObject();
-                payload.addProperty("user_id", getUserId());
-                payload.addProperty("device_id", getDeviceId());
-                payload.addProperty("amount", amount);
-                payload.addProperty("reason", reason);
-                payload.addProperty("type", type);
-                payload.addProperty("timestamp", System.currentTimeMillis());
-
-                String jsonPayload = gson.toJson(payload);
-
-                RequestBody body = RequestBody.create(
-                        jsonPayload,
-                        MediaType.parse("application/json; charset=utf-8")
-                );
-
-                Request request = new Request.Builder()
-                        .url(backendUrl + "credits/log/")
-                        .post(body)
-                        .build();
-
-                client.newCall(request).execute();
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error logging transaction", e);
-            }
-        }).start();
-    }
-
-    /**
-     * Fetch credits from backend
-     */
-    public void fetchCreditsFromBackend(CreditCallback callback) {
-        new Thread(() -> {
-            try {
-                Request request = new Request.Builder()
-                        .url(backendUrl + "credits/balance/?user_id=" + getUserId())
-                        .get()
-                        .build();
-
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.e(TAG, "Failed to fetch credits", e);
-                        if (callback != null) {
-                            callback.onError("Failed to fetch: " + e.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            String responseBody = response.body().string();
-                            JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
-
-                            if (jsonResponse.has("credits")) {
-                                int serverCredits = jsonResponse.get("credits").getAsInt();
-                                prefs.edit()
-                                        .putInt(KEY_CREDITS, serverCredits)
-                                        .putLong(KEY_LAST_SYNC, System.currentTimeMillis())
-                                        .apply();
-
-                                Log.d(TAG, "Credits fetched from server: " + serverCredits);
-
-                                if (callback != null) {
-                                    callback.onSuccess(serverCredits);
-                                }
-                            }
-                        } else {
-                            Log.e(TAG, "Failed to fetch credits: " + response.code());
-                            if (callback != null) {
-                                callback.onError("Fetch failed: " + response.code());
-                            }
-                        }
-                    }
-                });
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error fetching credits", e);
-                if (callback != null) {
-                    callback.onError("Error: " + e.getMessage());
-                }
-            }
-        }).start();
-    }
-
-    /**
-     * Purchase credits with key
-     */
-    public void purchaseWithKey(String purchaseKey, CreditCallback callback) {
-        new Thread(() -> {
-            try {
-                JsonObject payload = new JsonObject();
-                payload.addProperty("user_id", getUserId());
-                payload.addProperty("device_id", getDeviceId());
-                payload.addProperty("purchase_key", purchaseKey);
-
-                String jsonPayload = gson.toJson(payload);
-
-                RequestBody body = RequestBody.create(
-                        jsonPayload,
-                        MediaType.parse("application/json; charset=utf-8")
-                );
-
-                Request request = new Request.Builder()
-                        .url(backendUrl + "credits/purchase/")
-                        .post(body)
-                        .build();
-
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.e(TAG, "Purchase failed", e);
-                        if (callback != null) {
-                            callback.onError("Purchase failed: " + e.getMessage());
+                            callback.onError("Network error: " + e.getMessage());
                         }
                     }
 
@@ -358,36 +250,43 @@ public class CreditManager {
                         String responseBody = response.body().string();
 
                         if (response.isSuccessful()) {
-                            JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+                            try {
+                                JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
 
-                            if (jsonResponse.has("success") && jsonResponse.get("success").getAsBoolean()) {
-                                int creditsAdded = jsonResponse.get("credits_added").getAsInt();
-                                int totalCredits = jsonResponse.get("total_credits").getAsInt();
+                                if (jsonResponse.has("success") && jsonResponse.get("success").getAsBoolean()) {
+                                    int creditsToAdd = jsonResponse.get("credits").getAsInt();
 
-                                prefs.edit().putInt(KEY_CREDITS, totalCredits).apply();
+                                    // Add credits locally
+                                    addCredits(creditsToAdd, "token_redemption");
 
-                                Log.d(TAG, "Purchase successful: +" + creditsAdded + " credits");
+                                    Log.d(TAG, "Token redeemed: +" + creditsToAdd + " credits");
 
-                                if (callback != null) {
-                                    callback.onSuccess(totalCredits);
+                                    if (callback != null) {
+                                        callback.onSuccess(getCredits());
+                                    }
+                                } else {
+                                    String error = jsonResponse.has("error") ?
+                                            jsonResponse.get("error").getAsString() : "Invalid token";
+                                    if (callback != null) {
+                                        callback.onError(error);
+                                    }
                                 }
-                            } else {
-                                String error = jsonResponse.has("error") ?
-                                        jsonResponse.get("error").getAsString() : "Unknown error";
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing response", e);
                                 if (callback != null) {
-                                    callback.onError(error);
+                                    callback.onError("Invalid response from server");
                                 }
                             }
                         } else {
                             if (callback != null) {
-                                callback.onError("Invalid purchase key or server error");
+                                callback.onError("Invalid token or server error (Code: " + response.code() + ")");
                             }
                         }
                     }
                 });
 
             } catch (Exception e) {
-                Log.e(TAG, "Error processing purchase", e);
+                Log.e(TAG, "Error redeeming token", e);
                 if (callback != null) {
                     callback.onError("Error: " + e.getMessage());
                 }
@@ -396,10 +295,38 @@ public class CreditManager {
     }
 
     /**
-     * Reset credits (for testing)
+     * Get total ads watched
+     */
+    public int getTotalAdsWatched() {
+        return prefs.getInt(KEY_TOTAL_ADS_WATCHED, 0);
+    }
+
+    /**
+     * Get ads remaining today
+     */
+    public int getAdsRemainingToday() {
+        int watched = getAdsWatchedToday();
+        return Math.max(0, MAX_ADS_PER_DAY - watched);
+    }
+
+    /**
+     * Reset credits (for testing only)
      */
     public void resetCredits() {
-        prefs.edit().putInt(KEY_CREDITS, 0).apply();
-        Log.d(TAG, "Credits reset to 0");
+        prefs.edit()
+                .putInt(KEY_CREDITS, INITIAL_FREE_CREDITS)
+                .putInt(KEY_TOTAL_ADS_WATCHED, 0)
+                .putLong(KEY_LAST_AD_TIME, 0)
+                .apply();
+        Log.d(TAG, "Credits reset to " + INITIAL_FREE_CREDITS);
+    }
+
+    /**
+     * Get credit statistics
+     */
+    public String getCreditStats() {
+        return "Credits: " + getCredits() + "\n" +
+                "Total Ads Watched: " + getTotalAdsWatched() + "\n" +
+                "Ads Remaining Today: " + getAdsRemainingToday();
     }
 }

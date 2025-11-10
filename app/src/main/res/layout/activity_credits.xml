@@ -1,213 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
     android:background="#F5F5F5">
 
-    <!-- Header Card -->
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-        <LinearLayout
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Credits Manager"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Credit Balance Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:gravity="center">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#FFFFFF">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Your Credits"
-                android:textSize="16sp"
-                android:textColor="#666666"
-                android:layout_marginBottom="8dp"/>
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:gravity="center">
 
-            <TextView
-                android:id="@+id/tvCredits"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="48sp"
-                android:textStyle="bold"
-                android:textColor="#4CAF50"
-                android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:id="@+id/tvCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available Credits: 0"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="#4CAF50"
+                    android:layout_marginBottom="8dp" />
 
-            <TextView
-                android:id="@+id/tvUserId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="User ID: Loading..."
-                android:textSize="12sp"
-                android:textColor="#999999"/>
+                <TextView
+                    android:id="@+id/tvAdStats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ads watched: 0 | Remaining today: 50"
+                    android:textSize="14sp"
+                    android:textColor="#666666" />
 
-        </LinearLayout>
+            </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-    <!-- Info Card -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp">
+        <!-- Cooldown Timer -->
+        <TextView
+            android:id="@+id/tvCooldownTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next ad in: 30s"
+            android:textSize="14sp"
+            android:textColor="#FF9800"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp" />
 
-        <LinearLayout
+        <!-- Watch Ad Button -->
+        <Button
+            android:id="@+id/btnWatchAd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:text="Watch Ad (+5 Credits)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_rounded_green"
+            android:textColor="#FFFFFF" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Credit Costs"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_marginBottom="12dp"/>
+        <!-- Redeem Token Button -->
+        <Button
+            android:id="@+id/btnRedeemToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Redeem Token Code"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_rounded_blue"
+            android:textColor="#FFFFFF" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+        <!-- Info Button -->
+        <Button
+            android:id="@+id/btnInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How Credits Work"
+            android:textSize="14sp"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/button_rounded_gray"
+            android:textColor="#333333" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="• SMS Forward"
-                    android:textSize="13sp"
-                    android:textColor="#666666"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1 credit"
-                    android:textSize="13sp"
-                    android:textColor="#4CAF50"
-                    android:textStyle="bold"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="• Webhook"
-                    android:textSize="13sp"
-                    android:textColor="#666666"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1 credit"
-                    android:textSize="13sp"
-                    android:textColor="#4CAF50"
-                    android:textStyle="bold"/>
-
-            </LinearLayout>
+        <!-- Device ID Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#F9F9F9">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="• Telegram/WhatsApp"
-                    android:textSize="13sp"
-                    android:textColor="#666666"/>
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1 credit"
-                    android:textSize="13sp"
-                    android:textColor="#4CAF50"
-                    android:textStyle="bold"/>
+                    android:text="Device Information"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tvDeviceId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Device ID: xxxxxxxxxx"
+                    android:textSize="12sp"
+                    android:textColor="#666666"
+                    android:fontFamily="monospace" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Share this ID with admin to purchase credits"
+                    android:textSize="11sp"
+                    android:textColor="#999999"
+                    android:layout_marginTop="4dp" />
 
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-    </androidx.cardview.widget.CardView>
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
 
-    <!-- Action Buttons -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get More Credits"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginBottom="12dp"/>
+        <!-- Info Text -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="• Each SMS costs 1 credit\n• Watch ads to earn credits\n• Contact admin for bulk purchases"
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:gravity="center"
+            android:layout_marginTop="24dp" />
 
-    <Button
-        android:id="@+id/btnWatchAd"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Watch Ad (+5 Credits)"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/button_primary"
-        android:layout_marginBottom="12dp"
-        android:drawableLeft="@android:drawable/ic_media_play"
-        android:drawablePadding="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnPurchaseKey"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Redeem Purchase Key"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/button_secondary"
-        android:layout_marginBottom="12dp"
-        android:drawableLeft="@android:drawable/ic_secure"
-        android:drawablePadding="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"/>
-
-    <Button
-        android:id="@+id/btnRefreshCredits"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Sync with Server"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:background="@drawable/button_outline"
-        android:drawableLeft="@android:drawable/ic_menu_rotate"
-        android:drawablePadding="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"/>
-
-    <!-- Progress Bar -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="24dp"
-        android:visibility="gone"/>
-
-</LinearLayout>
+</ScrollView>

@@ -10,7 +10,10 @@ import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
@@ -44,6 +47,7 @@ public class AdsManager {
     // AdMob
     private RewardedAd rewardedAd;
     private boolean isAdMobLoading = false;
+    private boolean isAdMobInitialized = false;
 
     // Tapsell
     private String tapsellResponseId;
@@ -62,13 +66,11 @@ public class AdsManager {
     }
 
     /**
-     * Initialize ad networks
+     * Initialize ad networks - MUST be called before showing ads
      */
     public void initialize() {
-        // Initialize Google AdMob
+        Log.d(TAG, "Initializing ad networks...");
         initializeAdMob();
-
-        // Initialize Tapsell Plus
         initializeTapsell();
     }
 
@@ -76,22 +78,30 @@ public class AdsManager {
      * Initialize Google AdMob
      */
     private void initializeAdMob() {
-        // AdMob is initialized automatically when you add the dependency
-        // Just load an ad
-        loadAdMobRewardedAd();
+        Log.d(TAG, "Initializing AdMob...");
+
+        MobileAds.initialize(context, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                Log.d(TAG, "AdMob initialized successfully");
+                isAdMobInitialized = true;
+                // Preload ad after initialization
+                loadAdMobRewardedAd();
+            }
+        });
     }
 
     /**
      * Initialize Tapsell Plus
      */
     private void initializeTapsell() {
+        Log.d(TAG, "Initializing Tapsell...");
+
         TapsellPlus.initialize(context, TAPSELL_APP_KEY, new TapsellPlusInitListener() {
             @Override
             public void onInitializeSuccess(AdNetworks adNetworks) {
                 Log.d(TAG, "Tapsell initialized successfully with: " + adNetworks.name());
                 isTapsellInitialized = true;
-                // Preload Tapsell ad
-                loadTapsellRewardedAd();
             }
 
             @Override
@@ -106,12 +116,23 @@ public class AdsManager {
      * Load AdMob rewarded ad
      */
     public void loadAdMobRewardedAd() {
+        if (!isAdMobInitialized) {
+            Log.w(TAG, "AdMob not initialized yet, skipping load");
+            return;
+        }
+
         if (isAdMobLoading) {
             Log.d(TAG, "AdMob ad is already loading");
             return;
         }
 
+        if (rewardedAd != null) {
+            Log.d(TAG, "AdMob ad already loaded");
+            return;
+        }
+
         isAdMobLoading = true;
+        Log.d(TAG, "Loading AdMob rewarded ad...");
 
         AdRequest adRequest = new AdRequest.Builder().build();
 
@@ -134,10 +155,11 @@ public class AdsManager {
 
     /**
      * Load Tapsell rewarded ad
+     * Note: Tapsell requires Activity context for loading ads
      */
-    public void loadTapsellRewardedAd() {
+    public void loadTapsellRewardedAd(Activity activity) {
         if (!isTapsellInitialized) {
-            Log.e(TAG, "Tapsell not initialized yet");
+            Log.w(TAG, "Tapsell not initialized yet");
             return;
         }
 
@@ -146,9 +168,15 @@ public class AdsManager {
             return;
         }
 
-        isTapsellLoading = true;
+        if (tapsellResponseId != null) {
+            Log.d(TAG, "Tapsell ad already loaded");
+            return;
+        }
 
-        TapsellPlus.requestRewardedVideoAd((Activity) context, TAPSELL_REWARDED_ZONE_ID, new AdRequestCallback() {
+        isTapsellLoading = true;
+        Log.d(TAG, "Loading Tapsell rewarded ad...");
+
+        TapsellPlus.requestRewardedVideoAd(activity, TAPSELL_REWARDED_ZONE_ID, new AdRequestCallback() {
             @Override
             public void response(TapsellPlusAdModel tapsellPlusAdModel) {
                 Log.d(TAG, "Tapsell ad loaded successfully");
@@ -212,7 +240,7 @@ public class AdsManager {
 
                     @Override
                     public void onError(String error) {
-                        // Still give local credits even if sync fails
+                        // Still give credits even if there was an error
                         callback.onRewarded(CreditManager.REWARD_PER_AD_VIEW);
                     }
                 });
@@ -227,7 +255,7 @@ public class AdsManager {
         if (tapsellResponseId == null) {
             Log.e(TAG, "Tapsell ad not ready");
             callback.onAdFailed("Ad not ready. Please wait...");
-            loadTapsellRewardedAd(); // Load for next time
+            loadTapsellRewardedAd(activity);
             return;
         }
 
@@ -241,7 +269,7 @@ public class AdsManager {
             public void onClosed(TapsellPlusAdModel tapsellPlusAdModel) {
                 Log.d(TAG, "Tapsell ad closed");
                 tapsellResponseId = null;
-                loadTapsellRewardedAd(); // Load next ad
+                loadTapsellRewardedAd(activity); // Load next ad
             }
 
             @Override
@@ -257,7 +285,7 @@ public class AdsManager {
 
                     @Override
                     public void onError(String error) {
-                        // Still give local credits even if sync fails
+                        // Still give credits even if there was an error
                         callback.onRewarded(CreditManager.REWARD_PER_AD_VIEW);
                     }
                 });
@@ -268,7 +296,7 @@ public class AdsManager {
                 Log.e(TAG, "Tapsell ad error: " + tapsellPlusErrorModel.getErrorMessage());
                 callback.onAdFailed("Failed to show ad: " + tapsellPlusErrorModel.getErrorMessage());
                 tapsellResponseId = null;
-                loadTapsellRewardedAd();
+                loadTapsellRewardedAd(activity);
             }
         });
     }
@@ -295,6 +323,13 @@ public class AdsManager {
     }
 
     /**
+     * Check if ads are initializing
+     */
+    public boolean isInitializing() {
+        return !isAdMobInitialized || !isTapsellInitialized;
+    }
+
+    /**
      * Show any available ad (tries AdMob first, then fallback to Tapsell)
      */
     public void showRewardedAd(Activity activity, AdRewardCallback callback) {
@@ -306,25 +341,40 @@ public class AdsManager {
             showTapsellRewardedAd(activity, callback);
         } else {
             Log.e(TAG, "No ads available");
-            callback.onAdFailed("No ads available. Please try again later.");
+            callback.onAdFailed("No ads available. Please try again in a moment.");
             // Try to load both
-            loadAdMobRewardedAd();
-            loadTapsellRewardedAd();
+            preloadAds(activity);
         }
     }
 
     /**
      * Preload ads for faster display
+     * Note: Requires Activity for Tapsell
      */
-    public void preloadAds() {
+    public void preloadAds(Activity activity) {
+        Log.d(TAG, "Preloading ads...");
+
         // Load AdMob ad if not ready and not loading
-        if (!isAdMobAdReady() && !isAdMobLoading) {
+        if (!isAdMobAdReady() && !isAdMobLoading && isAdMobInitialized) {
             loadAdMobRewardedAd();
         }
 
         // Load Tapsell ad if not ready and not loading
         if (!isTapsellAdReady() && !isTapsellLoading && isTapsellInitialized) {
-            loadTapsellRewardedAd();
+            loadTapsellRewardedAd(activity);
+        }
+    }
+
+    /**
+     * Preload ads without Activity (AdMob only)
+     * Use this when Activity not available
+     */
+    public void preloadAds() {
+        Log.d(TAG, "Preloading AdMob only...");
+
+        // Load AdMob ad if not ready and not loading
+        if (!isAdMobAdReady() && !isAdMobLoading && isAdMobInitialized) {
+            loadAdMobRewardedAd();
         }
     }
 
@@ -333,22 +383,25 @@ public class AdsManager {
      */
     public String getAdNetworkStatus() {
         StringBuilder status = new StringBuilder();
+
         status.append("AdMob: ");
-        if (isAdMobAdReady()) {
-            status.append("Ready");
+        if (!isAdMobInitialized) {
+            status.append("Initializing...");
+        } else if (isAdMobAdReady()) {
+            status.append("Ready ✓");
         } else if (isAdMobLoading) {
             status.append("Loading...");
         } else {
             status.append("Not Ready");
         }
 
-        status.append(" | Tapsell: ");
-        if (isTapsellAdReady()) {
-            status.append("Ready");
+        status.append("\n\nTapsell: ");
+        if (!isTapsellInitialized) {
+            status.append("Initializing...");
+        } else if (isTapsellAdReady()) {
+            status.append("Ready ✓");
         } else if (isTapsellLoading) {
             status.append("Loading...");
-        } else if (!isTapsellInitialized) {
-            status.append("Not Initialized");
         } else {
             status.append("Not Ready");
         }
