@@ -116,19 +116,19 @@ public class ActionExecutor {
 
             switch (action.type) {
                 case WEBHOOK:
-                    WebhookExecutor webhookExecutor = new WebhookExecutor(context);
+                    SyncExecutors.WebhookExecutor webhookExecutor = new SyncExecutors.WebhookExecutor(context);
                     return webhookExecutor.executeSync(action, message, sms);
 
                 case SMS:
-                    SmsExecutor smsExecutor = new SmsExecutor(context);
+                    SyncExecutors.SmsExecutor smsExecutor = new SyncExecutors.SmsExecutor(context);
                     return smsExecutor.executeSync(action, message, sms);
 
                 case TELEGRAM:
-                    TelegramExecutor telegramExecutor = new TelegramExecutor(context);
+                    SyncExecutors.TelegramExecutor telegramExecutor = new SyncExecutors.TelegramExecutor(context);
                     return telegramExecutor.executeSync(action, message, sms);
 
                 case WHATSAPP:
-                    WhatsAppExecutor whatsappExecutor = new WhatsAppExecutor(context);
+                    SyncExecutors.WhatsAppExecutor whatsappExecutor = new SyncExecutors.WhatsAppExecutor(context);
                     return whatsappExecutor.executeSync(action, message, sms);
 
                 default:
