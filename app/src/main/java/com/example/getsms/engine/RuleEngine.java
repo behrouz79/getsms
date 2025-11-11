@@ -7,7 +7,9 @@ import android.util.Log;
 import com.example.getsms.credit.CreditManager;
 import com.example.getsms.model.Action;
 import com.example.getsms.model.Rule;
+import com.example.getsms.model.SmsLog;
 import com.example.getsms.model.SmsMessage;
+import com.example.getsms.roomDB.DataBase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -21,54 +23,119 @@ public class RuleEngine {
     private final Context context;
     private final Gson gson;
     private final CreditManager creditManager;
+    private final DataBase db;
 
     public RuleEngine(Context context) {
         this.context = context;
         this.gson = new Gson();
         this.creditManager = new CreditManager(context);
+        this.db = DataBase.getDbInstance(context);
     }
 
     /**
-     * Process incoming SMS through all rules
+     * Process incoming SMS through all rules with detailed logging
      */
     public void processSms(SmsMessage sms, List<Rule> rules) {
-        Log.d(TAG, "Processing SMS from: " + sms.getSender() + " on " + sms.getSimSlot());
+        Log.d(TAG, "========================================");
+        Log.d(TAG, "📱 NEW SMS RECEIVED");
+        Log.d(TAG, "========================================");
+        Log.d(TAG, "Sender: " + sms.getSender());
+        Log.d(TAG, "SIM Slot: " + sms.getSimSlot());
+        Log.d(TAG, "Message: " + sms.getBody());
+        Log.d(TAG, "Time: " + sms.getFormattedDate());
+        Log.d(TAG, "========================================");
+
+        // Create log entry
+        SmsLog smsLog = SmsLog.fromSmsMessage(sms);
 
         // Sort rules by priority (lower number = higher priority)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             rules.sort((r1, r2) -> Integer.compare(r1.priority, r2.priority));
         }
 
+        boolean ruleMatched = false;
+        int actionsExecuted = 0;
+        List<String> executedActions = new ArrayList<>();
+
         for (Rule rule : rules) {
             if (!rule.enabled) {
+                Log.d(TAG, "⏭️ Skipping disabled rule: " + rule.name);
                 continue;
             }
 
+            Log.d(TAG, "🔍 Checking rule: " + rule.name);
+
             if (matchesRule(sms, rule)) {
-                Log.d(TAG, "Rule matched: " + rule.name);
-                executeRule(sms, rule);
+                Log.d(TAG, "✅ RULE MATCHED: " + rule.name);
+                ruleMatched = true;
+
+                // Update log with matched rule
+                smsLog.matchedRuleId = rule.id;
+                smsLog.matchedRuleName = rule.name;
+
+                // Execute rule and track results
+                ExecutionResult result = executeRule(sms, rule, smsLog);
+                actionsExecuted += result.actionsExecuted;
+                executedActions.addAll(result.actionTypes);
+
+                if (result.hasError) {
+                    smsLog.hasError = true;
+                    smsLog.errorMessage = result.errorMessage;
+                }
+
+                smsLog.creditsUsed += result.creditsUsed;
+            } else {
+                Log.d(TAG, "❌ Rule not matched: " + rule.name);
             }
         }
+
+        // Log summary
+        Log.d(TAG, "========================================");
+        Log.d(TAG, "📊 PROCESSING SUMMARY");
+        Log.d(TAG, "========================================");
+        Log.d(TAG, "Rule Matched: " + (ruleMatched ? "YES" : "NO"));
+        if (ruleMatched) {
+            Log.d(TAG, "Matched Rule: " + smsLog.matchedRuleName);
+            Log.d(TAG, "Actions Executed: " + actionsExecuted);
+            Log.d(TAG, "Action Types: " + String.join(", ", executedActions));
+            Log.d(TAG, "Credits Used: " + smsLog.creditsUsed);
+            Log.d(TAG, "Available Credits: " + creditManager.getCredits());
+        } else {
+            Log.d(TAG, "No matching rules found");
+        }
+        Log.d(TAG, "========================================\n");
+
+        // Save log to database
+        smsLog.actionsExecuted = gson.toJson(executedActions);
+        new Thread(() -> db.smsLogDao().insertLog(smsLog)).start();
     }
 
     /**
      * Check if SMS matches rule conditions
      */
     private boolean matchesRule(SmsMessage sms, Rule rule) {
+        Log.d(TAG, "  Checking conditions for: " + rule.name);
+
         // Check SIM filter
         if (!matchesSimFilter(sms.getSimSlot(), rule.simFilter)) {
+            Log.d(TAG, "  ❌ SIM filter failed: " + rule.simFilter);
             return false;
         }
+        Log.d(TAG, "  ✅ SIM filter passed: " + rule.simFilter);
 
         // Check sender filter
         if (!matchesSenderFilter(sms.getSender(), rule.senderFilterType, rule.senderFilterValue)) {
+            Log.d(TAG, "  ❌ Sender filter failed: " + rule.senderFilterType + " " + rule.senderFilterValue);
             return false;
         }
+        Log.d(TAG, "  ✅ Sender filter passed: " + rule.senderFilterType);
 
         // Check message filter
         if (!matchesMessageFilter(sms.getBody(), rule.messageFilterType, rule.messageFilterValue)) {
+            Log.d(TAG, "  ❌ Message filter failed: " + rule.messageFilterType);
             return false;
         }
+        Log.d(TAG, "  ✅ Message filter passed: " + rule.messageFilterType);
 
         return true;
     }
@@ -78,7 +145,7 @@ public class RuleEngine {
             return true;
         }
         if ("BOTH".equals(filter)) {
-            return true; // Both means any SIM
+            return true;
         }
         return simSlot.equals(filter);
     }
@@ -132,38 +199,51 @@ public class RuleEngine {
     /**
      * Execute all actions for a matched rule
      */
-    private void executeRule(SmsMessage sms, Rule rule) {
+    private ExecutionResult executeRule(SmsMessage sms, Rule rule, SmsLog smsLog) {
+        ExecutionResult result = new ExecutionResult();
+
         try {
             List<Action> actions = parseActions(rule.actionsJson);
+            Log.d(TAG, "  📋 Executing " + actions.size() + " action(s)");
 
             for (Action action : actions) {
                 if (!action.enabled) {
+                    Log.d(TAG, "    ⏭️ Skipping disabled action: " + action.type);
                     continue;
                 }
+
+                Log.d(TAG, "    🚀 Executing action: " + action.type);
 
                 // CHECK CREDITS BEFORE EXECUTING ACTION
                 int requiredCredits = getCreditCostForAction(action.type);
 
                 if (!creditManager.hasEnoughCredits(requiredCredits)) {
-                    Log.e(TAG, "Insufficient credits for action: " + action.type +
+                    String error = "Insufficient credits for " + action.type +
                             ". Required: " + requiredCredits +
-                            ", Available: " + creditManager.getCredits());
-
-                    // Optionally send a notification to user about low credits
+                            ", Available: " + creditManager.getCredits();
+                    Log.e(TAG, "    ❌ " + error);
+                    result.hasError = true;
+                    result.errorMessage = error;
                     notifyLowCredits();
-                    continue; // Skip this action
+                    continue;
                 }
 
-                // Apply transformation FIRST if enabled (on original SMS body)
+                // Apply transformation FIRST if enabled
                 String transformedBody = sms.getBody();
                 if (action.enableTransform) {
                     transformedBody = applyTransformation(sms.getBody(), action);
-                    Log.d(TAG, "Message transformed for action: " + action.type);
-                    Log.d(TAG, "Original: " + sms.getBody());
-                    Log.d(TAG, "Transformed: " + transformedBody);
+                    Log.d(TAG, "    🔄 Message transformed");
+                    Log.d(TAG, "       Type: " + action.transformType);
+                    Log.d(TAG, "       Original: " + sms.getBody());
+                    Log.d(TAG, "       Transformed: " + transformedBody);
+
+                    // Update log
+                    smsLog.wasTransformed = true;
+                    smsLog.transformedMessage = transformedBody;
+                    smsLog.transformType = action.transformType;
                 }
 
-                // THEN process template with variables (using transformed body)
+                // Process template with variables
                 SmsMessage transformedSms = new SmsMessage(
                         sms.getSender(),
                         transformedBody,
@@ -173,23 +253,39 @@ public class RuleEngine {
                 );
 
                 String processedMessage = processTemplate(action.template, transformedSms);
+                Log.d(TAG, "    📝 Processed message: " + processedMessage);
 
                 // DEDUCT CREDITS BEFORE EXECUTING
                 if (creditManager.deductCredits(requiredCredits,
                         "Action: " + action.type + " for rule: " + rule.name)) {
 
-                    Log.d(TAG, "Credits deducted: " + requiredCredits +
+                    Log.d(TAG, "    💳 Credits deducted: " + requiredCredits +
                             ", Remaining: " + creditManager.getCredits());
 
                     // Execute the action
-                    executeAction(action, processedMessage, sms);
+                    boolean success = executeAction(action, processedMessage, sms, smsLog);
+
+                    if (success) {
+                        result.actionsExecuted++;
+                        result.actionTypes.add(action.type.toString());
+                        result.creditsUsed += requiredCredits;
+                        Log.d(TAG, "    ✅ Action executed successfully");
+                    } else {
+                        Log.e(TAG, "    ❌ Action execution failed");
+                        result.hasError = true;
+                    }
                 } else {
-                    Log.e(TAG, "Failed to deduct credits for action: " + action.type);
+                    Log.e(TAG, "    ❌ Failed to deduct credits for action: " + action.type);
+                    result.hasError = true;
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error executing rule: " + rule.name, e);
+            Log.e(TAG, "❌ Error executing rule: " + rule.name, e);
+            result.hasError = true;
+            result.errorMessage = e.getMessage();
         }
+
+        return result;
     }
 
     /**
@@ -204,7 +300,7 @@ public class RuleEngine {
             case TELEGRAM:
                 return CreditManager.COST_PER_TELEGRAM;
             case WHATSAPP:
-                return CreditManager.COST_PER_TELEGRAM; // Same as Telegram
+                return CreditManager.COST_PER_TELEGRAM;
             default:
                 return 1;
         }
@@ -214,17 +310,14 @@ public class RuleEngine {
      * Notify user about low credits
      */
     private void notifyLowCredits() {
-        // TODO: Implement notification to user
-        // You can use Android Notifications or save a flag to show dialog in MainActivity
-        Log.w(TAG, "Low credits warning - user should be notified");
+        Log.w(TAG, "⚠️ LOW CREDITS WARNING - User should be notified");
     }
 
     /**
-     * Apply message transformation based on action settings
+     * Apply message transformation
      */
     private String applyTransformation(String message, Action action) {
         try {
-            // Check if using chain transforms
             if (action.transformChain != null && !action.transformChain.isEmpty()) {
                 List<MessageTransformer.Transform> transforms = gson.fromJson(
                         action.transformChain,
@@ -233,13 +326,12 @@ public class RuleEngine {
                 return MessageTransformer.chainTransforms(message, transforms);
             }
 
-            // Single transformation
             MessageTransformer.TransformType type = action.getTransformType();
             return MessageTransformer.transform(message, type, action.transformPattern);
 
         } catch (Exception e) {
             Log.e(TAG, "Error applying transformation", e);
-            return message; // Return original on error
+            return message;
         }
     }
 
@@ -261,7 +353,6 @@ public class RuleEngine {
 
     /**
      * Process template with variables
-     * Variables: {sender}, {message}, {sim}, {date}, {time}
      */
     private String processTemplate(String template, SmsMessage sms) {
         if (template == null) {
@@ -277,24 +368,52 @@ public class RuleEngine {
     }
 
     /**
-     * Execute specific action
+     * Execute specific action and update log
      */
-    private void executeAction(Action action, String message, SmsMessage sms) {
-        Log.d(TAG, "Executing action: " + action.type);
+    private boolean executeAction(Action action, String message, SmsMessage sms, SmsLog log) {
+        Log.d(TAG, "    📤 Sending via: " + action.type);
+        Log.d(TAG, "       Destination: " + action.destination);
 
-        switch (action.type) {
-            case WEBHOOK:
-                new WebhookExecutor(context).execute(action, message, sms);
-                break;
-            case SMS:
-                new SmsExecutor(context).execute(action, message, sms);
-                break;
-            case TELEGRAM:
-                new TelegramExecutor(context).execute(action, message, sms);
-                break;
-            case WHATSAPP:
-                new WhatsAppExecutor(context).execute(action, message, sms);
-                break;
+        try {
+            switch (action.type) {
+                case WEBHOOK:
+                    new WebhookExecutor(context).execute(action, message, sms);
+                    log.webhookSent = true;
+                    log.webhookStatus = 200; // This should be updated by callback
+                    return true;
+
+                case SMS:
+                    new SmsExecutor(context).execute(action, message, sms);
+                    log.smsForwarded = true;
+                    return true;
+
+                case TELEGRAM:
+                    new TelegramExecutor(context).execute(action, message, sms);
+                    log.telegramSent = true;
+                    return true;
+
+                case WHATSAPP:
+                    new WhatsAppExecutor(context).execute(action, message, sms);
+                    log.whatsappSent = true;
+                    return true;
+
+                default:
+                    return false;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "    ❌ Error executing action", e);
+            return false;
         }
+    }
+
+    /**
+     * Execution result container
+     */
+    private static class ExecutionResult {
+        int actionsExecuted = 0;
+        int creditsUsed = 0;
+        List<String> actionTypes = new ArrayList<>();
+        boolean hasError = false;
+        String errorMessage = null;
     }
 }

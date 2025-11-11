@@ -20,13 +20,4 @@ public class SmsRecord {
 
     @ColumnInfo(name = "status")
     public int status;
-
-    @ColumnInfo(name = "delivery_status")
-    public String deliveryStatus; // "PENDING", "SENT", "FAILED"
-
-    @ColumnInfo(name = "retry_count")
-    public int retryCount;
-
-    @ColumnInfo(name = "error_message")
-    public String errorMessage;
 }

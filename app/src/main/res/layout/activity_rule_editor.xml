@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--activity rule editor-->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -329,6 +330,298 @@
                 </LinearLayout>
 
                 <!-- END TRANSFORMATION SECTION -->
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- RETRY CONFIGURATION SECTION -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#CCCCCC" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchEnableRetry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🔄 Enable Automatic Retry on Failure"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_500"
+                        android:checked="true" />
+
+                    <LinearLayout
+                        android:id="@+id/retrySettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#EEEEEE"
+                        android:padding="12dp"
+                        android:layout_marginTop="8dp"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="⚙️ Retry Configuration"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Max Retries -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Maximum Retry Attempts"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <SeekBar
+                                android:id="@+id/seekBarMaxRetries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:max="5"
+                                android:progress="3" />
+
+                            <TextView
+                                android:id="@+id/tvMaxRetries"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="3"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="12dp"
+                                android:minWidth="30dp"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                        <!-- Retry Delay -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Delay Between Retries (seconds)"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="12dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <SeekBar
+                                android:id="@+id/seekBarRetryDelay"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:max="60"
+                                android:progress="5" />
+
+                            <TextView
+                                android:id="@+id/tvRetryDelay"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="5s"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginStart="12dp"
+                                android:minWidth="40dp"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                        <!-- Retry Strategy -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Retry Strategy"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="12dp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerRetryStrategy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="48dp" />
+
+                        <TextView
+                            android:id="@+id/tvRetryStrategyHelp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textSize="11sp"
+                            android:textColor="@android:color/darker_gray"
+                            android:background="#FFFFFF"
+                            android:padding="8dp"
+                            android:text="• Immediate: Retry instantly\n• Fixed Delay: Wait same time between retries\n• Exponential Backoff: Double wait time each retry (5s, 10s, 20s...)" />
+
+                    </LinearLayout>
+
+                    <!-- BACKUP ACTION SECTION -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#CCCCCC" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchEnableBackup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🔀 Enable Backup Action on Failure"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_500"
+                        android:checked="true" />
+
+                    <LinearLayout
+                        android:id="@+id/backupSettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#FFF3E0"
+                        android:padding="12dp"
+                        android:layout_marginTop="8dp"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="⚙️ Backup Action Configuration"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Backup Type -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Backup Action Type"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="8dp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerBackupType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="48dp" />
+
+                        <!-- Backup Destination -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Backup Destination (Phone Number)"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="12dp" />
+
+                        <EditText
+                            android:id="@+id/etBackupDestination"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="+1234567890"
+                            android:inputType="phone" />
+
+                        <!-- Backup Template -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Backup Message Template"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="12dp" />
+
+                        <EditText
+                            android:id="@+id/etBackupTemplate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="⚠️ Primary action failed: {message}"
+                            android:inputType="textMultiLine"
+                            android:lines="3" />
+
+                        <!-- Backup Options -->
+                        <CheckBox
+                            android:id="@+id/cbBackupAfterAllRetries"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Trigger backup only after all retries fail"
+                            android:checked="true" />
+
+                        <CheckBox
+                            android:id="@+id/cbRetryBackup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Retry backup action if it fails (2 attempts)" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:textSize="11sp"
+                            android:textColor="#F57C00"
+                            android:background="#FFFFFF"
+                            android:padding="8dp"
+                            android:text="💡 TIP: SMS backup is recommended for critical notifications. It provides reliable fallback when primary actions fail." />
+
+                    </LinearLayout>
+
+                    <!-- ERROR HANDLING OPTIONS -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#CCCCCC" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="⚙️ Error Handling Options"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_500"
+                        android:layout_marginBottom="8dp" />
+
+                    <CheckBox
+                        android:id="@+id/cbContinueOnFailure"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Continue processing other actions if this fails"
+                        android:checked="true" />
+
+                    <CheckBox
+                        android:id="@+id/cbNotifyOnFailure"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Send notification on action failure"
+                        android:checked="true" />
+
+                    <CheckBox
+                        android:id="@+id/cbDetailedErrorLog"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Log detailed error information"
+                        android:checked="true" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

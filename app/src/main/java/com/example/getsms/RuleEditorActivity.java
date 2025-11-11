@@ -5,8 +5,10 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+
+
 
 public class RuleEditorActivity extends AppCompatActivity {
 
@@ -71,6 +76,28 @@ public class RuleEditorActivity extends AppCompatActivity {
     private Gson gson = new Gson();
 
     private int editingActionPosition = -1;
+
+    // Add new views to class fields
+    private SwitchCompat switchEnableRetry;
+    private LinearLayout retrySettings;
+    private SeekBar seekBarMaxRetries;
+    private TextView tvMaxRetries;
+    private SeekBar seekBarRetryDelay;
+    private TextView tvRetryDelay;
+    private Spinner spinnerRetryStrategy;
+    private TextView tvRetryStrategyHelp;
+
+    private SwitchCompat switchEnableBackup;
+    private LinearLayout backupSettings;
+    private Spinner spinnerBackupType;
+    private EditText etBackupDestination;
+    private EditText etBackupTemplate;
+    private CheckBox cbBackupAfterAllRetries;
+    private CheckBox cbRetryBackup;
+
+    private CheckBox cbContinueOnFailure;
+    private CheckBox cbNotifyOnFailure;
+    private CheckBox cbDetailedErrorLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +159,98 @@ public class RuleEditorActivity extends AppCompatActivity {
 
         // Test transform button
         btnTestTransform.setOnClickListener(v -> showTransformTestDialog());
+
+        // Setup retry listeners
+        setupRetryListeners();
+
+        // Setup backup listeners
+        setupBackupListeners();
+    }
+
+    private void setupRetryListeners() {
+        // Toggle retry settings visibility
+        switchEnableRetry.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            retrySettings.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
+
+        // Max retries seekbar
+        seekBarMaxRetries.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int retries = Math.max(1, progress);
+                tvMaxRetries.setText(String.valueOf(retries));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        // Retry delay seekbar
+        seekBarRetryDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int delay = Math.max(1, progress);
+                tvRetryDelay.setText(delay + "s");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        // Retry strategy listener
+        spinnerRetryStrategy.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                updateRetryStrategyHelp();
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+    }
+
+    private void setupBackupListeners() {
+        // Toggle backup settings visibility
+        switchEnableBackup.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            backupSettings.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        });
+
+        // Set default backup template
+        etBackupTemplate.setHint("⚠️ Primary action failed. Original: {message}");
+    }
+
+    private void updateRetryStrategyHelp() {
+        String strategy = spinnerRetryStrategy.getSelectedItem().toString();
+        String helpText;
+
+        switch (strategy) {
+            case "IMMEDIATE":
+                helpText = "Retry immediately without delay.\n\n" +
+                        "Example: 3 retries = instant, instant, instant\n\n" +
+                        "Use for: Quick operations that might fail due to temporary issues";
+                break;
+
+            case "EXPONENTIAL_BACKOFF":
+                helpText = "Double the wait time between each retry.\n\n" +
+                        "Example: 5s → 10s → 20s → 40s\n\n" +
+                        "Use for: Network requests, API calls (recommended)";
+                break;
+
+            case "FIXED_DELAY":
+            default:
+                helpText = "Wait the same amount of time between each retry.\n\n" +
+                        "Example: 5s → 5s → 5s\n\n" +
+                        "Use for: Simple operations with predictable recovery time";
+                break;
+        }
+
+        tvRetryStrategyHelp.setText(helpText);
     }
 
     private void initViews() {
@@ -163,6 +282,29 @@ public class RuleEditorActivity extends AppCompatActivity {
         btnCancelAction = findViewById(R.id.btnCancelAction);
 
         recyclerActions = findViewById(R.id.recyclerActions);
+
+        switchEnableRetry = findViewById(R.id.switchEnableRetry);
+        retrySettings = findViewById(R.id.retrySettings);
+        seekBarMaxRetries = findViewById(R.id.seekBarMaxRetries);
+        tvMaxRetries = findViewById(R.id.tvMaxRetries);
+        seekBarRetryDelay = findViewById(R.id.seekBarRetryDelay);
+        tvRetryDelay = findViewById(R.id.tvRetryDelay);
+        spinnerRetryStrategy = findViewById(R.id.spinnerRetryStrategy);
+        tvRetryStrategyHelp = findViewById(R.id.tvRetryStrategyHelp);
+
+        // Backup views
+        switchEnableBackup = findViewById(R.id.switchEnableBackup);
+        backupSettings = findViewById(R.id.backupSettings);
+        spinnerBackupType = findViewById(R.id.spinnerBackupType);
+        etBackupDestination = findViewById(R.id.etBackupDestination);
+        etBackupTemplate = findViewById(R.id.etBackupTemplate);
+        cbBackupAfterAllRetries = findViewById(R.id.cbBackupAfterAllRetries);
+        cbRetryBackup = findViewById(R.id.cbRetryBackup);
+
+        // Error handling views
+        cbContinueOnFailure = findViewById(R.id.cbContinueOnFailure);
+        cbNotifyOnFailure = findViewById(R.id.cbNotifyOnFailure);
+        cbDetailedErrorLog = findViewById(R.id.cbDetailedErrorLog);
     }
 
     private void setupSpinners() {
@@ -202,6 +344,19 @@ public class RuleEditorActivity extends AppCompatActivity {
                         "KEEP_AFTER", "REMOVE_AFTER"});
         transformAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTransformType.setAdapter(transformAdapter);
+
+        ArrayAdapter<String> retryStrategyAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"FIXED_DELAY", "EXPONENTIAL_BACKOFF", "IMMEDIATE"});
+        retryStrategyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRetryStrategy.setAdapter(retryStrategyAdapter);
+
+        // Backup Type Spinner
+        ArrayAdapter<String> backupTypeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"SMS", "TELEGRAM", "WEBHOOK"});
+        backupTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerBackupType.setAdapter(backupTypeAdapter);
     }
 
     private void updateTransformHelp() {
@@ -418,12 +573,51 @@ public class RuleEditorActivity extends AppCompatActivity {
 
         // Scroll to action form
         actionFormLayout.requestFocus();
+
+        // Load retry settings
+        switchEnableRetry.setChecked(action.enableRetry);
+        if (action.enableRetry) {
+            seekBarMaxRetries.setProgress(action.maxRetries);
+            seekBarRetryDelay.setProgress(action.retryDelaySeconds);
+            setSpinnerValue(spinnerRetryStrategy, action.retryStrategy);
+        }
+
+        // Load backup settings
+        switchEnableBackup.setChecked(action.enableBackup);
+        if (action.enableBackup) {
+            setSpinnerValue(spinnerBackupType, action.backupType.toString());
+            etBackupDestination.setText(action.backupDestination);
+            etBackupTemplate.setText(action.backupTemplate);
+            cbBackupAfterAllRetries.setChecked(action.backupAfterAllRetries);
+            cbRetryBackup.setChecked(action.retryBackup);
+        }
+
+        // Load error handling
+        cbContinueOnFailure.setChecked(action.continueOnFailure);
+        cbNotifyOnFailure.setChecked(action.notifyOnFailure);
+        cbDetailedErrorLog.setChecked(action.detailedErrorLog);
     }
 
     private boolean validateAndAddOrUpdateAction() {
         String type = spinnerActionType.getSelectedItem().toString();
         String destination = etActionDestination.getText().toString().trim();
         String template = etActionTemplate.getText().toString().trim();
+
+        // Validate backup if enabled
+        if (switchEnableBackup.isChecked()) {
+            String backupDest = etBackupDestination.getText().toString().trim();
+            String backupType = spinnerBackupType.getSelectedItem().toString();
+
+            if ("SMS".equals(backupType) && backupDest.isEmpty()) {
+                Toast.makeText(this, "Please enter backup phone number", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            if ("TELEGRAM".equals(backupType) && backupDest.isEmpty()) {
+                Toast.makeText(this, "Please enter backup Telegram chat ID", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
 
         if ("TELEGRAM".equals(type)) {
             String botToken = etBotToken.getText().toString().trim();
@@ -453,6 +647,9 @@ public class RuleEditorActivity extends AppCompatActivity {
             addOrUpdateAction(action);
             return true;
         }
+
+
+
     }
 
     private void applyTransformSettings(Action action) {
@@ -480,6 +677,30 @@ public class RuleEditorActivity extends AppCompatActivity {
             actions.add(action);
             Toast.makeText(this, "Action added: " + action.type, Toast.LENGTH_SHORT).show();
         }
+
+        action.enableRetry = switchEnableRetry.isChecked();
+        if (action.enableRetry) {
+            action.maxRetries = Math.max(1, seekBarMaxRetries.getProgress());
+            action.retryDelaySeconds = Math.max(1, seekBarRetryDelay.getProgress());
+            action.retryStrategy = spinnerRetryStrategy.getSelectedItem().toString();
+        }
+
+        // Backup settings
+        action.enableBackup = switchEnableBackup.isChecked();
+        if (action.enableBackup) {
+            action.backupType = Action.ActionType.valueOf(
+                    spinnerBackupType.getSelectedItem().toString()
+            );
+            action.backupDestination = etBackupDestination.getText().toString().trim();
+            action.backupTemplate = etBackupTemplate.getText().toString().trim();
+            action.backupAfterAllRetries = cbBackupAfterAllRetries.isChecked();
+            action.retryBackup = cbRetryBackup.isChecked();
+        }
+
+        // Error handling
+        action.continueOnFailure = cbContinueOnFailure.isChecked();
+        action.notifyOnFailure = cbNotifyOnFailure.isChecked();
+        action.detailedErrorLog = cbDetailedErrorLog.isChecked();
 
         actionsAdapter.notifyDataSetChanged();
     }
