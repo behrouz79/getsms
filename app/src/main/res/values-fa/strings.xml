@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values-fa/strings.xml -->
+<resources>
+    <string name="app_name">فوروارد پیامک</string>
+
+    <!-- Language Selection -->
+    <string name="select_language">انتخاب زبان</string>
+    <string name="change_language">تغییر زبان</string>
+    <string name="language_changed">زبان تغییر کرد. در حال راه‌اندازی مجدد...</string>
+
+    <!-- Main Activity -->
+    <string name="start_service">شروع سرویس</string>
+    <string name="stop_service">توقف سرویس</string>
+    <string name="manage_credits">مدیریت اعتبار</string>
+    <string name="credits">اعتبار: %d</string>
+    <string name="refresh">بروزرسانی</string>
+    <string name="cleanup_record">پاکسازی رکوردها</string>
+    <string name="manage_rules">مدیریت قوانین</string>
+    <string name="service_started">سرویس شروع شد ✅</string>
+    <string name="service_stopped">سرویس متوقف شد ⏹️</string>
+    <string name="service_running">سرویس فوروارد پیامک در حال اجراست</string>
+    <string name="low_credits">اعتبار کم</string>
+    <string name="need_credits_message">برای استفاده از سرویس نیاز به اعتبار دارید. تبلیغات تماشا کنید یا اعتبار خریداری کنید.</string>
+    <string name="get_credits">دریافت اعتبار</string>
+    <string name="cancel">لغو</string>
+
+    <!-- Credits Activity -->
+    <string name="credits_manager">مدیریت اعتبار</string>
+    <string name="available_credits">اعتبار موجود: %d</string>
+    <string name="ads_watched">تبلیغات مشاهده شده: %d | باقیمانده امروز: %d</string>
+    <string name="watch_ad">تماشای تبلیغ (+۵ اعتبار)</string>
+    <string name="loading_ad">بارگذاری تبلیغ…</string>
+    <string name="wait_seconds">صبر کنید %d ثانیه</string>
+    <string name="daily_limit_reached">محدودیت روزانه</string>
+    <string name="redeem_token">استفاده از کد توکن</string>
+    <string name="how_credits_work">نحوه کار اعتبار</string>
+    <string name="device_information">اطلاعات دستگاه</string>
+    <string name="device_id">شناسه دستگاه: %s</string>
+    <string name="share_device_id">این شناسه را با مدیر برای خرید اعتبار به اشتراک بگذارید</string>
+    <string name="reward_earned">جایزه دریافت شد!</string>
+    <string name="credits_earned">شما +%d اعتبار دریافت کردید!\n\nمجموع اعتبار: %d</string>
+    <string name="redeem_credit_token">استفاده از کد اعتبار</string>
+    <string name="enter_token">کد توکن ارائه شده توسط مدیر را وارد کنید:</string>
+    <string name="redeem">استفاده</string>
+    <string name="need_credits">نیاز به اعتبار؟</string>
+    <string name="token_redeemed">توکن استفاده شد!</string>
+    <string name="credits_added">اعتبار با موفقیت اضافه شد!\n\nموجودی جدید: %d</string>
+    <string name="redemption_failed">استفاده ناموفق</string>
+    <string name="contact_admin">تماس با مدیر</string>
+    <string name="credit_info">• هر پیامک ۱ اعتبار می‌خواهد\n• تبلیغات تماشا کنید تا اعتبار دریافت کنید\n• برای خرید عمده با مدیر تماس بگیرید</string>
+
+    <!-- Rules Activity -->
+    <string name="sms_rules">قوانین پیامک</string>
+    <string name="add_new_rule">افزودن قانون جدید</string>
+    <string name="rule_enabled">قانون فعال شد</string>
+    <string name="rule_disabled">قانون غیرفعال شد</string>
+    <string name="delete_rule">حذف قانون</string>
+    <string name="delete_rule_confirm">آیا مطمئن هستید که می‌خواهید این قانون را حذف کنید؟</string>
+    <string name="delete">حذف</string>
+    <string name="rule_deleted">قانون حذف شد</string>
+
+    <!-- Rule Editor -->
+    <string name="create_edit_rule">ایجاد/ویرایش قانون</string>
+    <string name="rule_name">نام قانون</string>
+    <string name="rule_name_hint">مثال: اطلاعیه‌های بانکی</string>
+    <string name="conditions">شرایط</string>
+    <string name="sim_card">سیم کارت</string>
+    <string name="sender_filter">فیلتر فرستنده</string>
+    <string name="sender_hint">مثال: BANK یا +۹۸۹۱۲۳۴۵۶۷۸۹</string>
+    <string name="message_filter">فیلتر پیام</string>
+    <string name="message_hint">مثال: رمز یکبار مصرف</string>
+    <string name="actions">اقدامات</string>
+    <string name="current_actions">اقدامات فعلی:</string>
+    <string name="add_edit_action">افزودن/ویرایش اقدام:</string>
+    <string name="action_type">نوع اقدام</string>
+    <string name="destination">مقصد (URL/شماره تلفن)</string>
+    <string name="destination_hint">مثال: https://api.example.com یا +۹۸۹۱۲۳۴۵۶۷۸۹</string>
+    <string name="message_template">قالب پیام (متغیرها: {sender}, {message}, {sim}, {date})</string>
+    <string name="template_hint">مثال: پیامک از {sender}: {message}</string>
+    <string name="telegram_bot_token">توکن ربات تلگرام</string>
+    <string name="telegram_chat_id">شناسه چت تلگرام</string>
+    <string name="telegram_default_bot_info">خالی بگذارید تا از ربات پیش‌فرض برنامه استفاده شود</string>
+    <string name="enable_transform">فعال‌سازی تبدیل پیام</string>
+    <string name="transform_type">نوع تبدیل</string>
+    <string name="transform_pattern">الگوی تبدیل</string>
+    <string name="test_transformation">تست تبدیل</string>
+    <string name="add_action">افزودن اقدام</string>
+    <string name="update_action">بروزرسانی اقدام</string>
+    <string name="action_added">اقدام اضافه شد: %s</string>
+    <string name="action_updated">اقدام بروزرسانی شد</string>
+    <string name="delete_action">حذف اقدام</string>
+    <string name="delete_action_confirm">آیا مطمئن هستید که می‌خواهید این اقدام را حذف کنید؟</string>
+    <string name="action_deleted">اقدام حذف شد</string>
+    <string name="save_rule">ذخیره قانون</string>
+    <string name="rule_saved">قانون ذخیره شد!</string>
+    <string name="enter_rule_name">لطفا نام قانون را وارد کنید</string>
+    <string name="add_one_action">لطفا حداقل یک اقدام اضافه کنید</string>
+
+    <!-- Retry Configuration -->
+    <string name="enable_retry">🔄 فعال‌سازی تلاش مجدد خودکار</string>
+    <string name="retry_configuration">⚙️ تنظیمات تلاش مجدد</string>
+    <string name="max_retry_attempts">حداکثر تعداد تلاش مجدد</string>
+    <string name="retry_delay">تاخیر بین تلاش‌ها (ثانیه)</string>
+    <string name="retry_strategy">استراتژی تلاش مجدد</string>
+    <string name="retry_strategy_help">• فوری: تلاش مجدد فوری\n• تاخیر ثابت: انتظار یکسان بین تلاش‌ها\n• تاخیر تصاعدی: دو برابر شدن زمان انتظار (۵ ثانیه، ۱۰ ثانیه، ۲۰ ثانیه...)</string>
+
+    <!-- Backup Configuration -->
+    <string name="enable_backup">🔀 فعال‌سازی اقدام پشتیبان</string>
+    <string name="backup_configuration">⚙️ تنظیمات اقدام پشتیبان</string>
+    <string name="backup_type">نوع اقدام پشتیبان</string>
+    <string name="backup_destination">مقصد پشتیبان (شماره تلفن)</string>
+    <string name="backup_template">قالب پیام پشتیبان</string>
+    <string name="backup_after_retries">فعال‌سازی پشتیبان فقط بعد از شکست همه تلاش‌ها</string>
+    <string name="retry_backup">تلاش مجدد اقدام پشتیبان در صورت شکست</string>
+    <string name="backup_tip">💡 نکته: پشتیبان پیامکی برای اطلاعیه‌های مهم توصیه می‌شود. در صورت شکست اقدامات اصلی، راه‌حل قابل اعتمادی فراهم می‌کند.</string>
+
+    <!-- Error Handling -->
+    <string name="error_handling">⚙️ گزینه‌های مدیریت خطا</string>
+    <string name="continue_on_failure">ادامه پردازش سایر اقدامات در صورت شکست</string>
+    <string name="notify_on_failure">ارسال اعلان در صورت شکست اقدام</string>
+    <string name="detailed_error_log">ثبت اطلاعات خطای دقیق</string>
+
+    <!-- SMS Logs -->
+    <string name="sms_log_details">جزئیات لاگ پیامک</string>
+    <string name="sender">فرستنده</string>
+    <string name="sim_slot">سیم کارت</string>
+    <string name="message">پیام</string>
+    <string name="time">زمان</string>
+    <string name="matched_rule">قانون مطابق</string>
+    <string name="transformation">تبدیل</string>
+    <string name="actions_executed">اقدامات انجام شده</string>
+    <string name="credits_used">اعتبار مصرف شده</string>
+    <string name="status">وضعیت</string>
+    <string name="error">خطا</string>
+    <string name="successfully_processed">با موفقیت پردازش شد</string>
+    <string name="delete_log">حذف لاگ</string>
+    <string name="delete_log_confirm">این لاگ حذف شود؟</string>
+    <string name="log_deleted">لاگ حذف شد</string>
+    <string name="clear_old_logs">پاکسازی لاگ‌های قدیمی</string>
+    <string name="clear_logs_confirm">لاگ‌های قدیمی‌تر از ۳۰ روز حذف شود؟</string>
+    <string name="clear">پاکسازی</string>
+    <string name="logs_deleted">%d لاگ قدیمی حذف شد</string>
+    <string name="no_logs_yet">هنوز لاگی وجود ندارد. لاگ‌ها هنگام دریافت پیامک ظاهر می‌شوند.</string>
+
+    <!-- Notifications -->
+    <string name="notification_permission_required">مجوز اعلان مورد نیاز است</string>
+    <string name="sms_permission_required">مجوز پیامک مورد نیاز است</string>
+    <string name="permission_required">مجوز مورد نیاز</string>
+    <string name="ok">تایید</string>
+
+    <!-- Common -->
+    <string name="yes">بله</string>
+    <string name="no">خیر</string>
+    <string name="edit">ویرایش</string>
+    <string name="close">بستن</string>
+    <string name="save">ذخیره</string>
+    <string name="loading">در حال بارگذاری…</string>
+    <string name="success">موفق</string>
+    <string name="failed">ناموفق</string>
+    <string name="error_occurred">خطا رخ داد: %s</string>
+    <string name="please_enter_valid_token">لطفا یک توکن معتبر وارد کنید</string>
+    <string name="enter_test_message">پیام تست را وارد کنید:</string>
+    <string name="test_message_hint">مثال:\nحساب: ۵۶۹۴۵۴۱۹۳۱\nمبلغ: ۱۰۰،۰۰۰\nموجودی: ۷،۸۶۵،۹۴۹</string>
+    <string name="test">تست</string>
+    <string name="transformation_result">نتیجه تبدیل</string>
+    <string name="original">اصلی:</string>
+    <string name="transformed">تبدیل شده:</string>
+    <string name="select_transform_type_help">نوع تبدیل را برای مشاهده مثال‌ها انتخاب کنید.</string>
+    <string name="enter_destination">لطفا مقصد را وارد کنید</string>
+    <string name="enter_bot_token_chat_id">لطفا توکن ربات و شناسه چت را وارد کنید</string>
+</resources>

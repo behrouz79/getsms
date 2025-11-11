@@ -1,6 +1,8 @@
 package com.example.getsms.engine;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.telephony.SmsManager;
 import android.util.Log;
 
@@ -9,6 +11,9 @@ import com.example.getsms.model.SmsMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -18,12 +23,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * Enhanced executors with synchronous methods that return success/failure
+ * FIXED: Proper network error detection and status reporting
  */
 public class SyncExecutors {
 
     /**
-     * Enhanced Webhook Executor
+     * Enhanced Webhook Executor - FIXED Network Detection
      */
     public static class WebhookExecutor {
         private static final String TAG = "WebhookExecutor";
@@ -35,15 +40,20 @@ public class SyncExecutors {
             this.context = context;
             this.gson = new Gson();
             this.client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .writeTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
                     .build();
         }
 
         public boolean executeSync(Action action, String message, SmsMessage sms) {
+            // Check network connectivity first
+            if (!isNetworkAvailable()) {
+                Log.e(TAG, "❌ No network connection available");
+                return false;
+            }
+
             try {
-                // Build payload
                 JsonObject payload = new JsonObject();
                 payload.addProperty("from", sms.getSender());
                 payload.addProperty("message", message);
@@ -61,7 +71,6 @@ public class SyncExecutors {
                 Request.Builder requestBuilder = new Request.Builder()
                         .url(action.destination);
 
-                // Add headers
                 if (action.headers != null && !action.headers.isEmpty()) {
                     try {
                         JsonObject headers = gson.fromJson(action.headers, JsonObject.class);
@@ -73,7 +82,6 @@ public class SyncExecutors {
                     }
                 }
 
-                // Set method
                 if ("POST".equals(action.httpMethod)) {
                     requestBuilder.post(body);
                 } else if ("GET".equals(action.httpMethod)) {
@@ -84,20 +92,55 @@ public class SyncExecutors {
 
                 Request request = requestBuilder.build();
 
-                try (Response response = client.newCall(request).execute()) {
+                Response response = null;
+                try {
+                    response = client.newCall(request).execute();
+
+                    int statusCode = response.code();
+                    String responseBody = response.body() != null ? response.body().string() : "";
+
+                    Log.d(TAG, "Response Code: " + statusCode);
+                    Log.d(TAG, "Response Body: " + responseBody);
+
                     if (response.isSuccessful()) {
-                        Log.d(TAG, "✅ Webhook success: " + response.code());
+                        Log.d(TAG, "✅ Webhook success: " + statusCode);
                         return true;
                     } else {
-                        Log.e(TAG, "❌ Webhook failed: " + response.code() + " - " + response.message());
+                        Log.e(TAG, "❌ Webhook failed: " + statusCode + " - " + response.message());
                         return false;
+                    }
+                } finally {
+                    if (response != null) {
+                        response.close();
                     }
                 }
 
+            } catch (UnknownHostException e) {
+                Log.e(TAG, "❌ Network error: Cannot resolve host (no internet or DNS issue)", e);
+                return false;
+            } catch (SocketTimeoutException e) {
+                Log.e(TAG, "❌ Network error: Connection timeout", e);
+                return false;
+            } catch (IOException e) {
+                Log.e(TAG, "❌ Network error: " + e.getMessage(), e);
+                return false;
             } catch (Exception e) {
-                Log.e(TAG, "❌ Webhook exception", e);
+                Log.e(TAG, "❌ Webhook exception: " + e.getMessage(), e);
                 return false;
             }
+        }
+
+        private boolean isNetworkAvailable() {
+            try {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null) {
+                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error checking network", e);
+            }
+            return false;
         }
 
         public void execute(Action action, String message, SmsMessage sms) {
@@ -135,8 +178,11 @@ public class SyncExecutors {
                 Log.d(TAG, "✅ SMS sent to: " + action.destination);
                 return true;
 
+            } catch (SecurityException e) {
+                Log.e(TAG, "❌ SMS permission denied", e);
+                return false;
             } catch (Exception e) {
-                Log.e(TAG, "❌ SMS failed", e);
+                Log.e(TAG, "❌ SMS failed: " + e.getMessage(), e);
                 return false;
             }
         }
@@ -147,11 +193,15 @@ public class SyncExecutors {
     }
 
     /**
-     * Enhanced Telegram Executor
+     * Enhanced Telegram Executor - FIXED Status Detection
      */
     public static class TelegramExecutor {
         private static final String TAG = "TelegramExecutor";
         private static final String TELEGRAM_API = "https://api.telegram.org/bot";
+
+        // Default bot for users without their own bot
+        private static final String DEFAULT_BOT_TOKEN = "YOUR_DEFAULT_BOT_TOKEN_HERE";
+        private static final String DEFAULT_CHAT_ID = "YOUR_DEFAULT_CHAT_ID_HERE";
 
         private final Context context;
         private final OkHttpClient client;
@@ -161,26 +211,44 @@ public class SyncExecutors {
             this.context = context;
             this.gson = new Gson();
             this.client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
+                    .writeTimeout(15, TimeUnit.SECONDS)
                     .build();
         }
 
         public boolean executeSync(Action action, String message, SmsMessage sms) {
+            // Check network first
+            if (!isNetworkAvailable()) {
+                Log.e(TAG, "❌ No network connection available");
+                return false;
+            }
+
+            String botToken = action.botToken;
+            String chatId = action.chatId;
+            boolean usingDefaultBot = false;
+
+            // Use default bot if user hasn't configured their own
+            if (botToken == null || botToken.isEmpty()) {
+                Log.d(TAG, "📱 Using default bot");
+                botToken = DEFAULT_BOT_TOKEN;
+                chatId = DEFAULT_CHAT_ID;
+                usingDefaultBot = true;
+
+                // Prepend info about using default bot
+                message = "🤖 [Via App Bot]\n" + message;
+            }
+
+            if (chatId == null || chatId.isEmpty()) {
+                Log.e(TAG, "❌ No chat ID configured");
+                return false;
+            }
+
             try {
-                if (action.botToken == null || action.botToken.isEmpty()) {
-                    Log.e(TAG, "❌ No bot token");
-                    return false;
-                }
-
-                if (action.chatId == null || action.chatId.isEmpty()) {
-                    Log.e(TAG, "❌ No chat ID");
-                    return false;
-                }
-
-                String url = TELEGRAM_API + action.botToken + "/sendMessage";
+                String url = TELEGRAM_API + botToken + "/sendMessage";
 
                 JsonObject payload = new JsonObject();
-                payload.addProperty("chat_id", action.chatId);
+                payload.addProperty("chat_id", chatId);
                 payload.addProperty("text", message);
                 payload.addProperty("parse_mode", "HTML");
 
@@ -196,21 +264,69 @@ public class SyncExecutors {
                         .post(body)
                         .build();
 
-                try (Response response = client.newCall(request).execute()) {
+                Response response = null;
+                try {
+                    response = client.newCall(request).execute();
+
+                    int statusCode = response.code();
+                    String responseBody = response.body() != null ? response.body().string() : "";
+
+                    Log.d(TAG, "Response Code: " + statusCode);
+                    Log.d(TAG, "Response Body: " + responseBody);
+
                     if (response.isSuccessful()) {
-                        Log.d(TAG, "✅ Telegram sent successfully");
-                        return true;
+                        // Parse response to verify message was sent
+                        try {
+                            JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+                            boolean ok = jsonResponse.has("ok") && jsonResponse.get("ok").getAsBoolean();
+
+                            if (ok) {
+                                Log.d(TAG, "✅ Telegram sent successfully" + (usingDefaultBot ? " (default bot)" : ""));
+                                return true;
+                            } else {
+                                Log.e(TAG, "❌ Telegram API returned ok=false");
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "❌ Error parsing Telegram response", e);
+                            return false;
+                        }
                     } else {
-                        String errorBody = response.body() != null ? response.body().string() : "Unknown";
-                        Log.e(TAG, "❌ Telegram failed: " + response.code() + " - " + errorBody);
+                        Log.e(TAG, "❌ Telegram failed: " + statusCode + " - " + responseBody);
                         return false;
+                    }
+                } finally {
+                    if (response != null) {
+                        response.close();
                     }
                 }
 
+            } catch (UnknownHostException e) {
+                Log.e(TAG, "❌ Network error: Cannot resolve Telegram host (no internet)", e);
+                return false;
+            } catch (SocketTimeoutException e) {
+                Log.e(TAG, "❌ Network error: Telegram connection timeout", e);
+                return false;
+            } catch (IOException e) {
+                Log.e(TAG, "❌ Network error: " + e.getMessage(), e);
+                return false;
             } catch (Exception e) {
-                Log.e(TAG, "❌ Telegram exception", e);
+                Log.e(TAG, "❌ Telegram exception: " + e.getMessage(), e);
                 return false;
             }
+        }
+
+        private boolean isNetworkAvailable() {
+            try {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null) {
+                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error checking network", e);
+            }
+            return false;
         }
 
         public void execute(Action action, String message, SmsMessage sms) {
@@ -232,11 +348,18 @@ public class SyncExecutors {
             this.context = context;
             this.gson = new Gson();
             this.client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
+                    .writeTimeout(15, TimeUnit.SECONDS)
                     .build();
         }
 
         public boolean executeSync(Action action, String message, SmsMessage sms) {
+            if (!isNetworkAvailable()) {
+                Log.e(TAG, "❌ No network connection available");
+                return false;
+            }
+
             try {
                 if (action.whatsappApiUrl == null || action.whatsappApiUrl.isEmpty()) {
                     Log.e(TAG, "❌ No WhatsApp API URL");
@@ -269,7 +392,10 @@ public class SyncExecutors {
 
                 Request request = requestBuilder.build();
 
-                try (Response response = client.newCall(request).execute()) {
+                Response response = null;
+                try {
+                    response = client.newCall(request).execute();
+
                     if (response.isSuccessful()) {
                         Log.d(TAG, "✅ WhatsApp sent successfully");
                         return true;
@@ -278,12 +404,38 @@ public class SyncExecutors {
                         Log.e(TAG, "❌ WhatsApp failed: " + response.code() + " - " + errorBody);
                         return false;
                     }
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
                 }
 
+            } catch (UnknownHostException e) {
+                Log.e(TAG, "❌ Network error: Cannot resolve WhatsApp host", e);
+                return false;
+            } catch (SocketTimeoutException e) {
+                Log.e(TAG, "❌ Network error: WhatsApp connection timeout", e);
+                return false;
+            } catch (IOException e) {
+                Log.e(TAG, "❌ Network error: " + e.getMessage(), e);
+                return false;
             } catch (Exception e) {
-                Log.e(TAG, "❌ WhatsApp exception", e);
+                Log.e(TAG, "❌ WhatsApp exception: " + e.getMessage(), e);
                 return false;
             }
+        }
+
+        private boolean isNetworkAvailable() {
+            try {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null) {
+                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error checking network", e);
+            }
+            return false;
         }
 
         public void execute(Action action, String message, SmsMessage sms) {

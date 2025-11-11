@@ -3,6 +3,7 @@ package com.example.getsms;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
@@ -15,10 +16,7 @@ import com.example.getsms.model.Rule;
 import com.example.getsms.roomDB.DataBase;
 import com.example.getsms.roomDB.SmsRecord;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,6 +24,9 @@ public class ReceiveSms extends BroadcastReceiver {
 
     private static final String TAG = "ReceiveSms";
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String PREFS_NAME = "sms_forwarder_prefs";
+    private static final String KEY_SERVICE_ENABLED = "service_enabled";
+
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
@@ -35,6 +36,12 @@ public class ReceiveSms extends BroadcastReceiver {
         }
 
         if (!SMS_RECEIVED.equals(intent.getAction())) {
+            return;
+        }
+
+        // Check if service is enabled
+        if (!isServiceEnabled(context)) {
+            Log.d(TAG, "Service is disabled. Ignoring SMS.");
             return;
         }
 
@@ -91,6 +98,32 @@ public class ReceiveSms extends BroadcastReceiver {
         } catch (Exception e) {
             Log.e(TAG, "Error receiving SMS", e);
         }
+    }
+
+    /**
+     * Check if service is enabled
+     */
+    private boolean isServiceEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(KEY_SERVICE_ENABLED, false);
+    }
+
+    /**
+     * Enable service
+     */
+    public static void enableService(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(KEY_SERVICE_ENABLED, true).apply();
+        Log.d(TAG, "Service enabled");
+    }
+
+    /**
+     * Disable service
+     */
+    public static void disableService(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(KEY_SERVICE_ENABLED, false).apply();
+        Log.d(TAG, "Service disabled");
     }
 
     /**
