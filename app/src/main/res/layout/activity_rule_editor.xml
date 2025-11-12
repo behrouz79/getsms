@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Create/Edit Rule"
+                android:text="@string/create_edit_rule"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rule Name"
+                android:text="@string/rule_name"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginTop="8dp" />
@@ -42,14 +42,14 @@
                 android:id="@+id/etRuleName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="e.g., Bank Alerts"
+                android:hint="@string/rule_name_hint"
                 android:inputType="text" />
 
             <!-- CONDITIONS SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="CONDITIONS"
+                android:text="@string/conditions"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/purple_500"
@@ -60,7 +60,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SIM Card"
+                android:text="@string/sim_card"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginTop="8dp" />
@@ -75,7 +75,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sender Filter"
+                android:text="@string/sender_filter"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp" />
@@ -90,14 +90,14 @@
                 android:id="@+id/etSenderValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="e.g., BANK or +1234567890"
+                android:hint="@string/sender_hint"
                 android:inputType="text" />
 
             <!-- Message Filter -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Message Filter"
+                android:text="@string/message_filter"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp" />
@@ -112,14 +112,14 @@
                 android:id="@+id/etMessageValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="e.g., OTP or credited"
+                android:hint="@string/message_hint"
                 android:inputType="text" />
 
             <!-- ACTIONS SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ACTIONS"
+                android:text="@string/actions"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/purple_500"
@@ -130,7 +130,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Current Actions:"
+                android:text="@string/current_actions"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginTop="8dp"
@@ -148,7 +148,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add/Edit Action:"
+                android:text="@string/add_edit_action"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"
@@ -165,7 +165,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Action Type"
+                    android:text="@string/action_type"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
@@ -179,7 +179,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Destination (URL/Phone)"
+                    android:text="@string/destination"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp" />
@@ -188,13 +188,13 @@
                     android:id="@+id/etActionDestination"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="e.g., https://api.example.com or +1234567890"
+                    android:hint="@string/destination_hint"
                     android:inputType="text" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Message Template (Variables: {sender}, {message}, {sim}, {date})"
+                    android:text="@string/message_template"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp" />
@@ -203,7 +203,7 @@
                     android:id="@+id/etActionTemplate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="e.g., SMS from {sender}: {message}"
+                    android:hint="@string/message_hint"
                     android:inputType="textMultiLine"
                     android:lines="3" />
 
@@ -261,7 +261,7 @@
                     android:id="@+id/switchEnableTransform"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Enable Message Transformation"
+                    android:text="@string/enable_transform"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/purple_500" />
@@ -348,7 +348,7 @@
                         android:id="@+id/switchEnableRetry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="🔄 Enable Automatic Retry on Failure"
+                        android:text="@string/enable_retry"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/purple_500"
@@ -367,7 +367,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="⚙️ Retry Configuration"
+                            android:text="@string/retry_configuration"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
@@ -376,7 +376,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Maximum Retry Attempts"
+                            android:text="@string/max_retry_attempts"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:layout_marginTop="8dp" />
@@ -412,7 +412,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Delay Between Retries (seconds)"
+                            android:text="@string/retry_delay"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:layout_marginTop="12dp" />
@@ -448,7 +448,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Retry Strategy"
+                            android:text="@string/retry_strategy"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:layout_marginTop="12dp" />
@@ -468,7 +468,7 @@
                             android:textColor="@android:color/darker_gray"
                             android:background="#FFFFFF"
                             android:padding="8dp"
-                            android:text="• Immediate: Retry instantly\n• Fixed Delay: Wait same time between retries\n• Exponential Backoff: Double wait time each retry (5s, 10s, 20s...)" />
+                            android:text="@string/retry_strategy_help" />
 
                     </LinearLayout>
 
@@ -484,7 +484,7 @@
                         android:id="@+id/switchEnableBackup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="🔀 Enable Backup Action on Failure"
+                        android:text="@string/enable_backup"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/purple_500"
@@ -503,7 +503,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="⚙️ Backup Action Configuration"
+                            android:text="@string/backup_configuration"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="12dp" />
@@ -512,7 +512,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Backup Action Type"
+                            android:text="@string/backup_type"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:layout_marginTop="8dp" />
@@ -527,7 +527,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Backup Destination (Phone Number)"
+                            android:text="@string/backup_destination"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:layout_marginTop="12dp" />
@@ -543,7 +543,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Backup Message Template"
+                            android:text="@string/backup_template"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:layout_marginTop="12dp" />
@@ -562,14 +562,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:text="Trigger backup only after all retries fail"
+                            android:text="@string/backup_after_retries"
                             android:checked="true" />
 
                         <CheckBox
                             android:id="@+id/cbRetryBackup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Retry backup action if it fails (2 attempts)" />
+                            android:text="@string/retry_backup" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -579,7 +579,7 @@
                             android:textColor="#F57C00"
                             android:background="#FFFFFF"
                             android:padding="8dp"
-                            android:text="💡 TIP: SMS backup is recommended for critical notifications. It provides reliable fallback when primary actions fail." />
+                            android:text="@string/backup_tip" />
 
                     </LinearLayout>
 
@@ -594,7 +594,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="⚙️ Error Handling Options"
+                        android:text="@string/error_handling"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/purple_500"
@@ -604,21 +604,21 @@
                         android:id="@+id/cbContinueOnFailure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Continue processing other actions if this fails"
+                        android:text="@string/continue_on_failure"
                         android:checked="true" />
 
                     <CheckBox
                         android:id="@+id/cbNotifyOnFailure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Send notification on action failure"
+                        android:text="@string/notify_on_failure"
                         android:checked="true" />
 
                     <CheckBox
                         android:id="@+id/cbDetailedErrorLog"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Log detailed error information"
+                        android:text="@string/detailed_error_log"
                         android:checked="true" />
 
                 </LinearLayout>
@@ -634,7 +634,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Add Action"
+                        android:text="@string/add_action"
                         android:textSize="14sp" />
 
                     <Button
@@ -643,7 +643,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        android:text="Cancel"
+                        android:text="@string/cancel"
                         android:textSize="14sp"
                         android:visibility="gone"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
@@ -657,7 +657,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp"
-                android:text="Save Rule"
+                android:text="@string/save_rule"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>

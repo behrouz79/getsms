@@ -84,12 +84,11 @@ public class CreditsActivity extends BaseActivity {
 
     private void updateDisplay() {
         int credits = creditManager.getCredits();
-        tvCredits.setText("Available Credits: " + credits);
-
+        tvCredits.setText(getString(R.string.available_credits, credits));
         // Update ad statistics
         int totalAds = creditManager.getTotalAdsWatched();
         int remainingAds = creditManager.getAdsRemainingToday();
-        tvAdStats.setText("Ads watched: " + totalAds + " | Remaining today: " + remainingAds);
+        tvAdStats.setText(getString(R.string.ads_watched, totalAds, remainingAds));
 
         // Update button state
         updateWatchAdButton();

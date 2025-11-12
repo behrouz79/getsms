@@ -22,7 +22,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/purple_500"
-            android:text="WEBHOOK" />
+            android:text="@string/action_type" />
 
         <TextView
             android:id="@+id/tvDestination"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textSize="14sp"
-            android:text="URL: https://example.com" />
+            android:text="@string/destination_hint" />
 
         <TextView
             android:id="@+id/tvTemplate"
@@ -39,7 +39,7 @@
             android:layout_marginTop="4dp"
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray"
-            android:text="Template: {message}" />
+            android:text="@string/template_hint" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Edit"
+                android:text="@string/edit"
                 android:textSize="12sp"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="Delete"
+                android:text="@string/delete"
                 android:textSize="12sp"
                 android:textColor="@android:color/holo_red_dark"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />

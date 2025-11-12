@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ExecutorService executorService;
     private CreditManager creditManager;
-    private LanguageManager languageManager;
 
     // --- Permission Launchers ---
     private final ActivityResultLauncher<String> requestNotificationPermission =
@@ -58,11 +57,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+    // --- Attach language before activity is created ---
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LanguageManager.applyLanguage(newBase));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Apply language before UI inflation
-        languageManager = new LanguageManager(this);
-        languageManager.updateResources(languageManager.getLanguage());
+        // Ensure language applied before UI inflation
+        LanguageManager.updateConfiguration(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -166,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         RadioButton radioEnglish = dialogView.findViewById(R.id.radioEnglish);
         RadioButton radioPersian = dialogView.findViewById(R.id.radioPersian);
 
-        String currentLang = languageManager.getLanguage();
+        String currentLang = LanguageManager.getLanguage(this);
         if (LanguageManager.ENGLISH.equals(currentLang)) radioEnglish.setChecked(true);
         else if (LanguageManager.PERSIAN.equals(currentLang)) radioPersian.setChecked(true);
 
@@ -174,10 +178,12 @@ public class MainActivity extends AppCompatActivity {
                 .setView(dialogView)
                 .setPositiveButton(R.string.ok, (d, w) -> {
                     int selectedId = radioGroup.getCheckedRadioButtonId();
-                    String newLang = (selectedId == R.id.radioEnglish) ? LanguageManager.ENGLISH : LanguageManager.PERSIAN;
+                    String newLang = (selectedId == R.id.radioEnglish)
+                            ? LanguageManager.ENGLISH
+                            : LanguageManager.PERSIAN;
+
                     if (!newLang.equals(currentLang)) {
-                        languageManager.setLanguage(newLang);
-                        recreate();
+                        LanguageManager.setLanguage(this, newLang);
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -235,19 +241,10 @@ public class MainActivity extends AppCompatActivity {
             details.append("🚀 ").append(getString(R.string.actions_executed)).append("\n");
             details.append(actions).append("\n\n");
 
-            // Detailed action status
-            if (log.webhookSent) {
-                details.append("  • Webhook: Status ").append(log.webhookStatus).append("\n");
-            }
-            if (log.telegramSent) {
-                details.append("  • Telegram: Sent\n");
-            }
-            if (log.smsForwarded) {
-                details.append("  • SMS: Forwarded\n");
-            }
-            if (log.whatsappSent) {
-                details.append("  • WhatsApp: Sent\n");
-            }
+            if (log.webhookSent) details.append("  • Webhook: Status ").append(log.webhookStatus).append("\n");
+            if (log.telegramSent) details.append("  • Telegram: Sent\n");
+            if (log.smsForwarded) details.append("  • SMS: Forwarded\n");
+            if (log.whatsappSent) details.append("  • WhatsApp: Sent\n");
             details.append("\n");
         }
 

@@ -9,28 +9,17 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <!-- Language Button (Top Right) -->
-    <Button
-        android:id="@+id/btnLanguage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/change_language"
-        android:textSize="12sp"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:weightSum="2"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLanguage">
+        tools:ignore="MissingConstraints">
 
         <Button
             android:id="@+id/btnStart"
@@ -59,31 +48,34 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/baseUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
         android:weightSum="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        android:id="@+id/baseUrl">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <TextView
             android:id="@+id/tvCreditsDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/credits"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_weight="1"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnCredits"
-            android:layout_width="0dp"
+            android:text="@string/manage_credits"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/manage_credits"/>
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_primary"
+            android:fontFamily="@font/shabnam"
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -109,21 +101,6 @@
             android:layout_height="1dp" />
 
         <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/btn_primary"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/cleanup_record"
-            android:textColor="@color/white" />
-
-        <View
-            android:layout_width="8dp"
-            android:layout_height="1dp" />
-
-        <Button
             android:id="@+id/btnOpenRules"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -136,14 +113,48 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/btns2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/btns"
+        tools:layout_editor_absoluteX="16dp">
+
+
+        <Button
+            android:id="@+id/btnLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_primary"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/change_language"
+            android:textColor="@color/white" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_primary"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/cleanup_record"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recRequ"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btns" />
+        app:layout_constraintTop_toBottomOf="@+id/btns2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

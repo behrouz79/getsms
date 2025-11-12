@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Credits Manager"
+            android:text="@string/credits_manager"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="#333333"
@@ -43,7 +43,7 @@
                     android:id="@+id/tvCredits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Available Credits: 0"
+                    android:text="@string/available_credits"
                     android:textSize="28sp"
                     android:textStyle="bold"
                     android:textColor="#4CAF50"
@@ -53,7 +53,7 @@
                     android:id="@+id/tvAdStats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ads watched: 0 | Remaining today: 50"
+                    android:text="@string/ads_watched"
                     android:textSize="14sp"
                     android:textColor="#666666" />
 
@@ -78,7 +78,7 @@
             android:id="@+id/btnWatchAd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Watch Ad (+5 Credits)"
+            android:text="@string/watch_ad"
             android:textSize="16sp"
             android:textStyle="bold"
             android:padding="16dp"
@@ -91,7 +91,7 @@
             android:id="@+id/btnRedeemToken"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Redeem Token Code"
+            android:text="@string/redeem_token"
             android:textSize="16sp"
             android:padding="16dp"
             android:layout_marginBottom="16dp"
@@ -103,7 +103,7 @@
             android:id="@+id/btnInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="How Credits Work"
+            android:text="@string/how_credits_work"
             android:textSize="14sp"
             android:padding="12dp"
             android:layout_marginBottom="24dp"
@@ -128,7 +128,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Device Information"
+                    android:text="@string/device_information"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#333333"
@@ -138,7 +138,7 @@
                     android:id="@+id/tvDeviceId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Device ID: xxxxxxxxxx"
+                    android:text="@string/device_id"
                     android:textSize="12sp"
                     android:textColor="#666666"
                     android:fontFamily="monospace" />
@@ -146,7 +146,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Share this ID with admin to purchase credits"
+                    android:text="@string/share_device_id"
                     android:textSize="11sp"
                     android:textColor="#999999"
                     android:layout_marginTop="4dp" />
@@ -167,7 +167,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="• Each SMS costs 1 credit\n• Watch ads to earn credits\n• Contact admin for bulk purchases"
+            android:text="@string/credit_info"
             android:textSize="12sp"
             android:textColor="#999999"
             android:gravity="center"
