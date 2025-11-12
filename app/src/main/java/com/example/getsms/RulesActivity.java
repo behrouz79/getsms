@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class RulesActivity extends AppCompatActivity {
+public class RulesActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private RulesAdapter adapter;

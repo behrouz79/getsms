@@ -35,7 +35,7 @@ import java.util.concurrent.Executors;
 
 
 
-public class RuleEditorActivity extends AppCompatActivity {
+public class RuleEditorActivity extends BaseActivity {
 
     private EditText etRuleName;
     private Spinner spinnerSim;

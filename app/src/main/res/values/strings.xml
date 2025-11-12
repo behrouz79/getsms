@@ -168,4 +168,5 @@
     <string name="select_transform_type_help">Select a transform type to see examples.</string>
     <string name="enter_destination">Please enter destination</string>
     <string name="enter_bot_token_chat_id">Please enter Bot Token and Chat ID</string>
+    <string name="permissions_required_header">permissions_required_header</string>
 </resources>

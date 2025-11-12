@@ -168,4 +168,5 @@
     <string name="select_transform_type_help">نوع تبدیل را برای مشاهده مثال‌ها انتخاب کنید.</string>
     <string name="enter_destination">لطفا مقصد را وارد کنید</string>
     <string name="enter_bot_token_chat_id">لطفا توکن ربات و شناسه چت را وارد کنید</string>
+    <string name="permissions_required_header">permissions_required_header</string>
 </resources>

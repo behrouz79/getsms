@@ -2,21 +2,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+    <!-- ============================================ -->
+    <!-- SMS PERMISSIONS (REQUIRED) -->
+    <!-- ============================================ -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Foreground service permissions (Android 9+) -->
+    <!-- For dual SIM support -->
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+
+    <!-- ============================================ -->
+    <!-- NETWORK PERMISSIONS -->
+    <!-- ============================================ -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- ============================================ -->
+    <!-- FOREGROUND SERVICE PERMISSIONS -->
+    <!-- ============================================ -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
         android:minSdkVersion="34" />
 
-    <!-- Notification permission (Android 13+) -->
+    <!-- ============================================ -->
+    <!-- NOTIFICATION PERMISSIONS (Android 13+) -->
+    <!-- ============================================ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- ============================================ -->
+    <!-- ADS PERMISSIONS -->
+    <!-- ============================================ -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- ============================================ -->
+    <!-- WAKE LOCK (Optional - for background processing) -->
+    <!-- ============================================ -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".App"
@@ -31,15 +55,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <!-- AdMob App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"/>
 
+        <!-- ============================================ -->
+        <!-- ACTIVITIES -->
+        <!-- ============================================ -->
 
-        <activity
-            android:name=".CreditsActivity"
-            android:exported="false"
-            android:label="Credits"/>
         <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
@@ -49,6 +73,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Credits Activity -->
+        <activity
+            android:name=".CreditsActivity"
+            android:exported="false"
+            android:label="Credits"/>
 
         <!-- Rules Management Activity -->
         <activity
@@ -64,23 +94,26 @@
             android:parentActivityName=".RulesActivity"
             android:exported="false" />
 
-
-
-        <!-- SMS Receiver -->
+        <!-- ============================================ -->
+        <!-- SMS RECEIVER -->
+        <!-- ============================================ -->
         <receiver
             android:name=".ReceiveSms"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
+            <intent-filter android:priority="999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
-        <!-- Foreground Service -->
+        <!-- ============================================ -->
+        <!-- FOREGROUND SERVICE -->
+        <!-- ============================================ -->
         <service
             android:name=".EndlessService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
+
     </application>
 
 </manifest>

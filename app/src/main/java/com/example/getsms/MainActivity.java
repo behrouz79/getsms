@@ -27,6 +27,7 @@ import com.example.getsms.credit.CreditManager;
 import com.example.getsms.model.SmsLog;
 import com.example.getsms.roomDB.DataBase;
 import com.example.getsms.utils.LanguageManager;
+import com.example.getsms.utils.PermissionsHelper;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
@@ -42,41 +43,24 @@ public class MainActivity extends AppCompatActivity {
     private SmsLogAdapter adapter;
     private List<SmsLog> logsList = new ArrayList<>();
     private DataBase db;
-    private Button btnClearLogs;
-    private Button btnStart;
-    private Button btnStop;
-    private Button btnLanguage;
-    private ExecutorService executorService;
-
-    // Credit system
-    private CreditManager creditManager;
+    private Button btnClearLogs, btnStart, btnStop, btnLanguage;
     private TextView tvCreditsDisplay;
 
-    // Language manager
+    private ExecutorService executorService;
+    private CreditManager creditManager;
     private LanguageManager languageManager;
 
-    // Permission launchers
+    // --- Permission Launchers ---
     private final ActivityResultLauncher<String> requestNotificationPermission =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    checkSmsPermission();
-                } else {
+                if (!isGranted) {
                     showPermissionRationale(getString(R.string.notification_permission_required));
-                }
-            });
-
-    private final ActivityResultLauncher<String> requestSmsPermission =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    Toast.makeText(this, "SMS permission granted", Toast.LENGTH_SHORT).show();
-                } else {
-                    showPermissionRationale(getString(R.string.sms_permission_required));
                 }
             });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Apply language before setContentView
+        // Apply language before UI inflation
         languageManager = new LanguageManager(this);
         languageManager.updateResources(languageManager.getLanguage());
 
@@ -90,42 +74,28 @@ public class MainActivity extends AppCompatActivity {
         executorService = Executors.newSingleThreadExecutor();
 
         // Initialize AdMob
-        MobileAds.initialize(this, initializationStatus -> {
-            Log.d(TAG, "✅ AdMob initialized");
-        });
+        MobileAds.initialize(this, initializationStatus -> Log.d(TAG, "✅ AdMob initialized"));
 
-        // Initialize credit manager
+        // Initialize Credit Manager
         creditManager = new CreditManager(this);
         creditManager.setBackendUrl("https://smsforwarder.amiriprog.ir/api/");
-
-        Log.d(TAG, "💳 Available credits: " + creditManager.getCredits());
+        Log.d(TAG, "💳 Credits: " + creditManager.getCredits());
 
         // Initialize database
         db = DataBase.getDbInstance(this);
 
-        // Initialize views
+        // Setup UI
         findViews();
-
-        // Setup adapter with click listener
-        adapter = new SmsLogAdapter(this, logsList, this::showLogDetails);
-
-        // Setup RecyclerView
         setupRecyclerView();
-
-        // Load data
-        loadLogs();
-
-        // Check permissions
-        checkPermissions();
-
-        // Setup buttons
         setupButtons();
 
-        // Update credits display
+        // Load logs and update UI
+        loadLogs();
         updateCreditsDisplay();
-
-        // Update button states
         updateServiceButtonStates();
+
+        // Check permissions
+        checkAndRequestPermissions();
 
         Log.d(TAG, "✅ MainActivity initialization complete");
     }
@@ -137,53 +107,57 @@ public class MainActivity extends AppCompatActivity {
         btnStop = findViewById(R.id.btnStart2);
         btnLanguage = findViewById(R.id.btnLanguage);
         tvCreditsDisplay = findViewById(R.id.tvCreditsDisplay);
-
-        Log.d(TAG, "Views initialized");
     }
 
     private void setupRecyclerView() {
+        adapter = new SmsLogAdapter(this, logsList, this::showLogDetails);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
-
-        Log.d(TAG, "RecyclerView configured");
     }
 
     private void setupButtons() {
-        // Start service button
-        btnStart.setOnClickListener(v -> startService(v));
-
-        // Stop service button
-        btnStop.setOnClickListener(v -> stopService(v));
-
-        // Clear logs button
+        btnStart.setOnClickListener(this::startService);
+        btnStop.setOnClickListener(this::stopService);
         btnClearLogs.setOnClickListener(v -> showClearLogsDialog());
 
-        // Rules button
-        Button btnOpenRules = findViewById(R.id.btnOpenRules);
-        btnOpenRules.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RulesActivity.class);
-            startActivity(intent);
-        });
+        findViewById(R.id.btnOpenRules).setOnClickListener(v ->
+                startActivity(new Intent(this, RulesActivity.class)));
 
-        // Credits button
-        Button btnCredits = findViewById(R.id.btnCredits);
-        btnCredits.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, CreditsActivity.class);
-            startActivity(intent);
-        });
+        findViewById(R.id.btnCredits).setOnClickListener(v ->
+                startActivity(new Intent(this, CreditsActivity.class)));
 
-        // Refresh button
-        Button btnRefresh = findViewById(R.id.btnRefresh);
-        btnRefresh.setOnClickListener(v -> {
-            Log.d(TAG, "🔄 Refreshing logs...");
+        findViewById(R.id.btnRefresh).setOnClickListener(v -> {
             loadLogs();
             updateCreditsDisplay();
             updateServiceButtonStates();
         });
 
-        // Language button
         btnLanguage.setOnClickListener(v -> showLanguageDialog());
+    }
+
+    private void checkAndRequestPermissions() {
+        PermissionsHelper.logPermissionStates(this);
+        if (PermissionsHelper.hasAllPermissions(this)) {
+            Log.d(TAG, "✅ All permissions granted");
+            return;
+        }
+
+        List<String> missing = PermissionsHelper.getMissingPermissions(this);
+        StringBuilder message = new StringBuilder(getString(R.string.permissions_required_header) + "\n\n");
+
+        for (String perm : missing) {
+            message.append("• ").append(PermissionsHelper.getPermissionName(perm))
+                    .append("\n  ").append(PermissionsHelper.getPermissionDescription(perm)).append("\n\n");
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.permission_required)
+                .setMessage(message.toString())
+                .setPositiveButton(R.string.ok, (d, w) -> PermissionsHelper.requestAllPermissions(this))
+                .setNegativeButton(R.string.cancel, (d, w) -> finish())
+                .setCancelable(false)
+                .show();
     }
 
     private void showLanguageDialog() {
@@ -192,101 +166,38 @@ public class MainActivity extends AppCompatActivity {
         RadioButton radioEnglish = dialogView.findViewById(R.id.radioEnglish);
         RadioButton radioPersian = dialogView.findViewById(R.id.radioPersian);
 
-        // Set current selection
-        String currentLanguage = languageManager.getLanguage();
-        if (LanguageManager.ENGLISH.equals(currentLanguage)) {
-            radioEnglish.setChecked(true);
-        } else if (LanguageManager.PERSIAN.equals(currentLanguage)) {
-            radioPersian.setChecked(true);
-        }
+        String currentLang = languageManager.getLanguage();
+        if (LanguageManager.ENGLISH.equals(currentLang)) radioEnglish.setChecked(true);
+        else if (LanguageManager.PERSIAN.equals(currentLang)) radioPersian.setChecked(true);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setView(dialogView)
-                .setPositiveButton(R.string.ok, (d, which) -> {
+                .setPositiveButton(R.string.ok, (d, w) -> {
                     int selectedId = radioGroup.getCheckedRadioButtonId();
-                    String newLanguage = currentLanguage;
-
-                    if (selectedId == R.id.radioEnglish) {
-                        newLanguage = LanguageManager.ENGLISH;
-                    } else if (selectedId == R.id.radioPersian) {
-                        newLanguage = LanguageManager.PERSIAN;
-                    }
-
-                    if (!newLanguage.equals(currentLanguage)) {
-                        languageManager.setLanguage(newLanguage);
-                        Toast.makeText(this, R.string.language_changed, Toast.LENGTH_SHORT).show();
-
-                        // Restart activity to apply language
+                    String newLang = (selectedId == R.id.radioEnglish) ? LanguageManager.ENGLISH : LanguageManager.PERSIAN;
+                    if (!newLang.equals(currentLang)) {
+                        languageManager.setLanguage(newLang);
                         recreate();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
-                .create();
-
-        dialog.show();
-    }
-
-    private void updateServiceButtonStates() {
-        boolean isEnabled = isServiceEnabled();
-
-        if (isEnabled) {
-            btnStart.setEnabled(false);
-            btnStart.setAlpha(0.5f);
-            btnStop.setEnabled(true);
-            btnStop.setAlpha(1.0f);
-        } else {
-            btnStart.setEnabled(true);
-            btnStart.setAlpha(1.0f);
-            btnStop.setEnabled(false);
-            btnStop.setAlpha(0.5f);
-        }
-    }
-
-    private boolean isServiceEnabled() {
-        return getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE)
-                .getBoolean("service_enabled", false);
+                .show();
     }
 
     private void loadLogs() {
-        Log.d(TAG, "📊 Loading SMS logs from database...");
-
         executorService.execute(() -> {
             try {
                 List<SmsLog> logs = db.smsLogDao().getRecentLogs();
-
-                Log.d(TAG, "✅ Loaded " + logs.size() + " log entries");
-
-                // Log summary
-                int withErrors = 0;
-                int totalCredits = 0;
-                for (SmsLog log : logs) {
-                    if (log.hasError) withErrors++;
-                    totalCredits += log.creditsUsed;
-                }
-
-                Log.d(TAG, "📊 Log Statistics:");
-                Log.d(TAG, "   Total logs: " + logs.size());
-                Log.d(TAG, "   With errors: " + withErrors);
-                Log.d(TAG, "   Total credits used: " + totalCredits);
-
                 runOnUiThread(() -> {
                     logsList.clear();
                     logsList.addAll(logs);
                     adapter.notifyDataSetChanged();
-
                     if (logsList.isEmpty()) {
-                        Toast.makeText(MainActivity.this,
-                                R.string.no_logs_yet,
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, R.string.no_logs_yet, Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (Exception e) {
                 Log.e(TAG, "❌ Error loading logs", e);
-                runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this,
-                            getString(R.string.error_occurred, e.getMessage()),
-                            Toast.LENGTH_LONG).show();
-                });
             }
         });
     }
@@ -360,151 +271,106 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteLog(SmsLog log) {
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.delete_log))
-                .setMessage(getString(R.string.delete_log_confirm))
-                .setPositiveButton(getString(R.string.delete), (dialog, which) -> {
-                    executorService.execute(() -> {
-                        db.smsLogDao().deleteLog(log);
-                        runOnUiThread(() -> {
-                            Toast.makeText(this, getString(R.string.log_deleted), Toast.LENGTH_SHORT).show();
-                            loadLogs();
-                        });
-                    });
-                })
-                .setNegativeButton(getString(R.string.cancel), null)
-                .show();
+        executorService.execute(() -> {
+            db.smsLogDao().deleteLog(log);
+            runOnUiThread(() -> {
+                Toast.makeText(this, R.string.log_deleted, Toast.LENGTH_SHORT).show();
+                loadLogs();
+            });
+        });
     }
 
     private void showClearLogsDialog() {
         new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.clear_old_logs))
-                .setMessage(getString(R.string.clear_logs_confirm))
-                .setPositiveButton(getString(R.string.clear), (dialog, which) -> clearOldLogs())
-                .setNegativeButton(getString(R.string.cancel), null)
+                .setTitle(R.string.clear_old_logs)
+                .setMessage(R.string.clear_logs_confirm)
+                .setPositiveButton(R.string.clear, (d, w) -> clearOldLogs())
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     private void clearOldLogs() {
         executorService.execute(() -> {
-            try {
-                long thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
-                int deleted = db.smsLogDao().deleteOldLogs(thirtyDaysAgo);
-
-                Log.d(TAG, "🗑️ Deleted " + deleted + " old logs");
-
-                runOnUiThread(() -> {
-                    Toast.makeText(this, getString(R.string.logs_deleted, deleted), Toast.LENGTH_SHORT).show();
-                    loadLogs();
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "Error deleting old logs", e);
-                runOnUiThread(() -> {
-                    Toast.makeText(this, getString(R.string.error_occurred, e.getMessage()), Toast.LENGTH_SHORT).show();
-                });
-            }
+            long thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
+            int deleted = db.smsLogDao().deleteOldLogs(thirtyDaysAgo);
+            runOnUiThread(() -> {
+                Toast.makeText(this, getString(R.string.logs_deleted, deleted), Toast.LENGTH_SHORT).show();
+                loadLogs();
+            });
         });
     }
 
     private void updateCreditsDisplay() {
-        if (tvCreditsDisplay != null) {
-            int credits = creditManager.getCredits();
-            tvCreditsDisplay.setText(getString(R.string.credits, credits));
-
-            if (credits < 10) {
-                tvCreditsDisplay.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-            } else {
-                tvCreditsDisplay.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-            }
-        }
+        int credits = creditManager.getCredits();
+        tvCreditsDisplay.setText(getString(R.string.credits, credits));
+        int color = (credits < 10)
+                ? getResources().getColor(android.R.color.holo_red_dark)
+                : getResources().getColor(android.R.color.holo_green_dark);
+        tvCreditsDisplay.setTextColor(color);
     }
 
-    public void startService(android.view.View v) {
-        // Check notification permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, getString(R.string.notification_permission_required), Toast.LENGTH_SHORT).show();
-                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
-                return;
-            }
+    public void startService(View v) {
+        if (!PermissionsHelper.hasSendSmsPermission(this)) {
+            PermissionsHelper.requestSendSmsPermission(this);
+            return;
         }
 
-        // Check credits
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+            return;
+        }
+
         if (!creditManager.hasEnoughCredits(1)) {
             new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.low_credits))
-                    .setMessage(getString(R.string.need_credits_message))
-                    .setPositiveButton(getString(R.string.get_credits), (dialog, which) -> {
-                        Intent intent = new Intent(MainActivity.this, CreditsActivity.class);
-                        startActivity(intent);
-                    })
-                    .setNegativeButton(getString(R.string.cancel), null)
+                    .setTitle(R.string.low_credits)
+                    .setMessage(R.string.need_credits_message)
+                    .setPositiveButton(R.string.get_credits, (d, w) ->
+                            startActivity(new Intent(this, CreditsActivity.class)))
+                    .setNegativeButton(R.string.cancel, null)
                     .show();
             return;
         }
 
-        // Enable service
         ReceiveSms.enableService(this);
-
-        // Start foreground service
         Intent serviceIntent = new Intent(this, EndlessService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startForegroundService(serviceIntent);
-        } else {
+        else
             startService(serviceIntent);
-        }
 
-        Toast.makeText(this, getString(R.string.service_started), Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "✅ Service started and enabled");
-
+        Toast.makeText(this, R.string.service_started, Toast.LENGTH_SHORT).show();
         updateServiceButtonStates();
     }
 
-    public void stopService(android.view.View v) {
-        // Disable service
+    public void stopService(View v) {
         ReceiveSms.disableService(this);
-
-        // Stop foreground service
-        Intent serviceIntent = new Intent(this, EndlessService.class);
-        stopService(serviceIntent);
-
-        Toast.makeText(this, getString(R.string.service_stopped), Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "⏹️ Service stopped and disabled");
-
+        stopService(new Intent(this, EndlessService.class));
+        Toast.makeText(this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
         updateServiceButtonStates();
     }
 
-    private void checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
-                return;
-            }
-        }
-        checkSmsPermission();
-    }
-
-    private void checkSmsPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestSmsPermission.launch(Manifest.permission.RECEIVE_SMS);
-        }
+    private void updateServiceButtonStates() {
+        boolean enabled = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE)
+                .getBoolean("service_enabled", false);
+        btnStart.setEnabled(!enabled);
+        btnStop.setEnabled(enabled);
+        btnStart.setAlpha(enabled ? 0.5f : 1.0f);
+        btnStop.setAlpha(enabled ? 1.0f : 0.5f);
     }
 
     private void showPermissionRationale(String message) {
         new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.permission_required))
+                .setTitle(R.string.permission_required)
                 .setMessage(message)
-                .setPositiveButton(getString(R.string.ok), null)
+                .setPositiveButton(R.string.ok, null)
                 .show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "🔄 MainActivity resumed - refreshing data");
         updateCreditsDisplay();
         updateServiceButtonStates();
         loadLogs();
@@ -513,9 +379,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (executorService != null && !executorService.isShutdown()) {
+        if (executorService != null && !executorService.isShutdown())
             executorService.shutdown();
-        }
-        Log.d(TAG, "👋 MainActivity destroyed");
     }
 }

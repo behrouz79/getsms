@@ -1,10 +1,15 @@
 package com.example.getsms.engine;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.telephony.SmsManager;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import com.example.getsms.model.Action;
 import com.example.getsms.model.SmsMessage;
@@ -14,6 +19,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -74,9 +80,11 @@ public class SyncExecutors {
                 if (action.headers != null && !action.headers.isEmpty()) {
                     try {
                         JsonObject headers = gson.fromJson(action.headers, JsonObject.class);
-                        headers.entrySet().forEach(entry ->
-                                requestBuilder.addHeader(entry.getKey(), entry.getValue().getAsString())
-                        );
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            headers.entrySet().forEach(entry ->
+                                    requestBuilder.addHeader(entry.getKey(), entry.getValue().getAsString())
+                            );
+                        }
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing headers", e);
                     }
@@ -160,36 +168,121 @@ public class SyncExecutors {
         }
 
         public boolean executeSync(Action action, String message, SmsMessage sms) {
+            // ============================================
+            // CRITICAL: CHECK SEND_SMS PERMISSION FIRST
+            // ============================================
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "❌ SEND_SMS permission not granted!");
+                Log.e(TAG, "   This should have been checked before execution");
+                Log.e(TAG, "   Please request permission in MainActivity");
+                return false;
+            }
+
+            // Check destination
+            if (action.destination == null || action.destination.isEmpty()) {
+                Log.e(TAG, "❌ No destination phone number");
+                return false;
+            }
+
             try {
-                if (action.destination == null || action.destination.isEmpty()) {
-                    Log.e(TAG, "❌ No destination phone number");
-                    return false;
-                }
+                Log.d(TAG, "📤 Sending SMS to: " + action.destination);
+                Log.d(TAG, "   Message: " + message);
 
                 SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(
-                        action.destination,
-                        null,
-                        message,
-                        null,
-                        null
-                );
 
-                Log.d(TAG, "✅ SMS sent to: " + action.destination);
+                // Check message length
+                if (message.length() > 160) {
+                    Log.d(TAG, "   Message is long (" + message.length() + " chars), splitting...");
+
+                    ArrayList<String> parts = smsManager.divideMessage(message);
+                    Log.d(TAG, "   Split into " + parts.size() + " parts");
+
+                    smsManager.sendMultipartTextMessage(
+                            action.destination,
+                            null,
+                            parts,
+                            null,
+                            null
+                    );
+
+                    Log.d(TAG, "✅ Multi-part SMS sent successfully");
+                } else {
+                    smsManager.sendTextMessage(
+                            action.destination,
+                            null,
+                            message,
+                            null,
+                            null
+                    );
+
+                    Log.d(TAG, "✅ SMS sent successfully");
+                }
+
                 return true;
 
             } catch (SecurityException e) {
-                Log.e(TAG, "❌ SMS permission denied", e);
+                Log.e(TAG, "❌ SecurityException: SEND_SMS permission denied at runtime!", e);
+                Log.e(TAG, "   This should not happen if permissions were checked properly");
                 return false;
+
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "❌ IllegalArgumentException: Invalid phone number or message", e);
+                Log.e(TAG, "   Destination: " + action.destination);
+                return false;
+
             } catch (Exception e) {
-                Log.e(TAG, "❌ SMS failed: " + e.getMessage(), e);
+                Log.e(TAG, "❌ SMS failed with exception: " + e.getClass().getSimpleName(), e);
+                Log.e(TAG, "   Error: " + e.getMessage());
                 return false;
             }
         }
 
+        /**
+         * Asynchronous execution
+         */
         public void execute(Action action, String message, SmsMessage sms) {
-            new Thread(() -> executeSync(action, message, sms)).start();
+            new Thread(() -> {
+                boolean success = executeSync(action, message, sms);
+                if (!success) {
+                    Log.e(TAG, "❌ Async SMS execution failed");
+                }
+            }).start();
         }
+
+        /**
+         * Check if SMS can be sent
+         */
+        public static boolean canSendSms(Context context) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                Log.w(TAG, "⚠️ SEND_SMS permission not granted");
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Validate phone number format
+         */
+        public static boolean isValidPhoneNumber(String phoneNumber) {
+            if (phoneNumber == null || phoneNumber.isEmpty()) {
+                return false;
+            }
+
+            // Remove spaces and dashes
+            String cleaned = phoneNumber.replaceAll("[\\s-]", "");
+
+            // Check if it starts with + and has digits
+            if (cleaned.startsWith("+")) {
+                return cleaned.substring(1).matches("\\d{10,15}");
+            }
+
+            // Check if it's all digits with reasonable length
+            return cleaned.matches("\\d{10,15}");
+        }
+
     }
 
     /**

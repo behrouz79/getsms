@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.getsms.credit.AdsManager;
 import com.example.getsms.credit.CreditManager;
 
-public class CreditsActivity extends AppCompatActivity {
+public class CreditsActivity extends BaseActivity {
 
     private TextView tvCredits;
     private TextView tvDeviceId;
