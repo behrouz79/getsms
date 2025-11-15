@@ -3,13 +3,16 @@ package com.example.getsms;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ import com.example.getsms.adapter.SmsLogAdapter;
 import com.example.getsms.credit.CreditManager;
 import com.example.getsms.model.SmsLog;
 import com.example.getsms.roomDB.DataBase;
+import com.example.getsms.utils.BatteryOptimizationHelper;
 import com.example.getsms.utils.LanguageManager;
 import com.example.getsms.utils.PermissionsHelper;
 import com.google.android.gms.ads.MobileAds;
@@ -306,12 +310,28 @@ public class MainActivity extends BaseActivity {
         tvCreditsDisplay.setTextColor(color);
     }
 
+    /**
+     * Show dialog confirming service is running persistently
+     */
+    private void showServiceStartedDialog() {
+        String status = BatteryOptimizationHelper.getBatteryOptimizationStatus(this);
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.service_started_title))
+                .setMessage(getString(R.string.service_started_message, status))
+                .setPositiveButton(getString(R.string.ok), null)
+                .show();
+    }
+
+
     public void startService(View v) {
+        // 1. Check SMS permissions first
         if (!PermissionsHelper.hasSendSmsPermission(this)) {
             PermissionsHelper.requestSendSmsPermission(this);
             return;
         }
 
+        // 2. Check notification permission (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                         != PackageManager.PERMISSION_GRANTED) {
@@ -319,6 +339,23 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
+        // 3. CRITICAL: Check battery optimization
+        if (!BatteryOptimizationHelper.isBatteryOptimizationDisabled(this)) {
+            BatteryOptimizationHelper.requestDisableBatteryOptimization(this);
+            // Show info dialog explaining why this is needed
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.battery_optimization_required)
+                    .setMessage(R.string.battery_optimization_explanation)
+                    .setPositiveButton(R.string.continue_text, (d, w) -> {
+                        // After user understands, request battery optimization
+                        BatteryOptimizationHelper.requestDisableBatteryOptimization(this);
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+            return;
+        }
+
+        // 4. Check credits
         if (!creditManager.hasEnoughCredits(1)) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.low_credits)
@@ -330,23 +367,64 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
+        // 5. Enable service in preferences
         ReceiveSms.enableService(this);
-        Intent serviceIntent = new Intent(this, EndlessService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startForegroundService(serviceIntent);
-        else
-            startService(serviceIntent);
 
+        // 6. Start foreground service
+        Intent serviceIntent = new Intent(this, EndlessService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+
+        // 7. Update UI
         Toast.makeText(this, R.string.service_started, Toast.LENGTH_SHORT).show();
         updateServiceButtonStates();
+
+        // 8. Show status dialog
+        showServiceStartedDialog();
     }
 
+
+    /**
+     * Cancel scheduled service restart alarm
+     */
+    private void cancelServiceRestartAlarm() {
+        Intent restartIntent = new Intent(getApplicationContext(), EndlessService.ServiceRestartReceiver.class);
+        restartIntent.setAction("RESTART_SERVICE");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(),
+                1,
+                restartIntent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+            Log.d(TAG, "Cancelled service restart alarm");
+        }
+    }
+    /**
+     * Stop the service (updated method)
+     */
     public void stopService(View v) {
+        // 1. Disable service in preferences (CRITICAL - prevents auto-restart)
         ReceiveSms.disableService(this);
+
+        // 2. Stop the foreground service
         stopService(new Intent(this, EndlessService.class));
+
+        // 3. Cancel any pending restart alarms
+        cancelServiceRestartAlarm();
+
+        // 4. Update UI
         Toast.makeText(this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
         updateServiceButtonStates();
     }
+
 
     private void updateServiceButtonStates() {
         boolean enabled = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE)
@@ -365,12 +443,33 @@ public class MainActivity extends BaseActivity {
                 .show();
     }
 
+    /**
+     * Check and warn about battery optimization
+     */
+    private void checkBatteryOptimizationStatus() {
+        SharedPreferences prefs = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE);
+        boolean serviceEnabled = prefs.getBoolean("service_enabled", false);
+
+        // Only check if service is running
+        if (serviceEnabled && !BatteryOptimizationHelper.isBatteryOptimizationDisabled(this)) {
+            // Show warning that service might be killed
+            Toast.makeText(this,
+                    getString(R.string.battery_optimization_warning),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+    /**
+     * Add this to onResume to check service status
+     */
     @Override
     protected void onResume() {
         super.onResume();
         updateCreditsDisplay();
         updateServiceButtonStates();
         loadLogs();
+
+        // Show battery optimization warning if not disabled
+        checkBatteryOptimizationStatus();
     }
 
     @Override

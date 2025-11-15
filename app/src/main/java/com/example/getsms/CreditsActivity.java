@@ -3,6 +3,8 @@ package com.example.getsms;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +21,7 @@ import com.example.getsms.credit.CreditManager;
 public class CreditsActivity extends BaseActivity {
 
     private TextView tvCredits;
-    private TextView tvDeviceId;
+//    private TextView tvDeviceId;
     private TextView tvAdStats;
     private TextView tvCooldownTimer;
     private Button btnWatchAd;
@@ -45,7 +47,7 @@ public class CreditsActivity extends BaseActivity {
 
         // Initialize views
         tvCredits = findViewById(R.id.tvCredits);
-        tvDeviceId = findViewById(R.id.tvDeviceId);
+//        tvDeviceId = findViewById(R.id.tvDeviceId);
         tvAdStats = findViewById(R.id.tvAdStats);
         tvCooldownTimer = findViewById(R.id.tvCooldownTimer);
         btnWatchAd = findViewById(R.id.btnWatchAd);
@@ -54,7 +56,7 @@ public class CreditsActivity extends BaseActivity {
 
         // Display current info
         updateDisplay();
-        tvDeviceId.setText("Device ID: " + creditManager.getDeviceId());
+//        tvDeviceId.setText("Device ID: " + creditManager.getDeviceId());
 
         // Initialize ads
         adsManager.initialize();
@@ -100,7 +102,7 @@ public class CreditsActivity extends BaseActivity {
 
         if (!adReady) {
             btnWatchAd.setEnabled(false);
-            btnWatchAd.setText("Loading Ad...");
+            btnWatchAd.setText(R.string.loading_ad);
         } else if (!canWatch) {
             btnWatchAd.setEnabled(false);
             long cooldown = creditManager.getAdCooldownRemaining();
@@ -111,7 +113,7 @@ public class CreditsActivity extends BaseActivity {
             }
         } else {
             btnWatchAd.setEnabled(true);
-            btnWatchAd.setText("Watch Ad (+5 Credits)");
+            btnWatchAd.setText(R.string.watch_ad);
         }
     }
 
@@ -154,12 +156,16 @@ public class CreditsActivity extends BaseActivity {
                     progressBar.setVisibility(View.GONE);
                     updateDisplay();
 
+                    int earned = credits;
+                    int total = creditManager.getCredits();
+
+                    String message = getString(R.string.credits_earned, earned, total);
+
                     // Show success message
                     new AlertDialog.Builder(CreditsActivity.this)
-                            .setTitle("Reward Earned!")
-                            .setMessage("You earned +" + credits + " credits!\n\nTotal credits: " +
-                                    creditManager.getCredits())
-                            .setPositiveButton("OK", null)
+                            .setTitle(R.string.reward_earned)
+                            .setMessage(message)
+                            .setPositiveButton(R.string.ok, null)
                             .show();
 
                     // Start cooldown timer
@@ -186,25 +192,25 @@ public class CreditsActivity extends BaseActivity {
 
     private void showTokenRedemptionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Redeem Credit Token");
-        builder.setMessage("Enter the token code provided by the administrator:");
+        builder.setTitle(R.string.redeem_credit_token);
+        builder.setMessage(R.string.enter_token);
 
         final EditText input = new EditText(this);
-        input.setHint("XXXX-XXXX-XXXX-XXXX");
+        input.setHint("XXXXXXXXX");
         builder.setView(input);
 
-        builder.setPositiveButton("Redeem", (dialog, which) -> {
+        builder.setPositiveButton(R.string.redeem, (dialog, which) -> {
             String token = input.getText().toString().trim();
             if (token.isEmpty()) {
-                Toast.makeText(this, "Please enter a valid token", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.please_enter_valid_token, Toast.LENGTH_SHORT).show();
                 return;
             }
             redeemToken(token);
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(R.string.cancel, null);
 
-        builder.setNeutralButton("Need Credits?", (dialog, which) -> {
+        builder.setNeutralButton(R.string.need_credits_message, (dialog, which) -> {
             showContactAdminDialog();
         });
 
@@ -224,9 +230,9 @@ public class CreditsActivity extends BaseActivity {
                     updateDisplay();
 
                     new AlertDialog.Builder(CreditsActivity.this)
-                            .setTitle("Token Redeemed!")
-                            .setMessage("Credits added successfully!\n\nYour new balance: " + totalCredits)
-                            .setPositiveButton("OK", null)
+                            .setTitle(R.string.token_redeemed)
+                            .setMessage(R.string.credits_added + totalCredits)
+                            .setPositiveButton(R.string.ok, null)
                             .show();
                 });
             }
@@ -238,10 +244,10 @@ public class CreditsActivity extends BaseActivity {
                     btnRedeemToken.setEnabled(true);
 
                     new AlertDialog.Builder(CreditsActivity.this)
-                            .setTitle("Redemption Failed")
+                            .setTitle(R.string.redemption_failed)
                             .setMessage(error)
-                            .setPositiveButton("OK", null)
-                            .setNeutralButton("Contact Admin", (d, w) -> showContactAdminDialog())
+                            .setPositiveButton(R.string.ok, null)
+                            .setNeutralButton(R.string.contact_admin, (d, w) -> showContactAdminDialog())
                             .show();
                 });
             }
@@ -249,25 +255,19 @@ public class CreditsActivity extends BaseActivity {
     }
 
     private void showContactAdminDialog() {
-        String deviceId = creditManager.getDeviceId();
-        String message = "To purchase more credits:\n\n" +
-                "1. Contact the administrator\n" +
-                "2. Provide your Device ID:\n   " + deviceId + "\n" +
-                "3. Receive your token code\n" +
-                "4. Enter the code in the app\n\n" +
-                "Device ID has been copied to clipboard!";
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.ok)
+                .setMessage(Html.fromHtml(getString(R.string.contact_admin)))
+                .setPositiveButton(R.string.ok, null)
+                .create();
 
-        // Copy device ID to clipboard
-        android.content.ClipboardManager clipboard =
-                (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        android.content.ClipData clip = android.content.ClipData.newPlainText("Device ID", deviceId);
-        clipboard.setPrimaryClip(clip);
+        dialog.show();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Need More Credits?")
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
+        // فعال‌سازی کلیک روی لینک
+        TextView messageView = dialog.findViewById(android.R.id.message);
+        if (messageView != null) {
+            messageView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
     }
 
     private void showInfoDialog() {

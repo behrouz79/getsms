@@ -43,7 +43,7 @@ public class CreditManager {
 
     // Ad watch limits (optional - prevent abuse)
     private static final int MAX_ADS_PER_DAY = 50;
-    private static final long AD_COOLDOWN_MS = 30000; // 30 seconds between ads
+    private static final long AD_COOLDOWN_MS = 3000; // 30 seconds between ads
 
     private final Context context;
     private final SharedPreferences prefs;

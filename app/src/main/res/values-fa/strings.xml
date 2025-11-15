@@ -46,7 +46,7 @@
     <string name="token_redeemed">توکن استفاده شد!</string>
     <string name="credits_added">اعتبار با موفقیت اضافه شد!\n\nموجودی جدید: %d</string>
     <string name="redemption_failed">استفاده ناموفق</string>
-    <string name="contact_admin">تماس با مدیر</string>
+    <string name="contact_admin">تماس با مدیر :&lt;a href="https://t.me/amiri_sup"&gt;https://t.me/amiri_sup&lt;/a&gt;</string>
     <string name="credit_info">• هر پیامک ۱ اعتبار می‌خواهد\n• تبلیغات تماشا کنید تا اعتبار دریافت کنید\n• برای خرید عمده با مدیر تماس بگیرید</string>
 
     <!-- Rules Activity -->
@@ -168,5 +168,59 @@
     <string name="select_transform_type_help">نوع تبدیل را برای مشاهده مثال‌ها انتخاب کنید.</string>
     <string name="enter_destination">لطفا مقصد را وارد کنید</string>
     <string name="enter_bot_token_chat_id">لطفا توکن ربات و شناسه چت را وارد کنید</string>
-    <string name="permissions_required_header">permissions_required_header</string>
+    <string name="permissions_required_header">سربرگ مجوزهای مورد نیاز</string>
+
+    <!-- ============================================ -->
+    <!-- PERSISTENT SERVICE - LOG MESSAGES -->
+    <!-- ============================================ -->
+    <string name="log_service_created">🚀 سرویس ایجاد شد</string>
+    <string name="log_on_start_command">📱 فرمان شروع فراخوانی شد</string>
+    <string name="log_service_disabled_by_user">⚠️ سرویس توسط کاربر غیرفعال شد، در حال توقف…</string>
+    <string name="log_service_started_foreground">✅ سرویس در پیش‌زمینه شروع شد</string>
+    <string name="log_service_destroyed">⚠️ سرویس از بین رفت</string>
+    <string name="log_service_scheduling_restart">🔄 سرویس هنوز فعال است، برنامه‌ریزی راه‌اندازی مجدد…</string>
+    <string name="log_service_stopped_by_user">✅ سرویس به درستی توسط کاربر متوقف شد</string>
+    <string name="log_task_removed">🗑️ وظیفه حذف شد (برنامه از لیست اخیر پاک شد)</string>
+    <string name="log_restarting_after_task_removal">🔄 راه‌اندازی مجدد سرویس پس از حذف وظیفه…</string>
+    <string name="log_service_restart_scheduled">⏰ راه‌اندازی مجدد سرویس از طریق AlarmManager برنامه‌ریزی شد</string>
+    <string name="log_wake_lock_acquired">🔋 قفل بیداری دریافت شد</string>
+    <string name="log_wake_lock_released">🔋 قفل بیداری آزاد شد</string>
+    <string name="log_screen_receiver_registered">📱 گیرنده صفحه ثبت شد</string>
+    <string name="log_screen_receiver_unregistered">📱 ثبت گیرنده صفحه لغو شد</string>
+    <string name="log_service_restart_receiver">🔄 گیرنده راه‌اندازی مجدد سرویس فعال شد</string>
+    <string name="log_service_should_run">✅ سرویس باید در حال اجرا باشد، راه‌اندازی مجدد…</string>
+    <string name="log_service_disabled_not_restarting">⚠️ سرویس غیرفعال است، راه‌اندازی مجدد نمی‌شود</string>
+
+    <!-- ============================================ -->
+    <!-- BOOT RECEIVER - LOG MESSAGES -->
+    <!-- ============================================ -->
+    <string name="log_boot_receiver_triggered">📱 گیرنده راه‌اندازی فعال شد</string>
+    <string name="log_service_enabled_before_reboot">✅ سرویس قبل از راه‌اندازی مجدد فعال بود، در حال شروع…</string>
+    <string name="log_service_started_successfully">✅ سرویس با موفقیت شروع شد</string>
+    <string name="log_service_disabled_before_reboot">⚠️ سرویس قبل از راه‌اندازی مجدد غیرفعال بود، شروع نمی‌شود</string>
+
+    <!-- ============================================ -->
+    <!-- BATTERY OPTIMIZATION -->
+    <!-- ============================================ -->
+    <string name="battery_optimization">بهینه‌سازی باتری</string>
+    <string name="battery_optimization_message">برای حفظ سرویس ارسال پیامک به صورت مداوم، لطفاً بهینه‌سازی باتری را برای این برنامه غیرفعال کنید.\n\nبدون این کار، اندروید ممکن است سرویس را برای صرفه‌جویی در باتری متوقف کند.\n\nاین برای عملکرد صحیح برنامه ضروری است.</string>
+    <string name="disable_optimization">غیرفعال کردن بهینه‌سازی</string>
+    <string name="skip">رد شدن</string>
+    <string name="battery_optimization_disabled_good">✅ بهینه‌سازی باتری غیرفعال است (خوب!)</string>
+    <string name="battery_optimization_enabled_warning">⚠️ بهینه‌سازی باتری فعال است (سرویس ممکن است متوقف شود!)</string>
+    <string name="battery_optimization_not_applicable">ℹ️ بهینه‌سازی باتری قابل اعمال نیست</string>
+    <string name="battery_optimization_required">بهینه‌سازی باتری مورد نیاز است</string>
+    <string name="battery_optimization_explanation">برای حفظ سرویس ارسال پیامک به صورت مداوم، بهینه‌سازی باتری باید غیرفعال شود.\n\nبدون این کار:\n• اندروید سرویس را برای صرفه‌جویی در باتری متوقف می‌کند\n• ارسال پیامک متوقف می‌شود\n• سرویس از بسته شدن برنامه جان نمی‌برد\n\nاین یک الزام سیستمی برای سرویس‌های پس‌زمینه پایدار است.</string>
+    <string name="battery_optimization_warning">⚠️ بهینه‌سازی باتری فعال است - سرویس ممکن است متوقف شود!</string>
+
+    <!-- ============================================ -->
+    <!-- SERVICE STATUS MESSAGES -->
+    <!-- ============================================ -->
+    <string name="service_started_title">✅ سرویس شروع شد</string>
+    <string name="service_started_message">سرویس ارسال پیامک اکنون در پس‌زمینه در حال اجرا است.\n\n%1$s\n\nسرویس حتی در صورت:\n• بستن برنامه\n• پاک کردن از لیست برنامه‌های اخیر\n• راه‌اندازی مجدد دستگاه\n\nبه کار خود ادامه خواهد داد.\n\nبرای متوقف کردن سرویس، از دکمه \'توقف سرویس\' در این برنامه استفاده کنید.</string>
+    <string name="continue_text">ادامه</string>
+    <string name="service_started_persistent">سرویس شروع شد (پایدار)</string>
+    <string name="service_running_background">در حال اجرا در پس‌زمینه</string>
+    <string name="service_will_survive">از بستن برنامه و راه‌اندازی مجدد دستگاه جان می‌برد</string>
+    <string name="more_credits_message">\"To purchase more credits:\\n\\n\" +\n                \"1. Contact the administrator\\n\" +\n                \"3. Receive your token code\\n\" +\n                \"4. Enter the code in the app\\n\\n\"</string>
 </resources>

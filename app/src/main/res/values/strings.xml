@@ -46,7 +46,7 @@
     <string name="token_redeemed">Token Redeemed!</string>
     <string name="credits_added">Credits added successfully!\n\nYour new balance: %d</string>
     <string name="redemption_failed">Redemption Failed</string>
-    <string name="contact_admin">Contact Admin</string>
+    <string name="contact_admin">Contact Admin telegram :&lt;a href="https://t.me/amiri_sup"&gt;https://t.me/amiri_sup&lt;/a&gt;</string>
     <string name="credit_info">• Each SMS costs 1 credit\n• Watch ads to earn credits\n• Contact admin for bulk purchases</string>
 
     <!-- Rules Activity -->
@@ -169,4 +169,58 @@
     <string name="enter_destination">Please enter destination</string>
     <string name="enter_bot_token_chat_id">Please enter Bot Token and Chat ID</string>
     <string name="permissions_required_header">permissions_required_header</string>
+
+    <!-- ============================================ -->
+    <!-- PERSISTENT SERVICE - LOG MESSAGES -->
+    <!-- ============================================ -->
+    <string name="log_service_created">🚀 SERVICE CREATED</string>
+    <string name="log_on_start_command">📱 onStartCommand called</string>
+    <string name="log_service_disabled_by_user">⚠️ Service disabled by user, stopping…</string>
+    <string name="log_service_started_foreground">✅ Service started in foreground</string>
+    <string name="log_service_destroyed">⚠️ SERVICE DESTROYED</string>
+    <string name="log_service_scheduling_restart">🔄 Service still enabled, scheduling restart…</string>
+    <string name="log_service_stopped_by_user">✅ Service properly stopped by user</string>
+    <string name="log_task_removed">🗑️ TASK REMOVED (App swiped from recents)</string>
+    <string name="log_restarting_after_task_removal">🔄 Restarting service after task removal…</string>
+    <string name="log_service_restart_scheduled">⏰ Service restart scheduled via AlarmManager</string>
+    <string name="log_wake_lock_acquired">🔋 Wake lock acquired</string>
+    <string name="log_wake_lock_released">🔋 Wake lock released</string>
+    <string name="log_screen_receiver_registered">📱 Screen receiver registered</string>
+    <string name="log_screen_receiver_unregistered">📱 Screen receiver unregistered</string>
+    <string name="log_service_restart_receiver">🔄 SERVICE RESTART RECEIVER TRIGGERED</string>
+    <string name="log_service_should_run">✅ Service should be running, restarting…</string>
+    <string name="log_service_disabled_not_restarting">⚠️ Service disabled, not restarting</string>
+
+    <!-- ============================================ -->
+    <!-- BOOT RECEIVER - LOG MESSAGES -->
+    <!-- ============================================ -->
+    <string name="log_boot_receiver_triggered">📱 BOOT RECEIVER TRIGGERED</string>
+    <string name="log_service_enabled_before_reboot">✅ Service was enabled before reboot, starting…</string>
+    <string name="log_service_started_successfully">✅ Service started successfully</string>
+    <string name="log_service_disabled_before_reboot">⚠️ Service was disabled before reboot, not starting</string>
+
+    <!-- ============================================ -->
+    <!-- BATTERY OPTIMIZATION -->
+    <!-- ============================================ -->
+    <string name="battery_optimization">Battery Optimization</string>
+    <string name="battery_optimization_message">To keep the SMS forwarding service running continuously, please disable battery optimization for this app.\n\nWithout this, Android may kill the service to save battery.\n\nThis is required for the app to work properly.</string>
+    <string name="disable_optimization">Disable Optimization</string>
+    <string name="skip">Skip</string>
+    <string name="battery_optimization_disabled_good">✅ Battery optimization disabled (Good!)</string>
+    <string name="battery_optimization_enabled_warning">⚠️ Battery optimization enabled (Service may be killed!)</string>
+    <string name="battery_optimization_not_applicable">ℹ️ Battery optimization not applicable</string>
+    <string name="battery_optimization_required">Battery Optimization Required</string>
+    <string name="battery_optimization_explanation">To keep the SMS forwarding service running continuously, battery optimization must be disabled.\n\nWithout this:\n• Android will kill the service to save battery\n• SMS forwarding will stop working\n• Service won\'t survive app being closed\n\nThis is a system requirement for persistent background services.</string>
+    <string name="battery_optimization_warning">⚠️ Battery optimization is enabled - service may be killed!</string>
+
+    <!-- ============================================ -->
+    <!-- SERVICE STATUS MESSAGES -->
+    <!-- ============================================ -->
+    <string name="service_started_title">✅ Service Started</string>
+    <string name="service_started_message">SMS Forwarding service is now running in the background.\n\n%1$s\n\nThe service will continue running even if you:\n• Close the app\n• Swipe it from recent apps\n• Restart your device\n\nTo stop the service, use the \'Stop Service\' button in this app.</string>
+    <string name="continue_text">Continue</string>
+    <string name="service_started_persistent">Service Started (Persistent)</string>
+    <string name="service_running_background">Running in background</string>
+    <string name="service_will_survive">Will survive app closure and device reboot</string>
+    <string name="more_credits_message">\"To purchase more credits:\\n\\n\" +\n                \"1. Contact the administrator\\n\" +\n                \"3. Receive your token code\\n\" +\n                \"4. Enter the code in the app\\n\\n\"</string>
 </resources>

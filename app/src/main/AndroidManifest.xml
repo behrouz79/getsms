@@ -38,9 +38,16 @@
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <!-- ============================================ -->
-    <!-- WAKE LOCK (Optional - for background processing) -->
+    <!-- CRITICAL: PERSISTENT SERVICE PERMISSIONS -->
     <!-- ============================================ -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.QUICKBOOT_POWERON" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Alarm for service restart -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:name=".App"
@@ -107,12 +114,43 @@
         </receiver>
 
         <!-- ============================================ -->
-        <!-- FOREGROUND SERVICE -->
+        <!-- BOOT RECEIVER - Starts service after reboot -->
+        <!-- ============================================ -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============================================ -->
+        <!-- SERVICE RESTART RECEIVER - Auto-restarts service if killed -->
+        <!-- ============================================ -->
+        <receiver
+            android:name=".EndlessService$ServiceRestartReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="RESTART_SERVICE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============================================ -->
+        <!-- PERSISTENT FOREGROUND SERVICE -->
+        <!-- stopWithTask="false" is CRITICAL - prevents service from stopping when app closes -->
         <!-- ============================================ -->
         <service
             android:name=".EndlessService"
-            android:foregroundServiceType="dataSync"
-            android:exported="false" />
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="dataSync" />
 
     </application>
 
