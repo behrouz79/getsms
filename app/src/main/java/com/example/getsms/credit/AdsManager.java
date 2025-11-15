@@ -54,6 +54,14 @@ public class AdsManager {
     private boolean isTapsellLoading = false;
     private boolean isTapsellInitialized = false;
 
+    // Ad load listener (new)
+    public interface AdLoadListener {
+        void onAdLoaded(); // called when any ad (AdMob or Tapsell) becomes available
+        void onAdFailed(String error); // called on load/show failure
+    }
+
+    private AdLoadListener adLoadListener;
+
     // Callbacks
     public interface AdRewardCallback {
         void onRewarded(int credits);
@@ -63,6 +71,13 @@ public class AdsManager {
     public AdsManager(Context context, CreditManager creditManager) {
         this.context = context.getApplicationContext();
         this.creditManager = creditManager;
+    }
+
+    /**
+     * Set listener to be notified when an ad is loaded or fails
+     */
+    public void setAdLoadListener(AdLoadListener listener) {
+        this.adLoadListener = listener;
     }
 
     /**
@@ -102,12 +117,16 @@ public class AdsManager {
             public void onInitializeSuccess(AdNetworks adNetworks) {
                 Log.d(TAG, "Tapsell initialized successfully with: " + adNetworks.name());
                 isTapsellInitialized = true;
+                // Note: Tapsell needs an Activity to load rewarded ads, so we don't auto-load here.
             }
 
             @Override
             public void onInitializeFailed(AdNetworks adNetworks, AdNetworkError adNetworkError) {
                 Log.e(TAG, "Tapsell initialization failed: " + adNetworkError.getErrorMessage());
                 isTapsellInitialized = false;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("Tapsell init failed: " + adNetworkError.getErrorMessage());
+                }
             }
         });
     }
@@ -142,6 +161,9 @@ public class AdsManager {
                 Log.e(TAG, "AdMob ad failed to load: " + loadAdError.getMessage());
                 rewardedAd = null;
                 isAdMobLoading = false;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("AdMob load failed: " + loadAdError.getMessage());
+                }
             }
 
             @Override
@@ -149,6 +171,9 @@ public class AdsManager {
                 Log.d(TAG, "AdMob ad loaded successfully");
                 rewardedAd = ad;
                 isAdMobLoading = false;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdLoaded();
+                }
             }
         });
     }
@@ -182,6 +207,9 @@ public class AdsManager {
                 Log.d(TAG, "Tapsell ad loaded successfully");
                 tapsellResponseId = tapsellPlusAdModel.getResponseId();
                 isTapsellLoading = false;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdLoaded();
+                }
             }
 
             @Override
@@ -189,6 +217,9 @@ public class AdsManager {
                 Log.e(TAG, "Tapsell ad failed to load: " + errorMessage);
                 tapsellResponseId = null;
                 isTapsellLoading = false;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("Tapsell load failed: " + errorMessage);
+                }
             }
         });
     }
@@ -209,6 +240,10 @@ public class AdsManager {
             public void onAdDismissedFullScreenContent() {
                 Log.d(TAG, "AdMob ad was dismissed");
                 rewardedAd = null;
+                // Notify UI that ad no longer available (so UI may show loading)
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("Ad dismissed, loading next...");
+                }
                 loadAdMobRewardedAd(); // Load next ad
             }
 
@@ -217,6 +252,9 @@ public class AdsManager {
                 Log.e(TAG, "AdMob ad failed to show: " + adError.getMessage());
                 rewardedAd = null;
                 callback.onAdFailed("Failed to show ad");
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("AdMob show failed: " + adError.getMessage());
+                }
                 loadAdMobRewardedAd();
             }
 
@@ -269,6 +307,9 @@ public class AdsManager {
             public void onClosed(TapsellPlusAdModel tapsellPlusAdModel) {
                 Log.d(TAG, "Tapsell ad closed");
                 tapsellResponseId = null;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("Tapsell ad closed, loading next...");
+                }
                 loadTapsellRewardedAd(activity); // Load next ad
             }
 
@@ -296,6 +337,9 @@ public class AdsManager {
                 Log.e(TAG, "Tapsell ad error: " + tapsellPlusErrorModel.getErrorMessage());
                 callback.onAdFailed("Failed to show ad: " + tapsellPlusErrorModel.getErrorMessage());
                 tapsellResponseId = null;
+                if (adLoadListener != null) {
+                    adLoadListener.onAdFailed("Tapsell show error: " + tapsellPlusErrorModel.getErrorMessage());
+                }
                 loadTapsellRewardedAd(activity);
             }
         });
@@ -344,6 +388,9 @@ public class AdsManager {
             callback.onAdFailed("No ads available. Please try again in a moment.");
             // Try to load both
             preloadAds(activity);
+            if (adLoadListener != null) {
+                adLoadListener.onAdFailed("No ads available");
+            }
         }
     }
 

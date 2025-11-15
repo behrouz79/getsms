@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.example.getsms.R;
 import com.example.getsms.credit.CreditManager;
 import com.example.getsms.model.Action;
 import com.example.getsms.model.SmsLog;
@@ -160,7 +161,7 @@ public class ActionExecutor {
         backupAction.destination = action.backupDestination;
         backupAction.template = action.backupTemplate != null ?
                 action.backupTemplate :
-                "⚠️ Primary action failed. Original message: {message}";
+                context.getString(R.string.primary_action_failed);
         backupAction.enableRetry = action.retryBackup;
         backupAction.maxRetries = action.retryBackup ? 2 : 0;
         backupAction.retryDelaySeconds = 5;

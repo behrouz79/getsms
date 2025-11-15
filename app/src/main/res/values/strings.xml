@@ -223,4 +223,80 @@
     <string name="service_running_background">Running in background</string>
     <string name="service_will_survive">Will survive app closure and device reboot</string>
     <string name="more_credits_message">\"To purchase more credits:\\n\\n\" +\n                \"1. Contact the administrator\\n\" +\n                \"3. Receive your token code\\n\" +\n                \"4. Enter the code in the app\\n\\n\"</string>
+    <string name="enter_backup_telegram_chat_id">Please enter backup Telegram chat ID</string>
+    <string name="enter_backup_phone_number">\"Please enter backup phone number\"</string>
+
+
+    <string name="transform_extract_lines">Extract specific lines.\nExample: 1,2,3 (extracts lines 1, 2, and 3)\n\nYour example:\nReceive: Line1\nLine2\nLine3\nLine4\nPattern: 1,2\nResult: Line1\nLine2</string>
+
+    <string name="transform_remove_lines">Remove specific lines.\nExample: 3,4 (removes lines 3 and 4)\n\nYour example:\nReceive: Line1\nLine2\nBalance: 757\nLine4\nPattern: 3\nResult: Line1\nLine2\nLine4</string>
+
+    <string name="transform_extract_pattern">Extract text matching regex.\nExample: حساب\\d+ (extracts account number)\n\nYour example:\nReceive: حساب5694541931\nبرداشت100,000\nPattern: حساب\\d+|برداشت[\\d,]+\nResult: حساب5694541931\nبرداشت100,000</string>
+
+    <string name="transform_remove_pattern">Remove text matching regex.\nExample: موجودی:.* (removes balance line)\n\nYour example:\nReceive: بلو\nانتقال پل\nموجودی: 757 ریال\nPattern: موجودی:.*\nResult: بلو\nانتقال پل</string>
+
+    <string name="transform_replace_pattern">Replace text matching regex.\nFormat: pattern|replacement\nExample: موجودی:.*| (replaces balance with nothing)</string>
+
+    <string name="transform_keep_until">Keep text until pattern found.\nExample: موجودی (keeps everything before موجودی)</string>
+
+    <string name="transform_keep_after">Keep text after pattern found.\nExample: حساب (keeps from حساب onwards)</string>
+
+    <string name="transform_remove_after">Remove text after pattern found.\nExample: موجودی (removes from موجودی onwards)\n\nYour example:\nReceive: بلو\nانتقال پل\nموجودی: 757\nPattern: موجودی\nResult: بلو\nانتقال پل</string>
+
+    <string name="transform_default">Select a transform type to see examples.</string>
+    <string name="not_required_for_telegram">not required for telegram</string>
+
+    <string name="retry_immediate">
+        Retry immediately without delay.
+
+        Example: 3 retries = instant, instant, instant
+
+        Use for: Quick operations that might fail due to temporary issues
+    </string>
+
+    <string name="retry_exponential_backoff">
+        Double the wait time between each retry.
+
+        Example: 5s → 10s → 20s → 40s
+
+        Use for: Network requests, API calls (recommended)
+    </string>
+
+    <string name="retry_fixed_delay">
+        Wait the same amount of time between each retry.
+
+        Example: 5s → 5s → 5s
+
+        Use for: Simple operations with predictable recovery time
+    </string>
+
+    <string name="sim_any">Any</string>
+    <string name="sim_1">SIM1</string>
+    <string name="sim_2">SIM2</string>
+    <string name="sim_both">Both</string>
+
+    <string name="any">Any</string>
+    <string name="equals">Equals</string>
+    <string name="contains">Contains</string>
+    <string name="starts_with">Starts With</string>
+    <string name="regex">Regex</string>
+
+    <string name="webhook">Webhook</string>
+    <string name="sms">SMS</string>
+    <string name="telegram">Telegram</string>
+
+    <string name="extract_lines">Extract Lines</string>
+    <string name="remove_lines">Remove Lines</string>
+    <string name="extract_pattern">Extract Pattern</string>
+    <string name="remove_pattern">Remove Pattern</string>
+    <string name="replace_pattern">Replace Pattern</string>
+    <string name="keep_until">Keep Until</string>
+    <string name="keep_after">Keep After</string>
+    <string name="remove_after">Remove After</string>
+
+    <string name="fixed_delay">Fixed Delay</string>
+    <string name="exponential_backoff">Exponential Backoff</string>
+    <string name="immediate">Immediate</string>
+    <string name="see_examples_below">see examples below</string>
+    <string name="primary_action_failed">⚠️ Primary action failed: {message}</string>
 </resources>

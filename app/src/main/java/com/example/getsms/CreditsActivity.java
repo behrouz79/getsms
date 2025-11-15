@@ -42,6 +42,27 @@ public class CreditsActivity extends BaseActivity {
         creditManager = new CreditManager(this);
         adsManager = new AdsManager(this, creditManager);
 
+        adsManager.setAdLoadListener(new AdsManager.AdLoadListener() {
+            @Override
+            public void onAdLoaded() {
+                runOnUiThread(() -> {
+                    updateDisplay();
+                    progressBar.setVisibility(View.GONE);
+                });
+            }
+
+            @Override
+            public void onAdFailed(String error) {
+                runOnUiThread(() -> {
+                    // update UI so the "Loading..." state is cleared and show a short toast for debug
+                    updateDisplay();
+                    progressBar.setVisibility(View.GONE);
+                    // optional debug toast:
+                    // Toast.makeText(CreditsActivity.this, "Ad load failed: " + error, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+
         // Set backend URL (only for token redemption)
         creditManager.setBackendUrl("https://smsforwarder.amiriprog.ir/api/");
 

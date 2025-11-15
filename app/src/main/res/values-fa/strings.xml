@@ -223,4 +223,84 @@
     <string name="service_running_background">در حال اجرا در پس‌زمینه</string>
     <string name="service_will_survive">از بستن برنامه و راه‌اندازی مجدد دستگاه جان می‌برد</string>
     <string name="more_credits_message">\"To purchase more credits:\\n\\n\" +\n                \"1. Contact the administrator\\n\" +\n                \"3. Receive your token code\\n\" +\n                \"4. Enter the code in the app\\n\\n\"</string>
+    <string name="enter_backup_telegram_chat_id">چت ایدی بکاپ را وارد کنید</string>
+    <string name="enter_backup_phone_number">شماره تلفن بکاپ را وارد کنید</string>
+
+    <string name="transform_extract_lines">استخراج خطوط مشخص.\nمثال: 1،2،3 (استخراج خطوط ۱ و ۲ و ۳)\n\nنمونه شما:\nمتن ورودی: Line1\nLine2\nLine3\nLine4\nالگو: 1,2\nنتیجه: Line1\nLine2</string>
+
+    <string name="transform_remove_lines">حذف خطوط مشخص.\nمثال: 3،4 (خطوط ۳ و ۴ را حذف می‌کند)\n\nنمونه شما:\nمتن ورودی: Line1\nLine2\nموجودی: 757\nLine4\nالگو: 3\nنتیجه: Line1\nLine2\nLine4</string>
+
+    <string name="transform_extract_pattern">استخراج متن مطابق با regex.\nمثال: حساب\\d+ (استخراج شماره حساب)\n\nنمونه شما:\nمتن ورودی: حساب5694541931\nبرداشت100,000\nالگو: حساب\\d+|برداشت[\\d,]+\nنتیجه: حساب5694541931\nبرداشت100,000</string>
+
+    <string name="transform_remove_pattern">حذف متن مطابق با regex.\nمثال: موجودی:.* (حذف خط موجودی)\n\nنمونه شما:\nمتن ورودی: بلو\nانتقال پل\nموجودی: 757 ریال\nالگو: موجودی:.*\nنتیجه: بلو\nانتقال پل</string>
+
+    <string name="transform_replace_pattern">جایگزینی متن مطابق با regex.\nفرمت: pattern|replacement\nمثال: موجودی:.*|  (جایگزینی موجودی با مقدار خالی)</string>
+
+    <string name="transform_keep_until">نگه‌داشتن متن تا رسیدن به الگو.\nمثال: موجودی (همه چیز قبل از کلمه موجودی نگه داشته می‌شود)</string>
+
+    <string name="transform_keep_after">نگه‌داشتن متن بعد از الگو.\nمثال: حساب (متن از حساب به بعد نگه‌ می‌ماند)</string>
+
+    <string name="transform_remove_after">حذف متن بعد از الگو.\nمثال: موجودی (متن از موجودی به بعد حذف می‌شود)\n\nنمونه شما:\nمتن ورودی: بلو\nانتقال پل\nموجودی: 757\nالگو: موجودی\nنتیجه: بلو\nانتقال پل</string>
+
+    <string name="transform_default">برای مشاهده نمونه‌ها، نوع تبدیل را انتخاب کنید.</string>
+    <string name="not_required_for_telegram">برای تلگرام مورد نیاز نیست</string>
+
+    <string name="retry_immediate">
+        تلاش مجدد فوری بدون تأخیر.
+
+        مثال: ۳ بار تلاش = فوری، فوری، فوری
+
+        مناسب برای: عملیات سریع که ممکن است به دلیل خطاهای لحظه‌ای شکست بخورند
+    </string>
+
+    <string name="retry_exponential_backoff">
+        دو برابر شدن زمان انتظار در هر تلاش.
+
+        مثال: ۵ ثانیه → ۱۰ ثانیه → ۲۰ ثانیه → ۴۰ ثانیه
+
+        مناسب برای: درخواست‌های شبکه، API (توصیه‌شده)
+    </string>
+
+    <string name="retry_fixed_delay">
+        زمان انتظار ثابت در تمام تلاش‌ها.
+
+        مثال: ۵ ثانیه → ۵ ثانیه → ۵ ثانیه
+
+        مناسب برای: عملیات ساده با زمان بازیابی قابل پیش‌بینی
+    </string>
+
+    <!-- SIM Filter -->
+    <string name="sim_any">همه سیم کارت</string>
+    <string name="sim_1">سیم ۱</string>
+    <string name="sim_2">سیم ۲</string>
+    <string name="sim_both">هر دو</string>
+
+    <!-- Sender / Message Filter Types -->
+    <string name="any">همه</string>
+    <string name="equals">برابر با</string>
+    <string name="contains">شامل</string>
+    <string name="starts_with">شروع با</string>
+    <string name="regex">عبارت منظم (Regex)</string>
+
+    <!-- Action Types -->
+    <string name="webhook">Webhook</string>
+    <string name="sms">پیامک</string>
+    <string name="telegram">تلگرام</string>
+
+    <!-- Transform Types -->
+    <string name="extract_lines">استخراج خطوط</string>
+    <string name="remove_lines">حذف خطوط</string>
+    <string name="extract_pattern">استخراج با الگو</string>
+    <string name="remove_pattern">حذف با الگو</string>
+    <string name="replace_pattern">جایگزینی با الگو</string>
+    <string name="keep_until">نگه‌داشتن تا</string>
+    <string name="keep_after">نگه‌داشتن بعد از</string>
+    <string name="remove_after">حذف بعد از</string>
+
+    <!-- Retry Strategies -->
+    <string name="fixed_delay">تأخیر ثابت</string>
+    <string name="exponential_backoff">تأخیر افزایشی</string>
+    <string name="immediate">فوری</string>
+    <string name="see_examples_below">به مثال های زیر دقت کنید</string>
+    <string name="primary_action_failed"> ⚠️ رویداد اصلی اجرا نشده : {message}</string>
 </resources>

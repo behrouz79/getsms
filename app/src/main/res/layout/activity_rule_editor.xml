@@ -279,7 +279,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Transform Type"
+                        android:text="@string/transform_type"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginTop="8dp" />
@@ -293,7 +293,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Transform Pattern/Value"
+                        android:text="@string/transform_pattern"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginTop="12dp" />
@@ -302,7 +302,7 @@
                         android:id="@+id/etTransformPattern"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="See examples below"
+                        android:hint="@string/see_examples_below"
                         android:inputType="text" />
 
                     <!-- Help text -->
@@ -315,7 +315,7 @@
                         android:textColor="@android:color/darker_gray"
                         android:background="#FFFFFF"
                         android:padding="8dp"
-                        android:text="Select a transform type to see examples." />
+                        android:text="@string/select_transform_type_help" />
 
                     <!-- Test transformation button -->
                     <Button
@@ -323,7 +323,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Test Transformation"
+                        android:text="@string/test_transformation"
                         android:textSize="14sp"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
@@ -552,7 +552,7 @@
                             android:id="@+id/etBackupTemplate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="⚠️ Primary action failed: {message}"
+                            android:hint="@string/primary_action_failed"
                             android:inputType="textMultiLine"
                             android:lines="3" />
 
