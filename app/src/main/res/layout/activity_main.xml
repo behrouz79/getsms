@@ -51,31 +51,43 @@
         android:id="@+id/baseUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
-        android:weightSum="3"
+        android:weightSum="2"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:ignore="MissingConstraints">
 
-        <TextView
+        <Button
             android:id="@+id/tvCreditsDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:clickable="false"
+            android:enabled="false"
+            android:focusable="false"
+            android:fontFamily="@font/shabnam"
             android:gravity="center"
             android:text="@string/credits"
+            android:textColor="#000000"
             android:textSize="16sp"
             android:textStyle="bold" />
 
+
         <Button
             android:id="@+id/btnCredits"
-            android:text="@string/manage_credits"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:background="@drawable/btn_primary"
             android:fontFamily="@font/shabnam"
+            android:text="@string/manage_credits"
             android:textColor="@color/white" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -85,20 +97,21 @@
         app:layout_constraintTop_toBottomOf="@+id/baseUrl"
         tools:layout_editor_absoluteX="16dp">
 
-        <Button
-            android:id="@+id/btnRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/btn_primary"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/refresh"
-            android:textColor="@color/white" />
+<!--        <Button-->
+<!--            android:id="@+id/btnRefresh"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@drawable/btn_primary"-->
+<!--            android:fontFamily="@font/shabnam"-->
+<!--            android:text="@string/refresh"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:visibility="invisible"/>-->
 
-        <View
-            android:layout_width="8dp"
-            android:layout_height="1dp" />
+<!--        <View-->
+<!--            android:layout_width="8dp"-->
+<!--            android:layout_height="1dp" />-->
 
         <Button
             android:id="@+id/btnOpenRules"

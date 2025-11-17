@@ -38,7 +38,7 @@
     <string name="device_id">Device ID: %s</string>
     <string name="share_device_id">Share this ID with admin to purchase credits</string>
     <string name="reward_earned">Reward Earned!</string>
-    <string name="credits_earned">You earned +%d credits!\n\nTotal credits: %d</string>
+    <string name="credits_earned">You earned %d credits!\n\nTotal credits: %d \nAds remaining today: %d</string>
     <string name="redeem_credit_token">Redeem Credit Token</string>
     <string name="enter_token">Enter the token code provided by the administrator:</string>
     <string name="redeem">Redeem</string>

@@ -7,6 +7,7 @@
     android:padding="20dp">
 
     <TextView
+        android:fontFamily="@font/shabnam"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_language"
@@ -21,6 +22,7 @@
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:fontFamily="@font/shabnam"
             android:id="@+id/radioEnglish"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,6 +31,7 @@
             android:padding="12dp" />
 
         <RadioButton
+            android:fontFamily="@font/shabnam"
             android:id="@+id/radioPersian"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

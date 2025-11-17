@@ -23,6 +23,7 @@
             android:gravity="center_vertical">
 
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/tvSender"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -33,6 +34,7 @@
                 android:textColor="#333333" />
 
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/tvSimSlot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,6 +49,7 @@
                 android:layout_marginStart="8dp" />
 
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,6 +62,7 @@
 
         <!-- Message Body -->
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,6 +75,7 @@
 
         <!-- Date/Time -->
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,6 +86,7 @@
 
         <!-- Rule Info -->
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvRule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,6 +98,7 @@
 
         <!-- Actions Executed -->
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,6 +110,7 @@
 
         <!-- Transformation Info -->
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvTransform"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,6 +122,7 @@
 
         <!-- Credits Used -->
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvCredits"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

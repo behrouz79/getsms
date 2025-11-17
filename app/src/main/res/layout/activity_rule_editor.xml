@@ -21,6 +21,7 @@
 
             <!-- Header -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/create_edit_rule"
@@ -31,6 +32,7 @@
 
             <!-- Rule Name -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rule_name"
@@ -39,6 +41,7 @@
                 android:layout_marginTop="8dp" />
 
             <EditText
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/etRuleName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,6 +50,7 @@
 
             <!-- CONDITIONS SECTION -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/conditions"
@@ -58,6 +62,7 @@
 
             <!-- SIM Filter -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/sim_card"
@@ -66,6 +71,7 @@
                 android:layout_marginTop="8dp" />
 
             <Spinner
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/spinnerSim"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,6 +79,7 @@
 
             <!-- Sender Filter -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/sender_filter"
@@ -81,12 +88,14 @@
                 android:layout_marginTop="16dp" />
 
             <Spinner
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/spinnerSenderType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp" />
 
             <EditText
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/etSenderValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -95,6 +104,7 @@
 
             <!-- Message Filter -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/message_filter"
@@ -103,12 +113,14 @@
                 android:layout_marginTop="16dp" />
 
             <Spinner
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/spinnerMessageType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp" />
 
             <EditText
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/etMessageValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -117,6 +129,7 @@
 
             <!-- ACTIONS SECTION -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/actions"
@@ -128,6 +141,7 @@
 
             <!-- Current Actions List -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/current_actions"
@@ -146,6 +160,7 @@
 
             <!-- Action Form -->
             <TextView
+                android:fontFamily="@font/shabnam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/add_edit_action"
@@ -163,6 +178,7 @@
                 android:padding="12dp">
 
                 <TextView
+                    android:fontFamily="@font/shabnam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/action_type"
@@ -171,12 +187,14 @@
                     android:layout_marginTop="8dp" />
 
                 <Spinner
+                    android:fontFamily="@font/shabnam"
                     android:id="@+id/spinnerActionType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="48dp" />
 
                 <TextView
+                    android:fontFamily="@font/shabnam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/destination"
@@ -185,6 +203,7 @@
                     android:layout_marginTop="16dp" />
 
                 <EditText
+                    android:fontFamily="@font/shabnam"
                     android:id="@+id/etActionDestination"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -192,6 +211,7 @@
                     android:inputType="text" />
 
                 <TextView
+                    android:fontFamily="@font/shabnam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/message_template"
@@ -200,6 +220,7 @@
                     android:layout_marginTop="16dp" />
 
                 <EditText
+                    android:fontFamily="@font/shabnam"
                     android:id="@+id/etActionTemplate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -216,6 +237,7 @@
                     android:visibility="gone">
 
                     <TextView
+                        android:fontFamily="@font/shabnam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Telegram Bot Token"
@@ -224,6 +246,7 @@
                         android:layout_marginTop="16dp" />
 
                     <EditText
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/etBotToken"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -231,6 +254,7 @@
                         android:inputType="text" />
 
                     <TextView
+                        android:fontFamily="@font/shabnam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Telegram Chat ID"
@@ -239,6 +263,7 @@
                         android:layout_marginTop="8dp" />
 
                     <EditText
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/etChatId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -258,6 +283,7 @@
                     android:background="#CCCCCC" />
 
                 <androidx.appcompat.widget.SwitchCompat
+                    android:fontFamily="@font/shabnam"
                     android:id="@+id/switchEnableTransform"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -277,6 +303,7 @@
                     android:layout_marginTop="8dp">
 
                     <TextView
+                        android:fontFamily="@font/shabnam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/transform_type"
@@ -285,12 +312,14 @@
                         android:layout_marginTop="8dp" />
 
                     <Spinner
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/spinnerTransformType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="48dp" />
 
                     <TextView
+                        android:fontFamily="@font/shabnam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/transform_pattern"
@@ -299,6 +328,7 @@
                         android:layout_marginTop="12dp" />
 
                     <EditText
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/etTransformPattern"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -307,6 +337,7 @@
 
                     <!-- Help text -->
                     <TextView
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/tvTransformHelp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -319,6 +350,7 @@
 
                     <!-- Test transformation button -->
                     <Button
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/btnTestTransform"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -345,6 +377,7 @@
                         android:background="#CCCCCC" />
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/switchEnableRetry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -352,7 +385,7 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/purple_500"
-                        android:checked="true" />
+                        android:checked="false" />
 
                     <LinearLayout
                         android:id="@+id/retrySettings"
@@ -362,9 +395,10 @@
                         android:background="#EEEEEE"
                         android:padding="12dp"
                         android:layout_marginTop="8dp"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/retry_configuration"
@@ -374,6 +408,7 @@
 
                         <!-- Max Retries -->
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/max_retry_attempts"
@@ -396,6 +431,7 @@
                                 android:progress="3" />
 
                             <TextView
+                                android:fontFamily="@font/shabnam"
                                 android:id="@+id/tvMaxRetries"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -410,6 +446,7 @@
 
                         <!-- Retry Delay -->
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/retry_delay"
@@ -424,6 +461,7 @@
                             android:gravity="center_vertical">
 
                             <SeekBar
+                                android:fontFamily="@font/shabnam"
                                 android:id="@+id/seekBarRetryDelay"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -432,6 +470,7 @@
                                 android:progress="5" />
 
                             <TextView
+                                android:fontFamily="@font/shabnam"
                                 android:id="@+id/tvRetryDelay"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -446,6 +485,7 @@
 
                         <!-- Retry Strategy -->
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/retry_strategy"
@@ -454,12 +494,14 @@
                             android:layout_marginTop="12dp" />
 
                         <Spinner
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/spinnerRetryStrategy"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:minHeight="48dp" />
 
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/tvRetryStrategyHelp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -481,6 +523,7 @@
                         android:background="#CCCCCC" />
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/switchEnableBackup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -488,7 +531,7 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/purple_500"
-                        android:checked="true" />
+                        android:checked="false" />
 
                     <LinearLayout
                         android:id="@+id/backupSettings"
@@ -498,9 +541,10 @@
                         android:background="#FFF3E0"
                         android:padding="12dp"
                         android:layout_marginTop="8dp"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/backup_configuration"
@@ -510,6 +554,7 @@
 
                         <!-- Backup Type -->
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/backup_type"
@@ -518,6 +563,7 @@
                             android:layout_marginTop="8dp" />
 
                         <Spinner
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/spinnerBackupType"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -525,6 +571,7 @@
 
                         <!-- Backup Destination -->
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/backup_destination"
@@ -533,6 +580,7 @@
                             android:layout_marginTop="12dp" />
 
                         <EditText
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/etBackupDestination"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -541,6 +589,7 @@
 
                         <!-- Backup Template -->
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/backup_template"
@@ -549,6 +598,7 @@
                             android:layout_marginTop="12dp" />
 
                         <EditText
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/etBackupTemplate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -558,6 +608,7 @@
 
                         <!-- Backup Options -->
                         <CheckBox
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/cbBackupAfterAllRetries"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -566,12 +617,14 @@
                             android:checked="true" />
 
                         <CheckBox
+                            android:fontFamily="@font/shabnam"
                             android:id="@+id/cbRetryBackup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/retry_backup" />
 
                         <TextView
+                            android:fontFamily="@font/shabnam"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
@@ -592,6 +645,7 @@
                         android:background="#CCCCCC" />
 
                     <TextView
+                        android:fontFamily="@font/shabnam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/error_handling"
@@ -601,6 +655,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <CheckBox
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/cbContinueOnFailure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -608,6 +663,7 @@
                         android:checked="true" />
 
                     <CheckBox
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/cbNotifyOnFailure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -615,6 +671,7 @@
                         android:checked="true" />
 
                     <CheckBox
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/cbDetailedErrorLog"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -630,6 +687,7 @@
                     android:orientation="horizontal">
 
                     <Button
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/btnAddAction"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -638,6 +696,7 @@
                         android:textSize="14sp" />
 
                     <Button
+                        android:fontFamily="@font/shabnam"
                         android:id="@+id/btnCancelAction"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -652,6 +711,7 @@
             </LinearLayout>
 
             <Button
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

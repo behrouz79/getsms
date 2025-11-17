@@ -75,10 +75,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "========================================");
-        Log.d(TAG, "📱 SMS FORWARDER STARTED");
-        Log.d(TAG, "========================================");
-
         executorService = Executors.newSingleThreadExecutor();
 
         // Initialize AdMob
@@ -135,11 +131,11 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btnCredits).setOnClickListener(v ->
                 startActivity(new Intent(this, CreditsActivity.class)));
 
-        findViewById(R.id.btnRefresh).setOnClickListener(v -> {
-            loadLogs();
-            updateCreditsDisplay();
-            updateServiceButtonStates();
-        });
+//        findViewById(R.id.btnRefresh).setOnClickListener(v -> {
+//            loadLogs();
+//            updateCreditsDisplay();
+//            updateServiceButtonStates();
+//        });
 
         btnLanguage.setOnClickListener(v -> showLanguageDialog());
     }
@@ -147,7 +143,6 @@ public class MainActivity extends BaseActivity {
     private void checkAndRequestPermissions() {
         PermissionsHelper.logPermissionStates(this);
         if (PermissionsHelper.hasAllPermissions(this)) {
-            Log.d(TAG, "✅ All permissions granted");
             return;
         }
 

@@ -88,18 +88,18 @@ public class RulesActivity extends BaseActivity {
 
     private void deleteRule(Rule rule) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Delete Rule")
-                .setMessage("Are you sure you want to delete this rule?")
-                .setPositiveButton("Delete", (dialog, which) -> {
+                .setTitle(R.string.delete_rule)
+                .setMessage(R.string.delete_rule_confirm)
+                .setPositiveButton(R.string.delete, (dialog, which) -> {
                     executorService.execute(() -> {
                         db.ruleDao().deleteRule(rule);
                         runOnUiThread(() -> {
-                            Toast.makeText(this, "Rule deleted", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.delete_rule, Toast.LENGTH_SHORT).show();
                             loadRules();
                         });
                     });
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -111,7 +111,7 @@ public class RulesActivity extends BaseActivity {
 
             runOnUiThread(() -> {
                 Toast.makeText(this,
-                        rule.enabled ? "Rule enabled" : "Rule disabled",
+                        rule.enabled ? R.string.rule_enabled : R.string.rule_disabled,
                         Toast.LENGTH_SHORT).show();
                 loadRules();
             });

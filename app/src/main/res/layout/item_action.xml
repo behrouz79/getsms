@@ -16,6 +16,7 @@
         android:padding="12dp">
 
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvActionType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
             android:text="@string/action_type" />
 
         <TextView
+            android:fontFamily="@font/shabnam"
             android:id="@+id/tvDestination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,6 +50,7 @@
             android:orientation="horizontal">
 
             <Button
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/btnEditAction"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -57,6 +60,7 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
             <Button
+                android:fontFamily="@font/shabnam"
                 android:id="@+id/btnDeleteAction"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

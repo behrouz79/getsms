@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -31,6 +32,8 @@ public class CreditManager {
     private static final String KEY_DEVICE_ID = "device_id";
     private static final String KEY_TOTAL_ADS_WATCHED = "total_ads_watched";
     private static final String KEY_LAST_AD_TIME = "last_ad_time";
+    private static final String KEY_ADS_WATCHED_TODAY = "ads_watched_today";
+    private static final String KEY_LAST_RESET_DATE = "last_reset_date";
 
     // Credit costs
     public static final int COST_PER_SMS = 1;
@@ -38,10 +41,10 @@ public class CreditManager {
     public static final int COST_PER_TELEGRAM = 1;
 
     // Credit rewards
-    public static final int REWARD_PER_AD_VIEW = 5;
+    public static final int REWARD_PER_AD_VIEW = 20;
     public static final int INITIAL_FREE_CREDITS = 20; // Free credits on first install
 
-    // Ad watch limits (optional - prevent abuse)
+    // Ad watch limits
     private static final int MAX_ADS_PER_DAY = 50;
     private static final long AD_COOLDOWN_MS = 3000; // 30 seconds between ads
 
@@ -69,6 +72,9 @@ public class CreditManager {
 
         // Give initial free credits on first launch
         initializeCredits();
+
+        // Check if we need to reset daily counter
+        resetDailyCounterIfNeeded();
     }
 
     /**
@@ -79,6 +85,82 @@ public class CreditManager {
             prefs.edit().putInt(KEY_CREDITS, INITIAL_FREE_CREDITS).apply();
             Log.d(TAG, "First launch - Added " + INITIAL_FREE_CREDITS + " free credits");
         }
+    }
+
+    /**
+     * Reset daily ad counter at midnight
+     */
+    private void resetDailyCounterIfNeeded() {
+        String today = getTodayDateString();
+        String lastResetDate = prefs.getString(KEY_LAST_RESET_DATE, "");
+
+        if (!today.equals(lastResetDate)) {
+            // It's a new day - reset the counter
+            int previousCount = prefs.getInt(KEY_ADS_WATCHED_TODAY, 0);
+
+            prefs.edit()
+                    .putInt(KEY_ADS_WATCHED_TODAY, 0)
+                    .putString(KEY_LAST_RESET_DATE, today)
+                    .apply();
+
+            Log.d(TAG, "🌅 New day detected! Reset daily ad counter. Previous: " +
+                    previousCount + ", Reset date: " + today);
+        }
+    }
+
+    /**
+     * Get today's date as string (YYYY-MM-DD)
+     */
+    private String getTodayDateString() {
+        Calendar calendar = Calendar.getInstance();
+        return String.format("%04d-%02d-%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /**
+     * Get midnight timestamp for today (00:00:00)
+     */
+    private long getTodayMidnight() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    /**
+     * Get midnight timestamp for tomorrow (00:00:00)
+     */
+    private long getTomorrowMidnight() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTimeInMillis();
+    }
+
+    /**
+     * Get time remaining until midnight (for display)
+     */
+    public long getTimeUntilMidnight() {
+        long now = System.currentTimeMillis();
+        long midnight = getTomorrowMidnight();
+        return midnight - now;
+    }
+
+    /**
+     * Get formatted time until reset
+     */
+    public String getTimeUntilReset() {
+        long millis = getTimeUntilMidnight();
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60;
+        return String.format("%dh %dm", hours, minutes);
     }
 
     /**
@@ -135,6 +217,9 @@ public class CreditManager {
      * Check if user can watch another ad (rate limiting)
      */
     public boolean canWatchAd() {
+        // Reset daily counter if needed
+        resetDailyCounterIfNeeded();
+
         long lastAdTime = prefs.getLong(KEY_LAST_AD_TIME, 0);
         long currentTime = System.currentTimeMillis();
 
@@ -148,7 +233,7 @@ public class CreditManager {
         // Check daily limit
         int adsToday = getAdsWatchedToday();
         if (adsToday >= MAX_ADS_PER_DAY) {
-            Log.d(TAG, "Daily ad limit reached: " + adsToday);
+            Log.d(TAG, "Daily ad limit reached: " + adsToday + "/" + MAX_ADS_PER_DAY);
             return false;
         }
 
@@ -156,11 +241,11 @@ public class CreditManager {
     }
 
     /**
-     * Get number of ads watched today
+     * Get number of ads watched today (properly resets at midnight)
      */
     private int getAdsWatchedToday() {
-        // Simple implementation - resets at midnight would be better
-        return prefs.getInt(KEY_TOTAL_ADS_WATCHED, 0) % MAX_ADS_PER_DAY;
+        resetDailyCounterIfNeeded(); // Make sure counter is current
+        return prefs.getInt(KEY_ADS_WATCHED_TODAY, 0);
     }
 
     /**
@@ -179,12 +264,17 @@ public class CreditManager {
 
         // Update ad watch tracking
         int totalAds = prefs.getInt(KEY_TOTAL_ADS_WATCHED, 0);
+        int dailyAds = prefs.getInt(KEY_ADS_WATCHED_TODAY, 0);
+
         prefs.edit()
                 .putInt(KEY_TOTAL_ADS_WATCHED, totalAds + 1)
+                .putInt(KEY_ADS_WATCHED_TODAY, dailyAds + 1)
                 .putLong(KEY_LAST_AD_TIME, System.currentTimeMillis())
                 .apply();
 
         Log.d(TAG, "User rewarded: +" + REWARD_PER_AD_VIEW + " credits for watching ad");
+        Log.d(TAG, "📊 Daily ads: " + (dailyAds + 1) + "/" + MAX_ADS_PER_DAY +
+                ", Resets in: " + getTimeUntilReset());
 
         if (callback != null) {
             callback.onSuccess(getCredits());
@@ -295,7 +385,7 @@ public class CreditManager {
     }
 
     /**
-     * Get total ads watched
+     * Get total ads watched (all time)
      */
     public int getTotalAdsWatched() {
         return prefs.getInt(KEY_TOTAL_ADS_WATCHED, 0);
@@ -305,6 +395,7 @@ public class CreditManager {
      * Get ads remaining today
      */
     public int getAdsRemainingToday() {
+        resetDailyCounterIfNeeded();
         int watched = getAdsWatchedToday();
         return Math.max(0, MAX_ADS_PER_DAY - watched);
     }
@@ -316,7 +407,9 @@ public class CreditManager {
         prefs.edit()
                 .putInt(KEY_CREDITS, INITIAL_FREE_CREDITS)
                 .putInt(KEY_TOTAL_ADS_WATCHED, 0)
+                .putInt(KEY_ADS_WATCHED_TODAY, 0)
                 .putLong(KEY_LAST_AD_TIME, 0)
+                .putString(KEY_LAST_RESET_DATE, getTodayDateString())
                 .apply();
         Log.d(TAG, "Credits reset to " + INITIAL_FREE_CREDITS);
     }
@@ -325,8 +418,23 @@ public class CreditManager {
      * Get credit statistics
      */
     public String getCreditStats() {
+        resetDailyCounterIfNeeded();
+
         return "Credits: " + getCredits() + "\n" +
                 "Total Ads Watched: " + getTotalAdsWatched() + "\n" +
-                "Ads Remaining Today: " + getAdsRemainingToday();
+                "Ads Today: " + getAdsWatchedToday() + "/" + MAX_ADS_PER_DAY + "\n" +
+                "Ads Remaining Today: " + getAdsRemainingToday() + "\n" +
+                "Counter Resets In: " + getTimeUntilReset();
+    }
+
+    /**
+     * Force reset daily counter (for testing)
+     */
+    public void forceResetDailyCounter() {
+        prefs.edit()
+                .putInt(KEY_ADS_WATCHED_TODAY, 0)
+                .putString(KEY_LAST_RESET_DATE, getTodayDateString())
+                .apply();
+        Log.d(TAG, "🔄 Daily counter manually reset");
     }
 }

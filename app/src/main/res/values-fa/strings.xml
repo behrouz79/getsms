@@ -38,7 +38,7 @@
     <string name="device_id">شناسه دستگاه: %s</string>
     <string name="share_device_id">این شناسه را با مدیر برای خرید اعتبار به اشتراک بگذارید</string>
     <string name="reward_earned">جایزه دریافت شد!</string>
-    <string name="credits_earned">شما +%d اعتبار دریافت کردید!\n\nمجموع اعتبار: %d</string>
+    <string name="credits_earned">شما %d اعتبار دریافت کردید!\n\nمجموع اعتبار: %d \nتبلیغات قابل تماشا امروز : %d</string>
     <string name="redeem_credit_token">استفاده از کد اعتبار</string>
     <string name="enter_token">کد توکن ارائه شده توسط مدیر را وارد کنید:</string>
     <string name="redeem">استفاده</string>

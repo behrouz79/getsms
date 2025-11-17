@@ -62,7 +62,7 @@ public class SyncExecutors {
             try {
                 JsonObject payload = new JsonObject();
                 payload.addProperty("from", sms.getSender());
-                payload.addProperty("message", message);
+                payload.addProperty("msg", message);
                 payload.addProperty("original_message", sms.getBody());
                 payload.addProperty("sim", sms.getSimSlot());
                 payload.addProperty("timestamp", sms.getTimestamp());
