@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--activity action logs-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Statistics Header -->
+    <TextView
+        android:id="@+id/tvStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📊 Loading statistics..."
+        android:textSize="14sp"
+        android:fontFamily="@font/shabnam"
+        android:padding="12dp"
+        android:background="#E8F5E9"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Filter Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_marginBottom="8dp">
+
+        <Button
+            android:id="@+id/btnShowAll"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="All Logs"
+            android:fontFamily="@font/shabnam"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/btn_primary"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnShowFailed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Failed Only"
+            android:fontFamily="@font/shabnam"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/btn_primary"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnClearLogs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear Old"
+            android:fontFamily="@font/shabnam"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/btn_primary"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+    <!-- RecyclerView for logs -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerActionLogs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

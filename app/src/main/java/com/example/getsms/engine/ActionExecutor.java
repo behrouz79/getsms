@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.getsms.R;
 import com.example.getsms.credit.CreditManager;
 import com.example.getsms.model.Action;
+import com.example.getsms.model.ActionLog;
 import com.example.getsms.model.SmsLog;
 import com.example.getsms.model.SmsMessage;
 import com.example.getsms.roomDB.DataBase;
@@ -16,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Handles action execution with retry logic and backup actions
+ * Enhanced Action Executor with comprehensive logging
  */
 public class ActionExecutor {
 
@@ -25,6 +26,7 @@ public class ActionExecutor {
     private final Context context;
     private final CreditManager creditManager;
     private final DataBase db;
+    private final ActionLogger actionLogger;
     private final ExecutorService executorService;
     private final Handler mainHandler;
 
@@ -32,40 +34,60 @@ public class ActionExecutor {
         this.context = context;
         this.creditManager = new CreditManager(context);
         this.db = DataBase.getDbInstance(context);
+        this.actionLogger = new ActionLogger(context);
         this.executorService = Executors.newCachedThreadPool();
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
-     * Execute action with retry and backup support
+     * Execute action with comprehensive logging
      */
-    public void execute(Action action, String message, SmsMessage sms, SmsLog log, ActionCallback callback) {
+    public void execute(Action action, String message, SmsMessage sms, SmsLog smsLog, ActionCallback callback) {
         Log.d(TAG, "========================================");
         Log.d(TAG, "🚀 EXECUTING ACTION: " + action.type);
         Log.d(TAG, "Retry enabled: " + action.enableRetry);
         Log.d(TAG, "Backup enabled: " + action.enableBackup);
         Log.d(TAG, "========================================");
 
-        executeWithRetry(action, message, sms, log, 1, callback);
+        executeWithRetry(action, message, sms, smsLog, 1, false, null, callback);
     }
 
     /**
-     * Execute action with retry logic
+     * Execute action with retry logic and detailed logging
      */
     private void executeWithRetry(Action action, String message, SmsMessage sms,
-                                  SmsLog log, int attemptNumber, ActionCallback callback) {
+                                  SmsLog smsLog, int attemptNumber, boolean isBackup,
+                                  String originalActionType, ActionCallback callback) {
 
-        Log.d(TAG, "📤 Attempt " + attemptNumber + "/" + (action.maxRetries + 1) +
-                " for " + action.type);
+        Log.d(TAG, "📤 Attempt " + attemptNumber + "/" + (action.maxRetries + 1) + " for " + action.type);
+
+        // Create action log for this attempt
+        ActionLog actionLog = actionLogger.startActionLog(
+                smsLog.id,
+                action,
+                smsLog.matchedRuleName,
+                attemptNumber,
+                isBackup
+        );
+
+        if (isBackup && originalActionType != null) {
+            actionLogger.markAsBackup(actionLog, originalActionType);
+        }
 
         executorService.execute(() -> {
-            boolean success = executeAction(action, message, sms, log);
+            long startTime = System.currentTimeMillis();
+            int creditsUsed = getCreditCost(action.type);
+
+            boolean success = executeAction(action, message, sms, smsLog);
 
             if (success) {
                 Log.d(TAG, "✅ Action succeeded on attempt " + attemptNumber);
 
-                // Update log
-                updateLogSuccess(log, action);
+                // Log success
+                actionLogger.logSuccess(actionLog, 200, "OK", startTime, creditsUsed);
+
+                // Update SMS log
+                updateLogSuccess(smsLog, action);
 
                 if (callback != null) {
                     callback.onSuccess(attemptNumber);
@@ -73,6 +95,10 @@ public class ActionExecutor {
 
             } else {
                 Log.e(TAG, "❌ Action failed on attempt " + attemptNumber);
+
+                // Log failure
+                actionLogger.logFailure(actionLog, new Exception("Action execution failed"),
+                        startTime, creditsUsed);
 
                 // Check if we should retry
                 if (action.enableRetry && attemptNumber <= action.maxRetries) {
@@ -82,20 +108,21 @@ public class ActionExecutor {
 
                     // Schedule retry
                     mainHandler.postDelayed(() -> {
-                        executeWithRetry(action, message, sms, log, attemptNumber + 1, callback);
+                        executeWithRetry(action, message, sms, smsLog, attemptNumber + 1,
+                                isBackup, originalActionType, callback);
                     }, delay);
 
                 } else {
                     Log.e(TAG, "❌ All retry attempts exhausted for " + action.type);
 
-                    // Update log with failure
-                    updateLogFailure(log, action, "Failed after " + attemptNumber + " attempts");
+                    // Update SMS log with failure
+                    updateLogFailure(smsLog, action, "Failed after " + attemptNumber + " attempts");
 
                     // Execute backup action if configured
-                    if (action.enableBackup && action.hasValidBackup()) {
+                    if (!isBackup && action.enableBackup && action.hasValidBackup()) {
                         if (action.backupAfterAllRetries) {
                             Log.d(TAG, "🔀 Executing backup action: " + action.backupType);
-                            executeBackupAction(action, message, sms, log, callback);
+                            executeBackupAction(action, message, sms, smsLog, callback);
                         }
                     } else {
                         if (callback != null) {
@@ -110,7 +137,7 @@ public class ActionExecutor {
     /**
      * Execute the actual action
      */
-    private boolean executeAction(Action action, String message, SmsMessage sms, SmsLog log) {
+    private boolean executeAction(Action action, String message, SmsMessage sms, SmsLog smsLog) {
         try {
             Log.d(TAG, "   Destination: " + action.destination);
             Log.d(TAG, "   Message: " + message);
@@ -147,7 +174,7 @@ public class ActionExecutor {
      * Execute backup action
      */
     private void executeBackupAction(Action action, String message, SmsMessage sms,
-                                     SmsLog log, ActionCallback callback) {
+                                     SmsLog smsLog, ActionCallback callback) {
 
         Log.d(TAG, "========================================");
         Log.d(TAG, "🔀 BACKUP ACTION TRIGGERED");
@@ -192,33 +219,43 @@ public class ActionExecutor {
             return;
         }
 
-        // Execute backup
-        boolean backupSuccess = executeAction(backupAction, backupMessage, sms, log);
+        // Execute backup with logging
+        executeWithRetry(backupAction, backupMessage, sms, smsLog, 1, true,
+                action.type.toString(), new ActionCallback() {
+                    @Override
+                    public void onSuccess(int attempts) {
+                        Log.d(TAG, "✅ Backup action succeeded");
+                        smsLog.backupActionUsed = true;
+                        smsLog.backupActionType = backupAction.type.toString();
+                        updateLogSuccess(smsLog, backupAction);
 
-        if (backupSuccess) {
-            Log.d(TAG, "✅ Backup action succeeded");
-            log.backupActionUsed = true;
-            log.backupActionType = backupAction.type.toString();
-            updateLogSuccess(log, backupAction);
+                        if (callback != null) {
+                            callback.onBackupSuccess();
+                        }
+                    }
 
-            if (callback != null) {
-                callback.onBackupSuccess();
-            }
-        } else {
-            Log.e(TAG, "❌ Backup action also failed");
-            log.backupActionUsed = true;
-            log.backupActionType = backupAction.type.toString();
-            log.backupActionFailed = true;
-            updateLogFailure(log, backupAction, "Backup action failed");
+                    @Override
+                    public void onFailure(int attempts, String reason) {
+                        Log.e(TAG, "❌ Backup action also failed");
+                        smsLog.backupActionUsed = true;
+                        smsLog.backupActionType = backupAction.type.toString();
+                        smsLog.backupActionFailed = true;
+                        updateLogFailure(smsLog, backupAction, "Backup action failed");
 
-            if (callback != null) {
-                callback.onFailure(0, "Backup action failed");
-            }
-        }
+                        if (callback != null) {
+                            callback.onFailure(attempts, reason);
+                        }
+                    }
+
+                    @Override
+                    public void onBackupSuccess() {
+                        // Not used
+                    }
+                });
     }
 
     /**
-     * Update log on success
+     * Update SMS log on success
      */
     private void updateLogSuccess(SmsLog log, Action action) {
         switch (action.type) {
@@ -237,12 +274,11 @@ public class ActionExecutor {
                 break;
         }
 
-        // Save to database
         executorService.execute(() -> db.smsLogDao().updateLog(log));
     }
 
     /**
-     * Update log on failure
+     * Update SMS log on failure
      */
     private void updateLogFailure(SmsLog log, Action action, String errorMessage) {
         log.hasError = true;
@@ -253,7 +289,6 @@ public class ActionExecutor {
             log.errorMessage += "\n" + action.type + ": " + errorMessage;
         }
 
-        // Save to database
         executorService.execute(() -> db.smsLogDao().updateLog(log));
     }
 
@@ -267,7 +302,6 @@ public class ActionExecutor {
             case WEBHOOK:
                 return CreditManager.COST_PER_WEBHOOK;
             case TELEGRAM:
-                return CreditManager.COST_PER_TELEGRAM;
             case WHATSAPP:
                 return CreditManager.COST_PER_TELEGRAM;
             default:
@@ -276,7 +310,7 @@ public class ActionExecutor {
     }
 
     /**
-     * Callback interface for action execution
+     * Callback interface
      */
     public interface ActionCallback {
         void onSuccess(int attempts);

@@ -14,7 +14,6 @@ import android.util.Log;
 import com.example.getsms.engine.RuleEngine;
 import com.example.getsms.model.Rule;
 import com.example.getsms.roomDB.DataBase;
-import com.example.getsms.roomDB.SmsRecord;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -92,7 +91,7 @@ public class ReceiveSms extends BroadcastReceiver {
                         subscriptionId
                 );
 
-                // Save to database and process rules
+                // Only process rules - NO MORE SAVING TO smsrecord TABLE
                 processIncomingSms(context, smsMessage);
             }
         } catch (Exception e) {
@@ -155,44 +154,25 @@ public class ReceiveSms extends BroadcastReceiver {
     }
 
     /**
-     * Process incoming SMS: Save to DB and execute rules
+     * Process incoming SMS: Execute rules with detailed logging
      */
     private void processIncomingSms(Context context, com.example.getsms.model.SmsMessage smsMessage) {
         executorService.execute(() -> {
             try {
                 DataBase db = DataBase.getDbInstance(context);
 
-                // Save to database
-                saveToDatabase(db, smsMessage);
-
                 // Load and execute rules
                 List<Rule> rules = db.ruleDao().getEnabledRules();
                 if (rules != null && !rules.isEmpty()) {
                     RuleEngine ruleEngine = new RuleEngine(context);
                     ruleEngine.processSms(smsMessage, rules);
+                } else {
+                    Log.d(TAG, "No enabled rules found");
                 }
 
             } catch (Exception e) {
                 Log.e(TAG, "Error processing SMS", e);
             }
         });
-    }
-
-    /**
-     * Save SMS to database
-     */
-    private void saveToDatabase(DataBase db, com.example.getsms.model.SmsMessage smsMessage) {
-        try {
-            SmsRecord record = new SmsRecord();
-            record.title = smsMessage.getSender() + " (" + smsMessage.getSimSlot() + ")";
-            record.body = smsMessage.getBody();
-            record.date = smsMessage.getFormattedDate();
-            record.status = 200; // Default status for received SMS
-
-            db.smsDao().insertRecord(record);
-            Log.d(TAG, "SMS saved: " + smsMessage.getSender() + " on " + smsMessage.getSimSlot());
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving to database", e);
-        }
     }
 }

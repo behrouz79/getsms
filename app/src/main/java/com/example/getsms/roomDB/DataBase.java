@@ -9,15 +9,18 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.getsms.model.ActionLog;
 import com.example.getsms.model.Rule;
 import com.example.getsms.model.SmsLog;
 
-@Database(entities = {SmsRecord.class, Rule.class, SmsLog.class}, version = 4, exportSchema = false)
+@Database(entities = {SmsRecord.class, Rule.class, SmsLog.class, ActionLog.class},
+        version = 6, exportSchema = false)
 public abstract class DataBase extends RoomDatabase {
 
     public abstract SmsRecordDao smsDao();
     public abstract RuleDao ruleDao();
-    public abstract SmsLogDao smsLogDao(); // NEW
+    public abstract SmsLogDao smsLogDao();
+    public abstract ActionLogDao actionLogDao(); // NEW
 
     private static volatile DataBase INSTANCE;
 
@@ -31,7 +34,6 @@ public abstract class DataBase extends RoomDatabase {
     static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Create rules table
             database.execSQL("CREATE TABLE IF NOT EXISTS `rules` (" +
                     "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                     "`name` TEXT, " +
@@ -51,7 +53,6 @@ public abstract class DataBase extends RoomDatabase {
     static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Create new SMS logs table with comprehensive tracking
             database.execSQL("CREATE TABLE IF NOT EXISTS `sms_logs` (" +
                     "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                     "`sender` TEXT, " +
@@ -80,19 +81,46 @@ public abstract class DataBase extends RoomDatabase {
     static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Add retry tracking columns
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN retry_count INTEGER NOT NULL DEFAULT 0");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN retry_attempts TEXT");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN succeeded_after_retry INTEGER NOT NULL DEFAULT 0");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN retry_strategy_used TEXT");
-
-            // Add backup tracking columns
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN backup_action_used INTEGER NOT NULL DEFAULT 0");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN backup_action_type TEXT");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN backup_action_destination TEXT");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN backup_action_success INTEGER NOT NULL DEFAULT 0");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN backup_action_failed INTEGER NOT NULL DEFAULT 0");
             database.execSQL("ALTER TABLE sms_logs ADD COLUMN backup_triggered_at INTEGER NOT NULL DEFAULT 0");
+        }
+    };
+
+    // NEW MIGRATION for ActionLog table
+    static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `action_logs` (" +
+                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`sms_log_id` INTEGER NOT NULL, " +
+                    "`action_type` TEXT, " +
+                    "`action_destination` TEXT, " +
+                    "`rule_name` TEXT, " +
+                    "`attempt_number` INTEGER NOT NULL, " +
+                    "`execution_time` INTEGER NOT NULL, " +
+                    "`duration_ms` INTEGER NOT NULL, " +
+                    "`success` INTEGER NOT NULL, " +
+                    "`status_code` INTEGER NOT NULL, " +
+                    "`response_body` TEXT, " +
+                    "`error_message` TEXT, " +
+                    "`error_type` TEXT, " +
+                    "`is_retry` INTEGER NOT NULL, " +
+                    "`retry_strategy` TEXT, " +
+                    "`retry_delay_seconds` INTEGER NOT NULL, " +
+                    "`is_backup_action` INTEGER NOT NULL, " +
+                    "`original_action_type` TEXT, " +
+                    "`message_transformed` INTEGER NOT NULL, " +
+                    "`original_message` TEXT, " +
+                    "`transformed_message` TEXT, " +
+                    "`credits_used` INTEGER NOT NULL)");
         }
     };
 
@@ -105,7 +133,8 @@ public abstract class DataBase extends RoomDatabase {
                                     DataBase.class,
                                     "SMS_LIST"
                             )
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
+                                    MIGRATION_4_5, MIGRATION_5_6)
                             .fallbackToDestructiveMigration()
                             .build();
                 }

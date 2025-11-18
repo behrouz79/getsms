@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Header Row: Status + Action Type -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✅"
+                android:textSize="20sp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/tvActionType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🌐 WEBHOOK"
+                android:textSize="16sp"
+                android:fontFamily="@font/shabnam"
+                android:textStyle="bold"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🕐 12:34:56"
+                android:textSize="12sp"
+                android:fontFamily="@font/shabnam"
+                android:textColor="#999999" />
+
+        </LinearLayout>
+
+        <!-- Destination -->
+        <TextView
+            android:id="@+id/tvDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📍 https://api.example.com/webhook"
+            android:textSize="14sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <!-- Duration and Status -->
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⏱️ 1234ms | Status: 200"
+            android:textSize="12sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <!-- Badges Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvRetryBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔄 Retry #2"
+                android:textSize="11sp"
+                android:fontFamily="@font/shabnam"
+                android:background="#FFF3E0"
+                android:padding="4dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvBackupBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔀 Backup"
+                android:textSize="11sp"
+                android:fontFamily="@font/shabnam"
+                android:background="#E3F2FD"
+                android:padding="4dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- Error Message (if failed) -->
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💬 Network error: Connection timeout"
+            android:textSize="12sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="#F44336"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+        <!-- Response Body (if success) -->
+        <TextView
+            android:id="@+id/tvResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📄 {&quot;status&quot;:&quot;ok&quot;,&quot;message&quot;:&quot;received&quot;}"
+            android:textSize="11sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="#4CAF50"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

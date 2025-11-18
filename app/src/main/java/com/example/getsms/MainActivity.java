@@ -130,6 +130,8 @@ public class MainActivity extends BaseActivity {
 
         findViewById(R.id.btnCredits).setOnClickListener(v ->
                 startActivity(new Intent(this, CreditsActivity.class)));
+        findViewById(R.id.test).setOnClickListener(v ->
+                startActivity(new Intent(this, ActionLogsActivity.class)));
 
 //        findViewById(R.id.btnRefresh).setOnClickListener(v -> {
 //            loadLogs();
