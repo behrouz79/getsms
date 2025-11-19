@@ -100,7 +100,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/sender_hint"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textDirection="ltr"
+                />
 
             <!-- Message Filter -->
             <TextView
@@ -193,6 +195,111 @@
                     android:layout_height="wrap_content"
                     android:minHeight="48dp" />
 
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/webhookHelpCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="#FFF3E0"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🌐 Webhook Information"
+                            android:textStyle="bold"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/shabnam"
+                            android:textColor="#E65100"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Method:"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/shabnam"
+                            android:textColor="#333333"
+                            android:layout_marginTop="4dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="POST"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/shabnam"
+                            android:textColor="#666666"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Content-Type:"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/shabnam"
+                            android:textColor="#333333" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="application/json"
+                            android:textSize="11sp"
+                            android:fontFamily="@font/shabnam"
+                            android:textColor="#666666"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="JSON Payload Structure:"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/shabnam"
+                            android:textColor="#333333" />
+
+                        <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxHeight="200dp"
+                            android:layout_marginTop="4dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="{\n  &quot;from&quot;: &quot;+1234567890&quot;,\n  &quot;msg&quot;: &quot;Your processed message&quot;,\n  &quot;original_message&quot;: &quot;Original SMS text&quot;,\n  &quot;sim&quot;: &quot;SIM1&quot;,\n  &quot;timestamp&quot;: 1234567890123\n}"
+                                android:textSize="10sp"
+                                android:fontFamily="monospace"
+                                android:textColor="#333333"
+                                android:background="#FFFFFF"
+                                android:padding="8dp"
+                                android:textIsSelectable="true"
+                                android:textDirection="ltr"
+                                />
+
+                        </ScrollView>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="8dp" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
                 <TextView
                     android:fontFamily="@font/shabnam"
                     android:layout_width="match_parent"
@@ -208,7 +315,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/destination_hint"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textDirection="ltr"
+                    />
 
                 <TextView
                     android:fontFamily="@font/shabnam"
@@ -234,41 +343,74 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="#E3F2FD"
+                    android:padding="12dp"
+                    android:layout_marginTop="8dp"
                     android:visibility="gone">
 
+                    <!-- Bot Token Field -->
                     <TextView
-                        android:fontFamily="@font/shabnam"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Telegram Bot Token"
+                        android:text="Telegram Bot Token (Optional)"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="16dp" />
+                        android:fontFamily="@font/shabnam"
+                        android:layout_marginTop="8dp"
+                        android:textDirection="ltr"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💡 Leave empty to use app's default bot"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/shabnam"
+                        android:textColor="#FF9800"
+                        android:layout_marginBottom="4dp"
+                        />
 
                     <EditText
-                        android:fontFamily="@font/shabnam"
                         android:id="@+id/etBotToken"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="123456:ABC-DEF..."
-                        android:inputType="text" />
-
-                    <TextView
+                        android:hint="123456:ABC-DEF... (Leave empty for default bot)"
                         android:fontFamily="@font/shabnam"
+                        android:inputType="text"
+                        android:textSize="13sp"
+                        android:textDirection="ltr"
+
+                        />
+
+                    <!-- Chat ID Field -->
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Telegram Chat ID"
+                        android:text="Telegram Chat ID (Required)"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="8dp" />
+                        android:fontFamily="@font/shabnam"
+                        android:layout_marginTop="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="⚠️ Required: Send /getchatid to the bot to get your Chat ID"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/shabnam"
+                        android:textColor="#F44336"
+                        android:layout_marginBottom="4dp" />
 
                     <EditText
-                        android:fontFamily="@font/shabnam"
                         android:id="@+id/etChatId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="987654321"
-                        android:inputType="text" />
+                        android:hint="987654321 or -100123456789"
+                        android:fontFamily="@font/shabnam"
+                        android:inputType="text"
+                        android:textSize="13sp"
+                        android:textDirection="ltr"
+                        />
                 </LinearLayout>
 
                 <!-- ============================================ -->
@@ -585,7 +727,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="+1234567890"
-                            android:inputType="phone" />
+                            android:inputType="phone"
+                            android:textDirection="ltr"
+                            />
 
                         <!-- Backup Template -->
                         <TextView

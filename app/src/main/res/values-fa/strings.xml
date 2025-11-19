@@ -137,7 +137,7 @@
     <string name="delete_log_confirm">این لاگ حذف شود؟</string>
     <string name="log_deleted">لاگ حذف شد</string>
     <string name="clear_old_logs">پاکسازی لاگ‌های قدیمی</string>
-    <string name="clear_logs_confirm">لاگ‌های قدیمی‌تر از ۳۰ روز حذف شود؟</string>
+    <string name="clear_logs_confirm">لاگ‌های قدیمی‌تر از 2 روز حذف شود؟</string>
     <string name="clear">پاکسازی</string>
     <string name="logs_deleted">%d لاگ قدیمی حذف شد</string>
     <string name="no_logs_yet">هنوز لاگی وجود ندارد. لاگ‌ها هنگام دریافت پیامک ظاهر می‌شوند.</string>
@@ -303,4 +303,6 @@
     <string name="immediate">فوری</string>
     <string name="see_examples_below">به مثال های زیر دقت کنید</string>
     <string name="primary_action_failed"> ⚠️ رویداد اصلی اجرا نشده : {message}</string>
+    <string name="telegram_default_bot_help">💡 Tip: Leave Bot Token empty to use app\'s default bot. Only Chat ID is required.</string>
+    <string name="telegram_get_chat_id">To get your Chat ID:\n1. Search for the bot in Telegram\n2. Send /start\n3. Send /getchatid\n4. Copy the number</string>
 </resources>

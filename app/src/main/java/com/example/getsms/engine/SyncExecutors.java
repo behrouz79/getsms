@@ -286,15 +286,16 @@ public class SyncExecutors {
     }
 
     /**
-     * Enhanced Telegram Executor - FIXED Status Detection
+     * Enhanced Telegram Executor with Default Bot Support
      */
     public static class TelegramExecutor {
         private static final String TAG = "TelegramExecutor";
         private static final String TELEGRAM_API = "https://api.telegram.org/bot";
 
         // Default bot for users without their own bot
-        private static final String DEFAULT_BOT_TOKEN = "YOUR_DEFAULT_BOT_TOKEN_HERE";
-        private static final String DEFAULT_CHAT_ID = "YOUR_DEFAULT_CHAT_ID_HERE";
+        // TODO: Replace with your actual bot token
+        private static final String DEFAULT_BOT_TOKEN = "6440238125:AAEVpKE-bSYF0pxOa5NgiaUn9TVaZHMYgeI";
+        private static final String DEFAULT_BOT_USERNAME = "@porjects_message_sender_bot"; // Your bot username
 
         private final Context context;
         private final OkHttpClient client;
@@ -322,17 +323,17 @@ public class SyncExecutors {
             boolean usingDefaultBot = false;
 
             // Use default bot if user hasn't configured their own
-            if (botToken == null || botToken.isEmpty()) {
-                Log.d(TAG, "📱 Using default bot");
+            if (botToken == null || botToken.trim().isEmpty()) {
+                Log.d(TAG, "📱 Using default app bot");
                 botToken = DEFAULT_BOT_TOKEN;
-                chatId = DEFAULT_CHAT_ID;
                 usingDefaultBot = true;
 
                 // Prepend info about using default bot
-                message = "🤖 [Via App Bot]\n" + message;
+                message = "🤖 [Via " + DEFAULT_BOT_USERNAME + "]\n" +
+                        "━━━━━━━━━━━━━━━\n" + message;
             }
 
-            if (chatId == null || chatId.isEmpty()) {
+            if (chatId == null || chatId.trim().isEmpty()) {
                 Log.e(TAG, "❌ No chat ID configured");
                 return false;
             }
@@ -424,6 +425,19 @@ public class SyncExecutors {
 
         public void execute(Action action, String message, SmsMessage sms) {
             new Thread(() -> executeSync(action, message, sms)).start();
+        }
+
+        /**
+         * Get default bot info for display
+         */
+        public static String getDefaultBotInfo() {
+            return "Default Bot: " + DEFAULT_BOT_USERNAME + "\n" +
+                    "To get your Chat ID:\n" +
+                    "1. Open Telegram\n" +
+                    "2. Search for " + DEFAULT_BOT_USERNAME + "\n" +
+                    "3. Send /start\n" +
+                    "4. Send /getchatid\n" +
+                    "5. Copy the Chat ID";
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.getsms.adapter.ActionsAdapter;
 import com.example.getsms.engine.MessageTransformer;
+import com.example.getsms.engine.SyncExecutors;
 import com.example.getsms.model.Action;
 import com.example.getsms.model.Rule;
 import com.example.getsms.roomDB.DataBase;
@@ -88,6 +89,9 @@ public class RuleEditorActivity extends BaseActivity {
     private Rule currentRule;
     private Gson gson = new Gson();
     private int editingActionPosition = -1;
+    // ADD THIS LINE
+    private androidx.cardview.widget.CardView webhookHelpCard;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +128,9 @@ public class RuleEditorActivity extends BaseActivity {
         etBotToken = findViewById(R.id.etBotToken);
         etChatId = findViewById(R.id.etChatId);
         telegramFields = findViewById(R.id.telegramFields);
+
+        // ADD THIS LINE
+        webhookHelpCard = findViewById(R.id.webhookHelpCard);
 
         // Transform views
         switchEnableTransform = findViewById(R.id.switchEnableTransform);
@@ -276,10 +283,23 @@ public class RuleEditorActivity extends BaseActivity {
         });
 
         SpinnerHelper.setup(this, spinnerBackupType, new SpinnerItem[]{
-                new SpinnerItem(getString(R.string.sms), "SMS"),
-                new SpinnerItem(getString(R.string.telegram), "TELEGRAM"),
-                new SpinnerItem(getString(R.string.webhook), "WEBHOOK")
+                new SpinnerItem(getString(R.string.sms), "SMS")
         });
+    }
+
+    private void updateTelegramFieldsVisibility() {
+        String selectedType = SpinnerHelper.getValue(spinnerActionType);
+
+        if ("TELEGRAM".equals(selectedType)) {
+            telegramFields.setVisibility(View.VISIBLE);
+            etActionDestination.setHint(R.string.not_required_for_telegram);
+        } else if ("WEBHOOK".equals(selectedType)) {
+            telegramFields.setVisibility(View.GONE);
+            etActionDestination.setHint("e.g., https://api.example.com/webhook");
+        } else if ("SMS".equals(selectedType)) {
+            telegramFields.setVisibility(View.GONE);
+            etActionDestination.setHint("e.g., +1234567890");
+        }
     }
 
     private void setupActionsRecyclerView() {
@@ -447,13 +467,19 @@ public class RuleEditorActivity extends BaseActivity {
         String botToken = etBotToken.getText().toString().trim();
         String chat = etChatId.getText().toString().trim();
 
-        if (botToken.isEmpty() || chat.isEmpty()) {
-            Toast.makeText(this, R.string.enter_bot_token_chat_id, Toast.LENGTH_SHORT).show();
+        // Chat ID is required, but bot token is optional (will use default)
+        if (chat.isEmpty()) {
+            Toast.makeText(this, "Chat ID is required. Send /getchatid to bot to get it.", Toast.LENGTH_LONG).show();
             return null;
         }
 
         Action action = createAction("TELEGRAM", chat, template);
-        action.botToken = botToken;
+
+        // Set bot token only if provided (empty means use default bot)
+        if (!botToken.isEmpty()) {
+            action.botToken = botToken;
+        }
+
         action.chatId = chat;
         return action;
     }
@@ -556,12 +582,17 @@ public class RuleEditorActivity extends BaseActivity {
 
         if ("TELEGRAM".equals(selectedType)) {
             telegramFields.setVisibility(View.VISIBLE);
+            webhookHelpCard.setVisibility(View.GONE);
             etActionDestination.setHint(R.string.not_required_for_telegram);
+
         } else if ("WEBHOOK".equals(selectedType)) {
             telegramFields.setVisibility(View.GONE);
+            webhookHelpCard.setVisibility(View.VISIBLE);
             etActionDestination.setHint("e.g., https://api.example.com/webhook");
+
         } else if ("SMS".equals(selectedType)) {
             telegramFields.setVisibility(View.GONE);
+            webhookHelpCard.setVisibility(View.GONE);
             etActionDestination.setHint("e.g., +1234567890");
         }
     }

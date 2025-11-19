@@ -137,7 +137,7 @@
     <string name="delete_log_confirm">Delete this log entry?</string>
     <string name="log_deleted">Log deleted</string>
     <string name="clear_old_logs">Clear Old Logs</string>
-    <string name="clear_logs_confirm">Delete logs older than 30 days?</string>
+    <string name="clear_logs_confirm">Delete logs older than 2 days?</string>
     <string name="clear">Clear</string>
     <string name="logs_deleted">Deleted %d old logs</string>
     <string name="no_logs_yet">No SMS logs yet. Logs will appear when SMS is received.</string>
@@ -299,4 +299,6 @@
     <string name="immediate">Immediate</string>
     <string name="see_examples_below">see examples below</string>
     <string name="primary_action_failed">⚠️ Primary action failed: {message}</string>
+    <string name="telegram_default_bot_help">💡 Tip: Leave Bot Token empty to use app\'s default bot. Only Chat ID is required.</string>
+    <string name="telegram_get_chat_id">To get your Chat ID:\n1. Search for the bot in Telegram\n2. Send /start\n3. Send /getchatid\n4. Copy the number</string>
 </resources>
