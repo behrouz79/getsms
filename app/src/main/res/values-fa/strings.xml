@@ -305,4 +305,8 @@
     <string name="primary_action_failed"> ⚠️ رویداد اصلی اجرا نشده : {message}</string>
     <string name="telegram_default_bot_help">💡 Tip: Leave Bot Token empty to use app\'s default bot. Only Chat ID is required.</string>
     <string name="telegram_get_chat_id">To get your Chat ID:\n1. Search for the bot in Telegram\n2. Send /start\n3. Send /getchatid\n4. Copy the number</string>
+    <string name="save_action">ذخیر اقدام</string>
+    <string name="basic_settings">basic settings</string>
+    <string name="logs_all_detials">\"📊 همه: %d | موفق: %d (%.1f%%) | نا موفق: %d | تکرار شده: %d\"</string>
+    <string name="error_saving_rule">error saving role</string>
 </resources>

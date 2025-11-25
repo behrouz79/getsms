@@ -5,6 +5,10 @@
     <!-- ============================================ -->
     <!-- SMS PERMISSIONS (REQUIRED) -->
     <!-- ============================================ -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -84,6 +88,10 @@
         <!-- Credits Activity -->
         <activity
             android:name=".CreditsActivity"
+            android:exported="false"
+            android:label="Credits"/>
+        <activity
+            android:name=".ActionEditorActivity"
             android:exported="false"
             android:label="Credits"/>
         <!-- Credits Activity -->

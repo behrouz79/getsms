@@ -239,8 +239,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onStatisticsLoaded(ActionLogger.ActionStatistics stats) {
                 runOnUiThread(() -> {
-                    tvStats.setText(String.format(Locale.getDefault(),
-                            "📊 Total: %d | Success: %d (%.1f%%) | Failed: %d | Retried: %d",
+                    tvStats.setText(getString(
+                            R.string.logs_all_detials,
                             stats.total, stats.successful, stats.successRate,
                             stats.failed, stats.retried));
                 });

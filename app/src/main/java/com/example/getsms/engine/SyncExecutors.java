@@ -327,10 +327,6 @@ public class SyncExecutors {
                 Log.d(TAG, "📱 Using default app bot");
                 botToken = DEFAULT_BOT_TOKEN;
                 usingDefaultBot = true;
-
-                // Prepend info about using default bot
-                message = "🤖 [Via " + DEFAULT_BOT_USERNAME + "]\n" +
-                        "━━━━━━━━━━━━━━━\n" + message;
             }
 
             if (chatId == null || chatId.trim().isEmpty()) {
