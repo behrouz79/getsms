@@ -13,8 +13,6 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
-    <!-- For dual SIM support -->
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
     <!-- ============================================ -->
@@ -49,6 +47,9 @@
     <uses-permission android:name="android.permission.QUICKBOOT_POWERON" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <!-- NEW: Job Scheduler Permission -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- Alarm for service restart -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
@@ -74,8 +75,6 @@
         <!-- ============================================ -->
         <!-- ACTIVITIES -->
         <!-- ============================================ -->
-
-        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -85,7 +84,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Credits Activity -->
         <activity
             android:name=".CreditsActivity"
             android:exported="false"
@@ -94,20 +92,15 @@
             android:name=".ActionEditorActivity"
             android:exported="false"
             android:label="Credits"/>
-        <!-- Credits Activity -->
         <activity
             android:name=".ActionLogsActivity"
             android:exported="false"
             android:label="ActionLogs"/>
-
-        <!-- Rules Management Activity -->
         <activity
             android:name=".RulesActivity"
             android:label="SMS Rules"
             android:parentActivityName=".MainActivity"
             android:exported="false" />
-
-        <!-- Rule Editor Activity -->
         <activity
             android:name=".RuleEditorActivity"
             android:label="Edit Rule"
@@ -143,7 +136,7 @@
         </receiver>
 
         <!-- ============================================ -->
-        <!-- SERVICE RESTART RECEIVER - Auto-restarts service if killed -->
+        <!-- SERVICE RESTART RECEIVERS -->
         <!-- ============================================ -->
         <receiver
             android:name=".EndlessService$ServiceRestartReceiver"
@@ -151,12 +144,12 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="RESTART_SERVICE" />
+                <action android:name="RESTART_SERVICE_BACKUP" />
             </intent-filter>
         </receiver>
 
         <!-- ============================================ -->
         <!-- PERSISTENT FOREGROUND SERVICE -->
-        <!-- stopWithTask="false" is CRITICAL - prevents service from stopping when app closes -->
         <!-- ============================================ -->
         <service
             android:name=".EndlessService"
@@ -164,6 +157,14 @@
             android:exported="false"
             android:stopWithTask="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- ============================================ -->
+        <!-- NEW: JOB SCHEDULER SERVICE (Watchdog) -->
+        <!-- ============================================ -->
+        <service
+            android:name=".ServiceWatchdogJob"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
 
     </application>
 

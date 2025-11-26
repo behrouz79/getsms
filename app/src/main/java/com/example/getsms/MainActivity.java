@@ -12,6 +12,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -39,6 +40,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
+import android.os.PowerManager;
 
 public class MainActivity extends BaseActivity {
 
@@ -473,6 +478,15 @@ public class MainActivity extends BaseActivity {
     }
 
     public void startService(View v) {
+        // Check Doze exemption FIRST
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                requestDozeExemption();
+                return;
+            }
+        }
+
         if (!PermissionsHelper.hasSendSmsPermission(this)) {
             PermissionsHelper.requestSendSmsPermission(this);
             return;
@@ -509,13 +523,21 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
+        // Enable service in preferences
         ReceiveSms.enableService(this);
 
+        // Start the foreground service
         Intent serviceIntent = new Intent(this, EndlessService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent);
         } else {
             startService(serviceIntent);
+        }
+
+        // ⭐ NEW: Schedule watchdog job for additional protection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ServiceWatchdogJob.scheduleJob(this);
+            Log.d(TAG, "✅ Watchdog job scheduled");
         }
 
         Toast.makeText(this, R.string.service_started, Toast.LENGTH_SHORT).show();
@@ -542,9 +564,21 @@ public class MainActivity extends BaseActivity {
     }
 
     public void stopService(View v) {
+        // Disable service in preferences
         ReceiveSms.disableService(this);
+
+        // Stop the foreground service
         stopService(new Intent(this, EndlessService.class));
+
+        // Cancel all restart mechanisms
         cancelServiceRestartAlarm();
+
+        // ⭐ NEW: Cancel watchdog job
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ServiceWatchdogJob.cancelJob(this);
+            Log.d(TAG, "❌ Watchdog job cancelled");
+        }
+
         Toast.makeText(this, R.string.service_stopped, Toast.LENGTH_SHORT).show();
         updateServiceButtonStates();
     }
@@ -585,6 +619,53 @@ public class MainActivity extends BaseActivity {
         loadActionLogs();
         loadStatistics();
         checkBatteryOptimizationStatus();
+        checkDozeExemption();
+
+    }
+
+    private void checkDozeExemption() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            SharedPreferences prefs = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE);
+            boolean serviceEnabled = prefs.getBoolean("service_enabled", false);
+
+            if (serviceEnabled && pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                Toast.makeText(this,
+                        "⚠️ WARNING: Doze mode will kill service! Grant battery exemption.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // Add this method for Doze exemption:
+    private void requestDozeExemption() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            String packageName = getPackageName();
+
+            if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("⚠️ CRITICAL: Doze Mode Exemption")
+                        .setMessage("For 24/7 operation without interruption, you MUST disable Doze mode restrictions:\n\n" +
+                                "✅ Disable battery optimization\n" +
+                                "✅ Grant 'Unrestricted' battery usage\n" +
+                                "✅ Allow background activity\n\n" +
+                                "⚠️ WARNING: Without this, Android WILL kill the service after 2-3 days!\n\n" +
+                                "This is the #1 reason services stop working.")
+                        .setPositiveButton("Grant Now (Required)", (dialog, which) -> {
+                            try {
+                                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                                intent.setData(Uri.parse("package:" + packageName));
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                                startActivity(intent);
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+            }
+        }
     }
 
     @Override
