@@ -305,4 +305,9 @@
     <string name="basic_settings">basic settings</string>
     <string name="logs_all_detials">\"📊 Total: %d | Success: %d (%.1f%%) | Failed: %d | Retried: %d\"</string>
     <string name="error_saving_rule">error saving role</string>
+
+    <string name="copy">Copy</string>
+    <string name="copy_rule">Copy Rule</string>
+    <string name="copy_rule_confirm">Create a copy of this rule with all its actions and configurations?</string>
+    <string name="rule_copied">Rule copied successfully</string>
 </resources>

@@ -26,6 +26,7 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
         void onEditClick(Rule rule);
         void onDeleteClick(Rule rule);
         void onToggleClick(Rule rule);
+        void onCopyClick(Rule rule); // NEW
     }
 
     public RulesAdapter(Context context, List<Rule> rules, RuleClickListener listener) {
@@ -79,6 +80,7 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
         // Click listeners
         holder.btnEdit.setOnClickListener(v -> listener.onEditClick(rule));
         holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(rule));
+        holder.btnCopy.setOnClickListener(v -> listener.onCopyClick(rule)); // NEW
         holder.switchEnabled.setOnClickListener(v -> listener.onToggleClick(rule));
 
         // Prevent switch from toggling when clicking the item
@@ -96,6 +98,7 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
         SwitchCompat switchEnabled;
         Button btnEdit;
         Button btnDelete;
+        Button btnCopy; // NEW
 
         RuleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,6 +107,7 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
             switchEnabled = itemView.findViewById(R.id.switchEnabled);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnCopy = itemView.findViewById(R.id.btnCopy); // NEW
         }
     }
 }

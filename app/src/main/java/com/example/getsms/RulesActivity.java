@@ -29,6 +29,42 @@ public class RulesActivity extends BaseActivity {
     private ExecutorService executorService;
     private FloatingActionButton fabAdd;
 
+    private void copyRule(Rule originalRule) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(R.string.copy_rule)
+                .setMessage(R.string.copy_rule_confirm)
+                .setPositiveButton(R.string.copy, (dialog, which) -> {
+                    executorService.execute(() -> {
+                        // Create a new Rule object with copied data
+                        Rule copiedRule = new Rule();
+                        copiedRule.name = originalRule.name + " (Copy)";
+                        copiedRule.enabled = originalRule.enabled;
+                        copiedRule.priority = originalRule.priority;
+                        copiedRule.simFilter = originalRule.simFilter;
+                        copiedRule.senderFilterType = originalRule.senderFilterType;
+                        copiedRule.senderFilterValue = originalRule.senderFilterValue;
+                        copiedRule.messageFilterType = originalRule.messageFilterType;
+                        copiedRule.messageFilterValue = originalRule.messageFilterValue;
+
+                        // Copy the entire actions JSON (includes all action configurations)
+                        copiedRule.actionsJson = originalRule.actionsJson;
+
+                        copiedRule.createdAt = System.currentTimeMillis();
+                        copiedRule.updatedAt = System.currentTimeMillis();
+
+                        // Insert the copied rule
+                        db.ruleDao().insertRule(copiedRule);
+
+                        runOnUiThread(() -> {
+                            Toast.makeText(this, R.string.rule_copied, Toast.LENGTH_SHORT).show();
+                            loadRules();
+                        });
+                    });
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +90,11 @@ public class RulesActivity extends BaseActivity {
             @Override
             public void onToggleClick(Rule rule) {
                 toggleRule(rule);
+            }
+
+            @Override
+            public void onCopyClick(Rule rule) {
+                copyRule(rule); // NEW
             }
         });
 
