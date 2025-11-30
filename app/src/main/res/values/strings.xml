@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/values/strings.xml -->
+<!-- res/values/strings.xml - CLEANED VERSION -->
 <resources>
     <string name="app_name">SMS Forwarder</string>
 
@@ -46,8 +46,9 @@
     <string name="token_redeemed">Token Redeemed!</string>
     <string name="credits_added">Credits added successfully!\n\nYour new balance: %d</string>
     <string name="redemption_failed">Redemption Failed</string>
-    <string name="contact_admin">Contact Admin telegram :&lt;a href="https://t.me/amiri_sup"&gt;https://t.me/amiri_sup&lt;/a&gt;</string>
+    <string name="contact_admin">Contact Admin telegram: &lt;a href="https://t.me/amiri_sup"&gt;https://t.me/amiri_sup&lt;/a&gt;</string>
     <string name="credit_info">• Each SMS costs 1 credit\n• Watch ads to earn credits\n• Contact admin for bulk purchases</string>
+    <string name="more_credits_message">To purchase more credits:\n\n1. Contact the administrator\n2. Share your device ID\n3. Receive your token code\n4. Enter the code in the app</string>
 
     <!-- Rules Activity -->
     <string name="sms_rules">SMS Rules</string>
@@ -58,6 +59,10 @@
     <string name="delete_rule_confirm">Are you sure you want to delete this rule?</string>
     <string name="delete">Delete</string>
     <string name="rule_deleted">Rule deleted</string>
+    <string name="copy">Copy</string>
+    <string name="copy_rule">Copy Rule</string>
+    <string name="copy_rule_confirm">Create a copy of this rule with all its actions and configurations?</string>
+    <string name="rule_copied">Rule copied successfully</string>
 
     <!-- Rule Editor -->
     <string name="create_edit_rule">Create/Edit Rule</string>
@@ -80,6 +85,8 @@
     <string name="telegram_bot_token">Telegram Bot Token</string>
     <string name="telegram_chat_id">Telegram Chat ID</string>
     <string name="telegram_default_bot_info">Leave empty to use app default bot</string>
+    <string name="telegram_default_bot_help">💡 Tip: Leave Bot Token empty to use app\'s default bot. Only Chat ID is required.</string>
+    <string name="telegram_get_chat_id">To get your Chat ID:\n1. Search for the bot in Telegram\n2. Send /start\n3. Send /getchatid\n4. Copy the number</string>
     <string name="enable_transform">Enable Message Transformation</string>
     <string name="transform_type">Transform Type</string>
     <string name="transform_pattern">Transform Pattern/Value</string>
@@ -92,9 +99,41 @@
     <string name="delete_action_confirm">Are you sure you want to delete this action?</string>
     <string name="action_deleted">Action deleted</string>
     <string name="save_rule">Save Rule</string>
+    <string name="save_action">Save Action</string>
     <string name="rule_saved">Rule saved!</string>
     <string name="enter_rule_name">Please enter rule name</string>
     <string name="add_one_action">Please add at least one action</string>
+    <string name="error_saving_rule">Error saving rule</string>
+    <string name="basic_settings">Basic Settings</string>
+    <string name="not_required_for_telegram">Not required for Telegram</string>
+
+    <!-- Filter Types -->
+    <string name="sim_any">Any</string>
+    <string name="sim_1">SIM1</string>
+    <string name="sim_2">SIM2</string>
+    <string name="sim_both">Both</string>
+    <string name="any">Any</string>
+    <string name="equals">Equals</string>
+    <string name="contains">Contains</string>
+    <string name="not_contains">Does NOT Contain</string>
+    <string name="not_equals">Does NOT Equal</string>
+    <string name="starts_with">Starts With</string>
+    <string name="regex">Regex</string>
+
+    <!-- Action Types -->
+    <string name="webhook">Webhook</string>
+    <string name="sms">SMS</string>
+    <string name="telegram">Telegram</string>
+
+    <!-- Transform Types -->
+    <string name="extract_lines">Extract Lines</string>
+    <string name="remove_lines">Remove Lines</string>
+    <string name="extract_pattern">Extract Pattern</string>
+    <string name="remove_pattern">Remove Pattern</string>
+    <string name="replace_pattern">Replace Pattern</string>
+    <string name="keep_until">Keep Until</string>
+    <string name="keep_after">Keep After</string>
+    <string name="remove_after">Remove After</string>
 
     <!-- Retry Configuration -->
     <string name="enable_retry">🔄 Enable Automatic Retry on Failure</string>
@@ -103,6 +142,12 @@
     <string name="retry_delay">Delay Between Retries (seconds)</string>
     <string name="retry_strategy">Retry Strategy</string>
     <string name="retry_strategy_help">• Immediate: Retry instantly\n• Fixed Delay: Wait same time between retries\n• Exponential Backoff: Double wait time each retry (5s, 10s, 20s...)</string>
+    <string name="fixed_delay">Fixed Delay</string>
+    <string name="exponential_backoff">Exponential Backoff</string>
+    <string name="immediate">Immediate</string>
+    <string name="retry_immediate">Retry immediately without delay.\n\nExample: 3 retries = instant, instant, instant\n\nUse for: Quick operations that might fail due to temporary issues</string>
+    <string name="retry_exponential_backoff">Double the wait time between each retry.\n\nExample: 5s → 10s → 20s → 40s\n\nUse for: Network requests, API calls (recommended)</string>
+    <string name="retry_fixed_delay">Wait the same amount of time between each retry.\n\nExample: 5s → 5s → 5s\n\nUse for: Simple operations with predictable recovery time</string>
 
     <!-- Backup Configuration -->
     <string name="enable_backup">🔀 Enable Backup Action on Failure</string>
@@ -113,12 +158,40 @@
     <string name="backup_after_retries">Trigger backup only after all retries fail</string>
     <string name="retry_backup">Retry backup action if it fails (2 attempts)</string>
     <string name="backup_tip">💡 TIP: SMS backup is recommended for critical notifications. It provides reliable fallback when primary actions fail.</string>
+    <string name="enter_backup_telegram_chat_id">Please enter backup Telegram chat ID</string>
+    <string name="enter_backup_phone_number">Please enter backup phone number</string>
 
     <!-- Error Handling -->
     <string name="error_handling">⚙️ Error Handling Options</string>
     <string name="continue_on_failure">Continue processing other actions if this fails</string>
     <string name="notify_on_failure">Send notification on action failure</string>
     <string name="detailed_error_log">Log detailed error information</string>
+    <string name="primary_action_failed">⚠️ Primary action failed: {message}</string>
+
+    <!-- Backup/Restore -->
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="backup_rules">Backup Rules</string>
+    <string name="restore_rules">Restore Rules</string>
+    <string name="delete_all_rules">Delete All Rules</string>
+    <string name="no_rules_to_backup">No rules to backup</string>
+    <string name="no_rules_to_delete">No rules to delete</string>
+    <string name="backing_up">Creating backup…</string>
+    <string name="loading_backup">Loading backup…</string>
+    <string name="restoring">Restoring rules…</string>
+    <string name="backup_success">✓ Rules backed up successfully</string>
+    <string name="backup_failed">✗ Failed to backup rules</string>
+    <string name="restore_success">✓ Rules restored successfully</string>
+    <string name="restore_failed">✗ Failed to restore rules: %s</string>
+    <string name="invalid_backup_file">✗ Invalid backup file</string>
+    <string name="restore_preview">This backup contains:\n\n• %d rules\n• Created: %s\n• App Version: %s\n\nHow do you want to restore?</string>
+    <string name="replace_all">Replace All</string>
+    <string name="merge">Merge (Add)</string>
+    <string name="warning">Warning</string>
+    <string name="replace_all_warning">This will DELETE all your current rules and replace them with the backup.\n\nAre you sure?</string>
+    <string name="yes_replace">Yes, Replace All</string>
+    <string name="delete_all_rules_confirm">Are you sure you want to delete ALL rules?\n\nThis cannot be undone!</string>
+    <string name="all_rules_deleted">All rules deleted</string>
 
     <!-- SMS Logs -->
     <string name="sms_log_details">SMS Log Details</string>
@@ -141,11 +214,13 @@
     <string name="clear">Clear</string>
     <string name="logs_deleted">Deleted %d old logs</string>
     <string name="no_logs_yet">No SMS logs yet. Logs will appear when SMS is received.</string>
+    <string name="logs_all_details">📊 Total: %d | Success: %d (%.1f%%) | Failed: %d | Retried: %d</string>
 
     <!-- Notifications -->
     <string name="notification_permission_required">Notification permission is required</string>
     <string name="sms_permission_required">SMS permission is required</string>
     <string name="permission_required">Permission Required</string>
+    <string name="permissions_required_header">Permissions Required</string>
     <string name="ok">OK</string>
 
     <!-- Common -->
@@ -168,11 +243,20 @@
     <string name="select_transform_type_help">Select a transform type to see examples.</string>
     <string name="enter_destination">Please enter destination</string>
     <string name="enter_bot_token_chat_id">Please enter Bot Token and Chat ID</string>
-    <string name="permissions_required_header">permissions_required_header</string>
+    <string name="see_examples_below">See examples below</string>
 
-    <!-- ============================================ -->
-    <!-- PERSISTENT SERVICE - LOG MESSAGES -->
-    <!-- ============================================ -->
+    <!-- Transform Examples -->
+    <string name="transform_extract_lines">Extract specific lines.\nExample: 1,2,3 (extracts lines 1, 2, and 3)\n\nYour example:\nReceive: Line1\nLine2\nLine3\nLine4\nPattern: 1,2\nResult: Line1\nLine2</string>
+    <string name="transform_remove_lines">Remove specific lines.\nExample: 3,4 (removes lines 3 and 4)\n\nYour example:\nReceive: Line1\nLine2\nBalance: 757\nLine4\nPattern: 3\nResult: Line1\nLine2\nLine4</string>
+    <string name="transform_extract_pattern">Extract text matching regex.\nExample: حساب\\d+ (extracts account number)\n\nYour example:\nReceive: حساب5694541931\nبرداشت100,000\nPattern: حساب\\d+|برداشت[\\d,]+\nResult: حساب5694541931\nبرداشت100,000</string>
+    <string name="transform_remove_pattern">Remove text matching regex.\nExample: موجودی:.* (removes balance line)\n\nYour example:\nReceive: بلو\nانتقال پل\nموجودی: 757 ریال\nPattern: موجودی:.*\nResult: بلو\nانتقال پل</string>
+    <string name="transform_replace_pattern">Replace text matching regex.\nFormat: pattern|replacement\nExample: موجودی:.*| (replaces balance with nothing)</string>
+    <string name="transform_keep_until">Keep text until pattern found.\nExample: موجودی (keeps everything before موجودی)</string>
+    <string name="transform_keep_after">Keep text after pattern found.\nExample: حساب (keeps from حساب onwards)</string>
+    <string name="transform_remove_after">Remove text after pattern found.\nExample: موجودی (removes from موجودی onwards)\n\nYour example:\nReceive: بلو\nانتقال پل\nموجودی: 757\nPattern: موجودی\nResult: بلو\nانتقال پل</string>
+    <string name="transform_default">Select a transform type to see examples.</string>
+
+    <!-- Service Status Messages -->
     <string name="log_service_created">🚀 SERVICE CREATED</string>
     <string name="log_on_start_command">📱 onStartCommand called</string>
     <string name="log_service_disabled_by_user">⚠️ Service disabled by user, stopping…</string>
@@ -190,18 +274,12 @@
     <string name="log_service_restart_receiver">🔄 SERVICE RESTART RECEIVER TRIGGERED</string>
     <string name="log_service_should_run">✅ Service should be running, restarting…</string>
     <string name="log_service_disabled_not_restarting">⚠️ Service disabled, not restarting</string>
-
-    <!-- ============================================ -->
-    <!-- BOOT RECEIVER - LOG MESSAGES -->
-    <!-- ============================================ -->
     <string name="log_boot_receiver_triggered">📱 BOOT RECEIVER TRIGGERED</string>
     <string name="log_service_enabled_before_reboot">✅ Service was enabled before reboot, starting…</string>
     <string name="log_service_started_successfully">✅ Service started successfully</string>
     <string name="log_service_disabled_before_reboot">⚠️ Service was disabled before reboot, not starting</string>
 
-    <!-- ============================================ -->
-    <!-- BATTERY OPTIMIZATION -->
-    <!-- ============================================ -->
+    <!-- Battery Optimization -->
     <string name="battery_optimization">Battery Optimization</string>
     <string name="battery_optimization_message">To keep the SMS forwarding service running continuously, please disable battery optimization for this app.\n\nWithout this, Android may kill the service to save battery.\n\nThis is required for the app to work properly.</string>
     <string name="disable_optimization">Disable Optimization</string>
@@ -213,101 +291,15 @@
     <string name="battery_optimization_explanation">To keep the SMS forwarding service running continuously, battery optimization must be disabled.\n\nWithout this:\n• Android will kill the service to save battery\n• SMS forwarding will stop working\n• Service won\'t survive app being closed\n\nThis is a system requirement for persistent background services.</string>
     <string name="battery_optimization_warning">⚠️ Battery optimization is enabled - service may be killed!</string>
 
-    <!-- ============================================ -->
-    <!-- SERVICE STATUS MESSAGES -->
-    <!-- ============================================ -->
+    <!-- Service Started Dialog -->
     <string name="service_started_title">✅ Service Started</string>
     <string name="service_started_message">SMS Forwarding service is now running in the background.\n\n%1$s\n\nThe service will continue running even if you:\n• Close the app\n• Swipe it from recent apps\n• Restart your device\n\nTo stop the service, use the \'Stop Service\' button in this app.</string>
     <string name="continue_text">Continue</string>
     <string name="service_started_persistent">Service Started (Persistent)</string>
     <string name="service_running_background">Running in background</string>
     <string name="service_will_survive">Will survive app closure and device reboot</string>
-    <string name="more_credits_message">\"To purchase more credits:\\n\\n\" +\n                \"1. Contact the administrator\\n\" +\n                \"3. Receive your token code\\n\" +\n                \"4. Enter the code in the app\\n\\n\"</string>
-    <string name="enter_backup_telegram_chat_id">Please enter backup Telegram chat ID</string>
-    <string name="enter_backup_phone_number">\"Please enter backup phone number\"</string>
+    <string name="logs_all_detials">logs all detials</string>
+    <string name="last_check">last check : </string>
+    <string name="m_ago">m ago</string>
 
-
-    <string name="transform_extract_lines">Extract specific lines.\nExample: 1,2,3 (extracts lines 1, 2, and 3)\n\nYour example:\nReceive: Line1\nLine2\nLine3\nLine4\nPattern: 1,2\nResult: Line1\nLine2</string>
-
-    <string name="transform_remove_lines">Remove specific lines.\nExample: 3,4 (removes lines 3 and 4)\n\nYour example:\nReceive: Line1\nLine2\nBalance: 757\nLine4\nPattern: 3\nResult: Line1\nLine2\nLine4</string>
-
-    <string name="transform_extract_pattern">Extract text matching regex.\nExample: حساب\\d+ (extracts account number)\n\nYour example:\nReceive: حساب5694541931\nبرداشت100,000\nPattern: حساب\\d+|برداشت[\\d,]+\nResult: حساب5694541931\nبرداشت100,000</string>
-
-    <string name="transform_remove_pattern">Remove text matching regex.\nExample: موجودی:.* (removes balance line)\n\nYour example:\nReceive: بلو\nانتقال پل\nموجودی: 757 ریال\nPattern: موجودی:.*\nResult: بلو\nانتقال پل</string>
-
-    <string name="transform_replace_pattern">Replace text matching regex.\nFormat: pattern|replacement\nExample: موجودی:.*| (replaces balance with nothing)</string>
-
-    <string name="transform_keep_until">Keep text until pattern found.\nExample: موجودی (keeps everything before موجودی)</string>
-
-    <string name="transform_keep_after">Keep text after pattern found.\nExample: حساب (keeps from حساب onwards)</string>
-
-    <string name="transform_remove_after">Remove text after pattern found.\nExample: موجودی (removes from موجودی onwards)\n\nYour example:\nReceive: بلو\nانتقال پل\nموجودی: 757\nPattern: موجودی\nResult: بلو\nانتقال پل</string>
-
-    <string name="transform_default">Select a transform type to see examples.</string>
-    <string name="not_required_for_telegram">not required for telegram</string>
-
-    <string name="retry_immediate">
-        Retry immediately without delay.
-
-        Example: 3 retries = instant, instant, instant
-
-        Use for: Quick operations that might fail due to temporary issues
-    </string>
-
-    <string name="retry_exponential_backoff">
-        Double the wait time between each retry.
-
-        Example: 5s → 10s → 20s → 40s
-
-        Use for: Network requests, API calls (recommended)
-    </string>
-
-    <string name="retry_fixed_delay">
-        Wait the same amount of time between each retry.
-
-        Example: 5s → 5s → 5s
-
-        Use for: Simple operations with predictable recovery time
-    </string>
-
-    <string name="sim_any">Any</string>
-    <string name="sim_1">SIM1</string>
-    <string name="sim_2">SIM2</string>
-    <string name="sim_both">Both</string>
-
-    <string name="any">Any</string>
-    <string name="equals">Equals</string>
-    <string name="contains">Contains</string>
-    <string name="starts_with">Starts With</string>
-    <string name="regex">Regex</string>
-
-    <string name="webhook">Webhook</string>
-    <string name="sms">SMS</string>
-    <string name="telegram">Telegram</string>
-
-    <string name="extract_lines">Extract Lines</string>
-    <string name="remove_lines">Remove Lines</string>
-    <string name="extract_pattern">Extract Pattern</string>
-    <string name="remove_pattern">Remove Pattern</string>
-    <string name="replace_pattern">Replace Pattern</string>
-    <string name="keep_until">Keep Until</string>
-    <string name="keep_after">Keep After</string>
-    <string name="remove_after">Remove After</string>
-
-    <string name="fixed_delay">Fixed Delay</string>
-    <string name="exponential_backoff">Exponential Backoff</string>
-    <string name="immediate">Immediate</string>
-    <string name="see_examples_below">see examples below</string>
-    <string name="primary_action_failed">⚠️ Primary action failed: {message}</string>
-    <string name="telegram_default_bot_help">💡 Tip: Leave Bot Token empty to use app\'s default bot. Only Chat ID is required.</string>
-    <string name="telegram_get_chat_id">To get your Chat ID:\n1. Search for the bot in Telegram\n2. Send /start\n3. Send /getchatid\n4. Copy the number</string>
-    <string name="save_action">save action</string>
-    <string name="basic_settings">basic settings</string>
-    <string name="logs_all_detials">\"📊 Total: %d | Success: %d (%.1f%%) | Failed: %d | Retried: %d\"</string>
-    <string name="error_saving_rule">error saving role</string>
-
-    <string name="copy">Copy</string>
-    <string name="copy_rule">Copy Rule</string>
-    <string name="copy_rule_confirm">Create a copy of this rule with all its actions and configurations?</string>
-    <string name="rule_copied">Rule copied successfully</string>
 </resources>

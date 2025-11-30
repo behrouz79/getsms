@@ -42,6 +42,7 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
         return new RuleViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull RuleViewHolder holder, int position) {
         Rule rule = rules.get(position);
@@ -61,7 +62,14 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
         }
 
         if (!"ANY".equals(rule.messageFilterType) && rule.messageFilterValue != null && !rule.messageFilterValue.isEmpty()) {
-            conditions.append("Message: ").append(rule.messageFilterValue).append(" • ");
+            // NEW: Better display for NOT filters
+            String messagePrefix = "Message: ";
+            if ("NOT_CONTAINS".equals(rule.messageFilterType)) {
+                messagePrefix = "Message NOT contains: ";
+            } else if ("NOT_EQUALS".equals(rule.messageFilterType)) {
+                messagePrefix = "Message NOT equals: ";
+            }
+            conditions.append(messagePrefix).append(rule.messageFilterValue).append(" • ");
         }
 
         if (conditions.length() > 0) {
@@ -80,7 +88,7 @@ public class RulesAdapter extends RecyclerView.Adapter<RulesAdapter.RuleViewHold
         // Click listeners
         holder.btnEdit.setOnClickListener(v -> listener.onEditClick(rule));
         holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(rule));
-        holder.btnCopy.setOnClickListener(v -> listener.onCopyClick(rule)); // NEW
+        holder.btnCopy.setOnClickListener(v -> listener.onCopyClick(rule));
         holder.switchEnabled.setOnClickListener(v -> listener.onToggleClick(rule));
 
         // Prevent switch from toggling when clicking the item

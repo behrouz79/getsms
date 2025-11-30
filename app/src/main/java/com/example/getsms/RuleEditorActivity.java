@@ -108,8 +108,11 @@ public class RuleEditorActivity extends BaseActivity {
 
         SpinnerHelper.setup(this, spinnerMessageType, new SpinnerItem[]{
                 new SpinnerItem(getString(R.string.any), "ANY"),
+                new SpinnerItem(getString(R.string.any), "ANY"),
                 new SpinnerItem(getString(R.string.equals), "EQUALS"),
                 new SpinnerItem(getString(R.string.contains), "CONTAINS"),
+                new SpinnerItem(getString(R.string.not_contains), "NOT_CONTAINS"),
+                new SpinnerItem(getString(R.string.not_equals), "NOT_EQUALS"),
                 new SpinnerItem(getString(R.string.regex), "REGEX")
         });
     }

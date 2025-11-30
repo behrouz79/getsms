@@ -43,26 +43,44 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
     public void onBindViewHolder(@NonNull ActionViewHolder holder, int position) {
         Action action = actions.get(position);
 
-        // Display action type
-        holder.tvActionType.setText(action.type.toString());
+        // Display action type with retry/backup indicators
+        StringBuilder typeText = new StringBuilder(action.type.toString());
+
+        if (action.enableRetry) {
+            typeText.append(" 🔄");
+        }
+        if (action.enableBackup && action.hasValidBackup()) {
+            typeText.append(" 💾");
+        }
+
+        holder.tvActionType.setText(typeText.toString());
 
         // Display destination based on type
-        String destinationText = "";
+        StringBuilder destinationText = new StringBuilder();
         switch (action.type) {
             case WEBHOOK:
-                destinationText = "URL: " + action.destination;
+                destinationText.append("URL: ").append(action.destination);
                 break;
             case SMS:
-                destinationText = "Phone: " + action.destination;
+                destinationText.append("Phone: ").append(action.destination);
                 break;
             case TELEGRAM:
-                destinationText = "Chat ID: " + action.chatId;
+                destinationText.append("Chat ID: ").append(action.chatId);
                 break;
             case WHATSAPP:
-                destinationText = "Phone: " + action.destination;
+                destinationText.append("Phone: ").append(action.destination);
                 break;
         }
-        holder.tvDestination.setText(destinationText);
+
+        // Add retry/backup info
+        if (action.enableRetry) {
+            destinationText.append(" • Retry: ").append(action.maxRetries).append("x");
+        }
+        if (action.enableBackup && action.hasValidBackup()) {
+            destinationText.append(" • Backup: ").append(action.backupType);
+        }
+
+        holder.tvDestination.setText(destinationText.toString());
 
         // Display template (truncated if too long)
         String template = action.template != null ? action.template : "{message}";
@@ -70,6 +88,11 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
             template = template.substring(0, 47) + "...";
         }
         holder.tvTemplate.setText("Template: " + template);
+
+        // Display transformation info if enabled
+        if (action.enableTransform && action.transformType != null) {
+            holder.tvTemplate.setText(holder.tvTemplate.getText() + " 🔄 " + action.transformType);
+        }
 
         // Set enabled/disabled appearance
         float alpha = action.enabled ? 1.0f : 0.5f;

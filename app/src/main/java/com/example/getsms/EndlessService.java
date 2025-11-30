@@ -254,7 +254,7 @@ public class EndlessService extends Service {
         // Add last health check info
         if (lastHealthCheck > 0) {
             long minutesAgo = (System.currentTimeMillis() - lastHealthCheck) / 60000;
-            content += " • Last check: " + minutesAgo + "m ago";
+            content += R.string.last_check + minutesAgo + R.string.m_ago;
         }
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)

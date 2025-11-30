@@ -169,6 +169,10 @@ public class RuleEngine {
                 return message.equals(filterValue);
             case "CONTAINS":
                 return message.toLowerCase().contains(filterValue.toLowerCase());
+            case "NOT_CONTAINS":
+                return !message.toLowerCase().contains(filterValue.toLowerCase());
+            case "NOT_EQUALS":
+                return !message.equals(filterValue);
             case "REGEX":
                 try {
                     return Pattern.matches(filterValue, message);
