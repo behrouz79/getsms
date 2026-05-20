@@ -288,12 +288,12 @@ public class ActionEditorActivity extends BaseActivity {
         } else if ("WEBHOOK".equals(selectedType)) {
             telegramFields.setVisibility(View.GONE);
             webhookHelpCard.setVisibility(View.VISIBLE);
-            etActionDestination.setHint("e.g., https://api.example.com/webhook");
+            etActionDestination.setHint(R.string.webhook_url_hint);
 
         } else if ("SMS".equals(selectedType)) {
             telegramFields.setVisibility(View.GONE);
             webhookHelpCard.setVisibility(View.GONE);
-            etActionDestination.setHint("e.g., +1234567890");
+            etActionDestination.setHint(R.string.sms_phone_hint);
         }
     }
 
@@ -383,7 +383,7 @@ public class ActionEditorActivity extends BaseActivity {
         textView.setText(text);
         textView.setPadding(0, 10, 0, 20);
         if (highlight) {
-            textView.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+            textView.setTextColor(getResources().getColor(R.color.claude_success));
         }
         layout.addView(textView);
     }
@@ -440,7 +440,7 @@ public class ActionEditorActivity extends BaseActivity {
         String chat = etChatId.getText().toString().trim();
 
         if (chat.isEmpty()) {
-            Toast.makeText(this, "Chat ID is required. Send /getchatid to bot to get it.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.telegram_chat_id, Toast.LENGTH_LONG).show();
             return null;
         }
 

@@ -1,92 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--activity rules - Alternative with bottom buttons (no toolbar needed)-->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:orientation="vertical"
+    android:background="@color/claude_bg">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
+        android:background="@color/claude_bg">
 
-        <!-- Header -->
         <TextView
-            android:fontFamily="@font/shabnam"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/sms_rules"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:padding="16dp"
-            android:background="@color/purple_500"
-            android:textColor="@android:color/white" />
-
-        <!-- RecyclerView for Rules -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerRules"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="8dp"
-            android:clipToPadding="false" />
-
-        <!-- Bottom Button Bar -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:background="@color/primary"
-            android:elevation="4dp">
-
-            <Button
-                android:id="@+id/btnBackup"
-                android:fontFamily="@font/shabnam"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:text="@string/backup"
-                android:drawableTop="@android:drawable/ic_menu_save"
-                android:drawableTint="@android:color/white"
-                android:textSize="12sp"
-                android:padding="8dp"
-                android:textColor="@color/white"
-                style="@style/Widget.Material3.Button.TonalButton"
-                />
-
-            <Button
-                android:id="@+id/btnRestore"
-                android:fontFamily="@font/shabnam"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:text="@string/restore"
-                android:drawableTop="@android:drawable/ic_menu_revert"
-                android:drawableTint="@android:color/white"
-                android:textSize="12sp"
-                android:padding="8dp"
-                android:textColor="@color/white"
-                style="@style/Widget.Material3.Button.TonalButton" />
-            <Button
-                android:id="@+id/fabAddRule"
-                android:fontFamily="@font/shabnam"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:text="@string/add_new_rule"
-                android:drawableTop="@android:drawable/ic_input_add"
-                android:drawableTint="@android:color/white"
-                android:textSize="12sp"
-                android:padding="8dp"
-                android:textColor="@color/white"
-                style="@style/Widget.Material3.Button.TonalButton" />
-        </LinearLayout>
+            android:text="@string/sms_rules"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/shabnam_bold"
+            android:textColor="@color/claude_text_primary" />
 
     </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/claude_divider" />
+
+    <!-- Rules list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerRules"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:clipToPadding="false" />
+
+    <!-- Bottom bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp"
+        android:background="@color/claude_surface"
+        android:elevation="4dp">
+
+        <Button
+            android:id="@+id/btnBackup"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="@string/backup"
+            android:textSize="13sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="@color/claude_text_secondary"
+            android:background="@drawable/btn_outline" />
+
+        <Button
+            android:id="@+id/btnRestore"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="@string/restore"
+            android:textSize="13sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="@color/claude_text_secondary"
+            android:background="@drawable/btn_outline" />
+
+        <Button
+            android:id="@+id/fabAddRule"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="@string/add_new_rule"
+            android:textSize="13sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_primary" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,6 +1,5 @@
 package com.example.getsms;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -54,8 +53,20 @@ public class ActionLogsActivity extends BaseActivity {
         btnShowAll = findViewById(R.id.btnShowAll);
         btnClearLogs = findViewById(R.id.btnClearLogs);
 
-        btnShowFailed.setOnClickListener(v -> loadFailedLogs());
-        btnShowAll.setOnClickListener(v -> loadLogs());
+        btnShowFailed.setOnClickListener(v -> {
+            loadFailedLogs();
+            btnShowAll.setBackgroundResource(R.drawable.btn_outline);
+            btnShowFailed.setBackgroundResource(R.drawable.btn_error);
+            btnShowAll.setTextColor(getResources().getColor(R.color.claude_text_primary));
+            btnShowFailed.setTextColor(getResources().getColor(R.color.white));
+        });
+        btnShowAll.setOnClickListener(v -> {
+            loadLogs();
+            btnShowAll.setBackgroundResource(R.drawable.btn_primary);
+            btnShowFailed.setBackgroundResource(R.drawable.btn_outline);
+            btnShowAll.setTextColor(getResources().getColor(R.color.white));
+            btnShowFailed.setTextColor(getResources().getColor(R.color.claude_text_primary));
+        });
         btnClearLogs.setOnClickListener(v -> showClearDialog());
     }
 
@@ -81,8 +92,8 @@ public class ActionLogsActivity extends BaseActivity {
                         logsList.addAll(logs);
                         adapter.notifyDataSetChanged();
 
-                        btnShowAll.setBackgroundColor(Color.parseColor("#4CAF50"));
-                        btnShowFailed.setBackgroundColor(Color.parseColor("#CCCCCC"));
+                        btnShowAll.setBackgroundResource(R.drawable.btn_primary);
+                        btnShowFailed.setBackgroundResource(R.drawable.btn_outline);
                     }
                 });
             }
@@ -115,8 +126,8 @@ public class ActionLogsActivity extends BaseActivity {
                         logsList.addAll(logs);
                         adapter.notifyDataSetChanged();
 
-                        btnShowAll.setBackgroundColor(Color.parseColor("#CCCCCC"));
-                        btnShowFailed.setBackgroundColor(Color.parseColor("#F44336"));
+                        btnShowAll.setBackgroundResource(R.drawable.btn_outline);
+                        btnShowFailed.setBackgroundResource(R.drawable.btn_error);
                     }
                 });
             }
@@ -131,7 +142,7 @@ public class ActionLogsActivity extends BaseActivity {
                     @Override
                     public void run() {
                         tvStats.setText(
-                                String.format("📊 Stats: %d total | %.1f%% success | %d failed | %d retried",
+                                String.format("%d total  ·  %.1f%% success  ·  %d failed  ·  %d retried",
                                         stats.total, stats.successRate, stats.failed, stats.retried)
                         );
                     }

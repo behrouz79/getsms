@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:orientation="horizontal"
+    android:layout_marginVertical="4dp"
+    android:background="@drawable/bg_card"
+    android:padding="14dp">
 
+    <!-- Left status strip -->
+    <View
+        android:id="@+id/viewStatusStrip"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:background="@color/claude_success"
+        android:layout_marginEnd="12dp" />
+
+    <!-- Content -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <!-- Header Row: Status + Action Type -->
+        <!-- Row 1: status icon + action type + time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,112 +32,121 @@
 
             <TextView
                 android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✅"
-                android:textSize="20sp"
-                android:layout_marginEnd="8dp" />
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:text="✓"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_marginEnd="6dp" />
 
             <TextView
                 android:id="@+id/tvActionType"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="🌐 WEBHOOK"
-                android:textSize="16sp"
-                android:fontFamily="@font/shabnam"
+                android:text="WEBHOOK"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#333333" />
+                android:fontFamily="@font/shabnam_bold"
+                android:textColor="@color/claude_text_primary" />
 
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🕐 12:34:56"
-                android:textSize="12sp"
+                android:text="12:34"
+                android:textSize="11sp"
                 android:fontFamily="@font/shabnam"
-                android:textColor="#999999" />
+                android:textColor="@color/claude_text_hint" />
 
         </LinearLayout>
 
-        <!-- Destination -->
+        <!-- Row 2: destination -->
         <TextView
             android:id="@+id/tvDestination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📍 https://api.example.com/webhook"
-            android:textSize="14sp"
+            android:text="https://api.example.com/webhook"
+            android:textSize="12sp"
             android:fontFamily="@font/shabnam"
-            android:textColor="#666666"
-            android:layout_marginTop="4dp" />
+            android:textColor="@color/claude_text_secondary"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginTop="3dp" />
 
-        <!-- Duration and Status -->
+        <!-- Row 3: duration + status code -->
         <TextView
             android:id="@+id/tvDuration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="⏱️ 1234ms | Status: 200"
-            android:textSize="12sp"
+            android:text="1234ms  ·  200"
+            android:textSize="11sp"
             android:fontFamily="@font/shabnam"
-            android:textColor="#666666"
-            android:layout_marginTop="4dp" />
+            android:textColor="@color/claude_text_hint"
+            android:layout_marginTop="2dp" />
 
-        <!-- Badges Row -->
+        <!-- Row 4: badges -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="4dp">
+            android:layout_marginTop="6dp">
 
             <TextView
                 android:id="@+id/tvRetryBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🔄 Retry #2"
-                android:textSize="11sp"
+                android:text="Retry #2"
+                android:textSize="10sp"
                 android:fontFamily="@font/shabnam"
-                android:background="#FFF3E0"
-                android:padding="4dp"
-                android:layout_marginEnd="8dp"
+                android:textColor="@color/claude_primary_dark"
+                android:background="@drawable/bg_tag_amber"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:layout_marginEnd="6dp"
                 android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvBackupBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🔀 Backup"
-                android:textSize="11sp"
+                android:text="Backup"
+                android:textSize="10sp"
                 android:fontFamily="@font/shabnam"
-                android:background="#E3F2FD"
-                android:padding="4dp"
+                android:textColor="@color/claude_info_text"
+                android:background="@drawable/bg_tag_blue"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
                 android:visibility="gone" />
 
         </LinearLayout>
 
-        <!-- Error Message (if failed) -->
+        <!-- Error message -->
         <TextView
             android:id="@+id/tvErrorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="💬 Network error: Connection timeout"
-            android:textSize="12sp"
+            android:text="Network error: Connection timeout"
+            android:textSize="11sp"
             android:fontFamily="@font/shabnam"
-            android:textColor="#F44336"
+            android:textColor="@color/claude_error"
             android:layout_marginTop="4dp"
             android:visibility="gone" />
 
-        <!-- Response Body (if success) -->
+        <!-- Response body -->
         <TextView
             android:id="@+id/tvResponse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📄 {&quot;status&quot;:&quot;ok&quot;,&quot;message&quot;:&quot;received&quot;}"
-            android:textSize="11sp"
-            android:fontFamily="@font/shabnam"
-            android:textColor="#4CAF50"
+            android:text="{&quot;status&quot;:&quot;ok&quot;}"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:textColor="@color/claude_success"
             android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:visibility="gone" />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</LinearLayout>

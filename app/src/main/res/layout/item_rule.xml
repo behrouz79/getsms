@@ -1,85 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--item rule-->
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="4dp">
+    android:orientation="vertical"
+    android:layout_marginVertical="5dp"
+    android:background="@drawable/bg_card"
+    android:padding="16dp">
 
+    <!-- Rule name + toggle -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:fontFamily="@font/shabnam"
-                android:id="@+id/tvRuleName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:fontFamily="@font/shabnam"
-                android:id="@+id/switchEnabled"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <TextView
-            android:fontFamily="@font/shabnam"
-            android:id="@+id/tvRuleConditions"
-            android:layout_width="match_parent"
+            android:id="@+id/tvRuleName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="14sp" />
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/shabnam_bold"
+            android:textColor="@color/claude_text_primary" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchEnabled"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:fontFamily="@font/shabnam"
-                android:id="@+id/btnCopy"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/copy"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <Button
-                android:fontFamily="@font/shabnam"
-                android:id="@+id/btnEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/edit" />
-
-            <Button
-                android:fontFamily="@font/shabnam"
-                android:id="@+id/btnDelete"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/delete"
-                style="@style/Widget.MaterialComponents.Button.TextButton" />
-
-        </LinearLayout>
+            android:fontFamily="@font/shabnam" />
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    <!-- Conditions summary -->
+    <TextView
+        android:id="@+id/tvRuleConditions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textSize="13sp"
+        android:fontFamily="@font/shabnam"
+        android:textColor="@color/claude_text_secondary" />
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/claude_divider"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Action buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCopy"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/copy"
+            android:textSize="12sp"
+            android:textColor="@color/claude_text_secondary"
+            android:background="@drawable/btn_outline" />
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/edit"
+            android:textSize="12sp"
+            android:background="@drawable/btn_primary"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/shabnam"
+            android:text="@string/delete"
+            android:textSize="12sp"
+            android:textColor="@color/claude_error"
+            android:background="@android:color/transparent"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -12,11 +12,13 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,7 @@ import com.example.getsms.roomDB.DataBase;
 import com.example.getsms.utils.BatteryOptimizationHelper;
 import com.example.getsms.utils.LanguageManager;
 import com.example.getsms.utils.PermissionsHelper;
+import com.example.getsms.utils.ServicePrefs;
 import com.google.android.gms.ads.MobileAds;
 
 import java.text.SimpleDateFormat;
@@ -40,10 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
-import android.os.PowerManager;
 
 public class MainActivity extends BaseActivity {
 
@@ -142,6 +141,9 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btnCredits).setOnClickListener(v ->
                 startActivity(new Intent(this, CreditsActivity.class)));
 
+        tvCreditsDisplay.setOnClickListener(v ->
+                startActivity(new Intent(this, CreditsActivity.class)));
+
         // ADD THIS LINE
         findViewById(R.id.btnDelete).setOnClickListener(v -> showClearOldLogsDialog());
 
@@ -163,21 +165,28 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateFilterButtons(String activeFilter) {
-        // Reset all buttons
-        btnShowAll.setBackgroundColor(Color.parseColor("#CCCCCC"));
-        btnShowSuccess.setBackgroundColor(Color.parseColor("#CCCCCC"));
-        btnShowFailed.setBackgroundColor(Color.parseColor("#CCCCCC"));
+        int textInactive = getResources().getColor(R.color.claude_text_primary);
+        int textActive = getResources().getColor(R.color.white);
 
-        // Highlight active button
+        btnShowAll.setBackgroundResource(R.drawable.btn_outline);
+        btnShowSuccess.setBackgroundResource(R.drawable.btn_outline);
+        btnShowFailed.setBackgroundResource(R.drawable.btn_outline);
+        btnShowAll.setTextColor(textInactive);
+        btnShowSuccess.setTextColor(textInactive);
+        btnShowFailed.setTextColor(textInactive);
+
         switch (activeFilter) {
             case "ALL":
-                btnShowAll.setBackgroundColor(Color.parseColor("#4CAF50"));
+                btnShowAll.setBackgroundResource(R.drawable.btn_primary);
+                btnShowAll.setTextColor(textActive);
                 break;
             case "SUCCESS":
-                btnShowSuccess.setBackgroundColor(Color.parseColor("#4CAF50"));
+                btnShowSuccess.setBackgroundResource(R.drawable.btn_success);
+                btnShowSuccess.setTextColor(textActive);
                 break;
             case "FAILED":
-                btnShowFailed.setBackgroundColor(Color.parseColor("#F44336"));
+                btnShowFailed.setBackgroundResource(R.drawable.btn_error);
+                btnShowFailed.setTextColor(textActive);
                 break;
         }
     }
@@ -245,7 +254,7 @@ public class MainActivity extends BaseActivity {
             public void onStatisticsLoaded(ActionLogger.ActionStatistics stats) {
                 runOnUiThread(() -> {
                     tvStats.setText(getString(
-                            R.string.logs_all_detials,
+                            R.string.logs_all_details,
                             stats.total, stats.successful, stats.successRate,
                             stats.failed, stats.retried));
                 });
@@ -462,8 +471,8 @@ public class MainActivity extends BaseActivity {
         int credits = creditManager.getCredits();
         tvCreditsDisplay.setText(getString(R.string.credits, credits));
         int color = (credits < 10)
-                ? getResources().getColor(android.R.color.holo_red_dark)
-                : getResources().getColor(android.R.color.holo_green_dark);
+                ? getResources().getColor(R.color.claude_error)
+                : getResources().getColor(R.color.claude_primary_dark);
         tvCreditsDisplay.setTextColor(color);
     }
 
@@ -584,8 +593,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateServiceButtonStates() {
-        boolean enabled = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE)
-                .getBoolean("service_enabled", false);
+        boolean enabled = ServicePrefs.isServiceEnabled(this);
         btnStart.setEnabled(!enabled);
         btnStop.setEnabled(enabled);
         btnStart.setAlpha(enabled ? 0.5f : 1.0f);
@@ -601,10 +609,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void checkBatteryOptimizationStatus() {
-        android.content.SharedPreferences prefs = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE);
-        boolean serviceEnabled = prefs.getBoolean("service_enabled", false);
-
-        if (serviceEnabled && !BatteryOptimizationHelper.isBatteryOptimizationDisabled(this)) {
+        if (ServicePrefs.isServiceEnabled(this) && !BatteryOptimizationHelper.isBatteryOptimizationDisabled(this)) {
             Toast.makeText(this,
                     getString(R.string.battery_optimization_warning),
                     Toast.LENGTH_LONG).show();
@@ -626,10 +631,7 @@ public class MainActivity extends BaseActivity {
     private void checkDozeExemption() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            SharedPreferences prefs = getSharedPreferences("sms_forwarder_prefs", MODE_PRIVATE);
-            boolean serviceEnabled = prefs.getBoolean("service_enabled", false);
-
-            if (serviceEnabled && pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+            if (ServicePrefs.isServiceEnabled(this) && pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
                 Toast.makeText(this,
                         "⚠️ WARNING: Doze mode will kill service! Grant battery exemption.",
                         Toast.LENGTH_LONG).show();
@@ -637,7 +639,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    // Add this method for Doze exemption:
     private void requestDozeExemption() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);

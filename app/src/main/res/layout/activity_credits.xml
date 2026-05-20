@@ -1,154 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--activity_credits.xml-->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="@color/claude_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:paddingHorizontal="16dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="32dp">
 
-        <!-- Title -->
+        <!-- Header -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/credits_manager"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#333333"
-            android:fontFamily="@font/shabnam"
-            android:layout_marginBottom="24dp" />
+            android:fontFamily="@font/shabnam_bold"
+            android:textColor="@color/claude_text_primary"
+            android:layout_marginBottom="20dp" />
 
-        <!-- Credit Balance Card -->
-        <androidx.cardview.widget.CardView
+        <!-- Balance card -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#FFFFFF">
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="20dp"
+            android:gravity="center"
+            android:layout_marginBottom="12dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvCredits"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp"
-                android:gravity="center">
+                android:text="@string/available_credits"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/shabnam_bold"
+                android:textColor="@color/claude_primary"
+                android:layout_marginBottom="6dp" />
 
-                <TextView
-                    android:id="@+id/tvCredits"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/available_credits"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:fontFamily="@font/shabnam"
-                    android:textColor="#4CAF50"
-                    android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/tvAdStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ads_watched"
+                android:textSize="13sp"
+                android:fontFamily="@font/shabnam"
+                android:textColor="@color/claude_text_secondary" />
 
-                <TextView
-                    android:id="@+id/tvAdStats"
-                    android:layout_width="wrap_content"
-                    android:fontFamily="@font/shabnam"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ads_watched"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+        </LinearLayout>
 
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Reset Timer (NEW) -->
+        <!-- Reset timer -->
         <TextView
             android:id="@+id/tvResetTimer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🔄 Counter resets in: 5h 30m"
-            android:textSize="13sp"
-            android:textColor="#666666"
+            android:text="Counter resets in: 5h 30m"
+            android:textSize="12sp"
+            android:textColor="@color/claude_text_secondary"
             android:gravity="center"
-            android:background="#E8F5E9"
-            android:padding="8dp"
-            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_card"
+            android:padding="10dp"
             android:fontFamily="@font/shabnam"
-            android:visibility="visible" />
+            android:layout_marginBottom="10dp" />
 
-        <!-- Cooldown Timer -->
+        <!-- Cooldown timer -->
         <TextView
             android:id="@+id/tvCooldownTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Next ad in: 30s"
-            android:textSize="14sp"
-            android:textColor="#FF9800"
+            android:textSize="13sp"
+            android:textColor="@color/claude_warning"
             android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
             android:visibility="gone"
             android:layout_marginBottom="8dp" />
 
-        <!-- Watch Ad Button -->
+        <!-- Watch ad button -->
         <Button
             android:id="@+id/btnWatchAd"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:text="@string/watch_ad"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:fontFamily="@font/shabnam"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/button_rounded_green"
-            android:textColor="#FFFFFF" />
+            android:background="@drawable/btn_success"
+            android:textColor="@color/white"
+            android:layout_marginBottom="10dp" />
 
-        <!-- Redeem Token Button -->
+        <!-- Redeem token button -->
         <Button
             android:id="@+id/btnRedeemToken"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:text="@string/redeem_token"
-            android:textSize="16sp"
-            android:padding="16dp"
+            android:textSize="15sp"
             android:fontFamily="@font/shabnam"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/button_rounded_blue"
-            android:textColor="#FFFFFF" />
+            android:background="@drawable/btn_primary"
+            android:textColor="@color/white"
+            android:layout_marginBottom="10dp" />
 
-        <!-- Info Button -->
+        <!-- Info button (invisible placeholder) -->
         <Button
             android:id="@+id/btnInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:text="@string/how_credits_work"
-            android:textSize="14sp"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/button_rounded_gray"
-            android:textColor="#333333"
-            android:visibility="invisible"/>
+            android:textSize="13sp"
+            android:fontFamily="@font/shabnam"
+            android:background="@drawable/btn_outline"
+            android:textColor="@color/claude_text_secondary"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone" />
 
-        <!-- Progress Bar -->
+        <!-- Progress -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
             android:visibility="gone" />
 
-        <!-- Info Text -->
+        <!-- Info text -->
         <TextView
             android:layout_width="match_parent"
-            android:fontFamily="@font/shabnam"
             android:layout_height="wrap_content"
             android:text="@string/credit_info"
             android:textSize="12sp"
-            android:textColor="#999999"
+            android:fontFamily="@font/shabnam"
+            android:textColor="@color/claude_text_hint"
             android:gravity="center"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="16dp" />
 
     </LinearLayout>
 

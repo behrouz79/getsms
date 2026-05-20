@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/claude_bg">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -56,7 +56,7 @@
                 android:text="@string/conditions"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/claude_primary"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
 
@@ -137,7 +137,7 @@
                 android:text="@string/actions"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/claude_primary"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp" />
 

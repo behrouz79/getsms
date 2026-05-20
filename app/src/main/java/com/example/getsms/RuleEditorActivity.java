@@ -108,7 +108,6 @@ public class RuleEditorActivity extends BaseActivity {
 
         SpinnerHelper.setup(this, spinnerMessageType, new SpinnerItem[]{
                 new SpinnerItem(getString(R.string.any), "ANY"),
-                new SpinnerItem(getString(R.string.any), "ANY"),
                 new SpinnerItem(getString(R.string.equals), "EQUALS"),
                 new SpinnerItem(getString(R.string.contains), "CONTAINS"),
                 new SpinnerItem(getString(R.string.not_contains), "NOT_CONTAINS"),
@@ -239,13 +238,7 @@ public class RuleEditorActivity extends BaseActivity {
     }
 
     private void autoSaveRuleToDatabase() {
-        // Only auto-save if we're editing an existing rule
         if (currentRule == null) {
-            return;
-        }
-
-        // Optional: Don't save if actions list is empty
-        if (actions.isEmpty()) {
             return;
         }
 

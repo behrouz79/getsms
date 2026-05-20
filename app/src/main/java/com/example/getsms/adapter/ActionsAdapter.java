@@ -47,10 +47,10 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
         StringBuilder typeText = new StringBuilder(action.type.toString());
 
         if (action.enableRetry) {
-            typeText.append(" 🔄");
+            typeText.append(" · Retry");
         }
         if (action.enableBackup && action.hasValidBackup()) {
-            typeText.append(" 💾");
+            typeText.append(" · Backup");
         }
 
         holder.tvActionType.setText(typeText.toString());
@@ -91,7 +91,7 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
 
         // Display transformation info if enabled
         if (action.enableTransform && action.transformType != null) {
-            holder.tvTemplate.setText(holder.tvTemplate.getText() + " 🔄 " + action.transformType);
+            holder.tvTemplate.setText(holder.tvTemplate.getText() + " · " + action.transformType);
         }
 
         // Set enabled/disabled appearance

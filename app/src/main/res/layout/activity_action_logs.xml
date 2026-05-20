@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--activity action logs-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/claude_bg"
     android:padding="16dp">
 
     <!-- Statistics Header -->
-    <TextView
-        android:id="@+id/tvStats"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="📊 Loading statistics..."
-        android:textSize="14sp"
-        android:fontFamily="@font/shabnam"
+        android:background="@drawable/bg_card"
         android:padding="12dp"
-        android:background="#E8F5E9"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading statistics..."
+            android:textSize="13sp"
+            android:fontFamily="@font/shabnam"
+            android:textColor="@color/claude_text_secondary" />
+
+    </LinearLayout>
 
     <!-- Filter Buttons -->
     <LinearLayout
@@ -24,14 +31,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="3"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="12dp">
 
         <Button
             android:id="@+id/btnShowAll"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="All Logs"
+            android:textSize="12sp"
             android:fontFamily="@font/shabnam"
             android:layout_marginEnd="4dp"
             android:background="@drawable/btn_primary"
@@ -40,25 +48,27 @@
         <Button
             android:id="@+id/btnShowFailed"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="Failed Only"
+            android:textSize="12sp"
             android:fontFamily="@font/shabnam"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:background="@drawable/btn_primary"
-            android:textColor="@android:color/white" />
+            android:background="@drawable/btn_outline"
+            android:textColor="@color/claude_text_primary" />
 
         <Button
             android:id="@+id/btnClearLogs"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="Clear Old"
+            android:textSize="12sp"
             android:fontFamily="@font/shabnam"
             android:layout_marginStart="4dp"
-            android:background="@drawable/btn_primary"
-            android:textColor="@android:color/white" />
+            android:background="@drawable/btn_outline"
+            android:textColor="@color/claude_text_primary" />
 
     </LinearLayout>
 

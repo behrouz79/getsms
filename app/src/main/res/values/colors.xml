@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Keep original colors for backward compat -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -8,8 +9,29 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primary">#2867e1</color>
-    <color name="title">#29322d</color>
-    <color name="text_400">#53575b</color>
-    <color name="text_300">#606267</color>
+    <!-- Claude design palette -->
+    <color name="claude_bg">#FAF9F7</color>
+    <color name="claude_surface">#FFFFFF</color>
+    <color name="claude_surface_2">#F5F3EF</color>
+    <color name="claude_primary">#D97706</color>
+    <color name="claude_primary_dark">#B45309</color>
+    <color name="claude_text_primary">#1C1917</color>
+    <color name="claude_text_secondary">#78716C</color>
+    <color name="claude_text_hint">#A8A29E</color>
+    <color name="claude_divider">#E7E5E4</color>
+    <color name="claude_border">#D6D3D1</color>
+    <color name="claude_success">#059669</color>
+    <color name="claude_success_bg">#D1FAE5</color>
+    <color name="claude_error">#DC2626</color>
+    <color name="claude_error_bg">#FEE2E2</color>
+    <color name="claude_warning">#D97706</color>
+    <color name="claude_warning_bg">#FEF3C7</color>
+    <color name="claude_info_bg">#DBEAFE</color>
+    <color name="claude_info_text">#1E40AF</color>
+
+    <!-- Aliases -->
+    <color name="primary">@color/claude_primary</color>
+    <color name="title">@color/claude_text_primary</color>
+    <color name="text_400">@color/claude_text_secondary</color>
+    <color name="text_300">@color/claude_text_hint</color>
 </resources>

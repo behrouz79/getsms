@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/claude_bg">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -223,7 +223,7 @@
                             android:text="💡 Leave empty to use app's default bot"
                             android:textSize="11sp"
                             android:fontFamily="@font/shabnam"
-                            android:textColor="#FF9800"
+                            android:textColor="@color/claude_warning"
                             android:layout_marginBottom="4dp" />
 
                         <EditText
@@ -251,7 +251,7 @@
                             android:text="⚠️ Required: Send /getchatid to the bot to get your Chat ID"
                             android:textSize="11sp"
                             android:fontFamily="@font/shabnam"
-                            android:textColor="#F44336"
+                            android:textColor="@color/claude_error"
                             android:layout_marginBottom="4dp" />
 
                         <EditText
@@ -278,7 +278,7 @@
                 android:text="@string/transformation"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/claude_primary"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp" />
 
@@ -381,7 +381,7 @@
                 android:text="@string/retry_configuration"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/claude_primary"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp" />
 
@@ -532,7 +532,7 @@
                 android:text="@string/backup_configuration"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/claude_primary"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp" />
 
@@ -660,7 +660,7 @@
                 android:text="@string/error_handling"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/claude_primary"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp" />
 

@@ -1,14 +1,12 @@
 package com.example.getsms.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.getsms.R;
@@ -19,9 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Adapter for displaying detailed action logs
- */
 public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.LogViewHolder> {
 
     private final Context context;
@@ -48,77 +43,62 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
     @Override
     public void onBindViewHolder(@NonNull LogViewHolder holder, int position) {
         ActionLog log = logs.get(position);
+        int success = context.getResources().getColor(R.color.claude_success);
+        int error = context.getResources().getColor(R.color.claude_error);
 
-        // Status and Action Type
         if (log.success) {
-            holder.tvStatus.setText("✅");
-            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"));
-            holder.cardView.setCardBackgroundColor(Color.WHITE);
+            holder.viewStatusStrip.setBackgroundColor(success);
+            holder.tvStatus.setText("✓");
+            holder.tvStatus.setTextColor(success);
         } else {
-            holder.tvStatus.setText("❌");
-            holder.tvStatus.setTextColor(Color.parseColor("#F44336"));
-            holder.cardView.setCardBackgroundColor(Color.parseColor("#FFEBEE"));
+            holder.viewStatusStrip.setBackgroundColor(error);
+            holder.tvStatus.setText("✕");
+            holder.tvStatus.setTextColor(error);
         }
 
-        // Action type with emoji
-        String actionEmoji = getActionEmoji(log.actionType);
-        holder.tvActionType.setText(actionEmoji + " " + log.actionType);
+        holder.tvActionType.setText(log.actionType);
+        holder.tvDestination.setText(truncate(log.actionDestination, 40));
 
-        // Destination
-        holder.tvDestination.setText("📍 " + truncate(log.actionDestination, 30));
-
-        // Duration and status code
         if (log.success) {
-            holder.tvDuration.setText(String.format("⏱️ %dms | Status: %d",
-                    log.durationMs, log.statusCode));
-            holder.tvDuration.setTextColor(Color.parseColor("#666666"));
+            holder.tvDuration.setText(log.durationMs + "ms  ·  " + log.statusCode);
+            holder.tvDuration.setTextColor(context.getResources().getColor(R.color.claude_text_hint));
         } else {
-            holder.tvDuration.setText(String.format("⏱️ %dms | %s %s",
-                    log.durationMs, log.getErrorTypeEmoji(), log.errorType));
-            holder.tvDuration.setTextColor(Color.parseColor("#F44336"));
+            holder.tvDuration.setText(log.durationMs + "ms  ·  " + (log.errorType != null ? log.errorType : "ERROR"));
+            holder.tvDuration.setTextColor(error);
         }
 
-        // Timestamp
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        holder.tvTime.setText("🕐 " + sdf.format(new Date(log.executionTime)));
+        holder.tvTime.setText(sdf.format(new Date(log.executionTime)));
 
-        // Retry badge
         if (log.isRetry) {
             holder.tvRetryBadge.setVisibility(View.VISIBLE);
-            holder.tvRetryBadge.setText("🔄 Retry #" + log.attemptNumber);
+            holder.tvRetryBadge.setText("Retry #" + log.attemptNumber);
         } else {
             holder.tvRetryBadge.setVisibility(View.GONE);
         }
 
-        // Backup badge
         if (log.isBackupAction) {
             holder.tvBackupBadge.setVisibility(View.VISIBLE);
-            holder.tvBackupBadge.setText("🔀 Backup");
         } else {
             holder.tvBackupBadge.setVisibility(View.GONE);
         }
 
-        // Error message (if failed)
         if (!log.success && log.errorMessage != null) {
             holder.tvErrorMessage.setVisibility(View.VISIBLE);
-            holder.tvErrorMessage.setText("💬 " + truncate(log.errorMessage, 80));
+            holder.tvErrorMessage.setText(truncate(log.errorMessage, 80));
         } else {
             holder.tvErrorMessage.setVisibility(View.GONE);
         }
 
-        // Response body (if success and available)
         if (log.success && log.responseBody != null && !log.responseBody.isEmpty()) {
             holder.tvResponse.setVisibility(View.VISIBLE);
-            holder.tvResponse.setText("📄 " + truncate(log.responseBody, 50));
+            holder.tvResponse.setText(truncate(log.responseBody, 60));
         } else {
             holder.tvResponse.setVisibility(View.GONE);
         }
 
-        // Click listener
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onLogClick(log, position);
-            }
+            if (listener != null) listener.onLogClick(log, position);
         });
     }
 
@@ -127,22 +107,6 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
         return logs != null ? logs.size() : 0;
     }
 
-    /**
-     * Get emoji for action type
-     */
-    private String getActionEmoji(String actionType) {
-        switch (actionType) {
-            case "WEBHOOK": return "🌐";
-            case "SMS": return "📱";
-            case "TELEGRAM": return "✈️";
-            case "WHATSAPP": return "💚";
-            default: return "📋";
-        }
-    }
-
-    /**
-     * Truncate string
-     */
     private String truncate(String text, int maxLength) {
         if (text == null) return "";
         if (text.length() <= maxLength) return text;
@@ -150,7 +114,7 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
     }
 
     static class LogViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
+        View viewStatusStrip;
         TextView tvStatus;
         TextView tvActionType;
         TextView tvDestination;
@@ -163,7 +127,7 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
 
         LogViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardView = (CardView) itemView;
+            viewStatusStrip = itemView.findViewById(R.id.viewStatusStrip);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvActionType = itemView.findViewById(R.id.tvActionType);
             tvDestination = itemView.findViewById(R.id.tvDestination);
