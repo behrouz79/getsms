@@ -3,8 +3,8 @@
     android:color="#40047857">
     <item>
         <shape>
-            <solid android:color="@color/claude_success" />
-            <corners android:radius="10dp" />
+            <solid android:color="@color/success"/>
+            <corners android:radius="4dp"/>
         </shape>
     </item>
 </ripple>

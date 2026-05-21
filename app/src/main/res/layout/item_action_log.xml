@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Root uses strip_success/strip_error layer-list as background.
+     The 3dp colored left rail is baked into the drawable. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:layout_marginVertical="4dp"
-    android:background="@drawable/bg_card"
-    android:padding="14dp">
+    android:background="@drawable/strip_success"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingEnd="12dp"
+    android:paddingStart="13dp">
 
-    <!-- Left status strip -->
-    <View
-        android:id="@+id/viewStatusStrip"
-        android:layout_width="3dp"
-        android:layout_height="match_parent"
-        android:background="@color/claude_success"
-        android:layout_marginEnd="12dp" />
-
-    <!-- Content -->
+    <!-- Content (starts 13dp in — 12dp padding + 1dp to visually clear the rail) -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical">
 
         <!-- Row 1: status icon + action type + time -->
@@ -45,10 +41,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="WEBHOOK"
-                android:textSize="14sp"
-                android:textStyle="bold"
+                android:textSize="13sp"
                 android:fontFamily="@font/shabnam_bold"
-                android:textColor="@color/claude_text_primary" />
+                android:textColor="@color/text_primary"
+                android:textAllCaps="true"
+                android:letterSpacing="0.04" />
 
             <TextView
                 android:id="@+id/tvTime"
@@ -57,19 +54,19 @@
                 android:text="12:34"
                 android:textSize="11sp"
                 android:fontFamily="@font/shabnam"
-                android:textColor="@color/claude_text_hint" />
+                android:textColor="@color/text_muted" />
 
         </LinearLayout>
 
-        <!-- Row 2: destination -->
+        <!-- Row 2: destination (monospace) -->
         <TextView
             android:id="@+id/tvDestination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="https://api.example.com/webhook"
             android:textSize="12sp"
-            android:fontFamily="@font/shabnam"
-            android:textColor="@color/claude_text_secondary"
+            android:fontFamily="monospace"
+            android:textColor="@color/text_secondary"
             android:ellipsize="end"
             android:maxLines="1"
             android:layout_marginTop="3dp" />
@@ -79,10 +76,10 @@
             android:id="@+id/tvDuration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1234ms  ·  200"
+            android:text="142 ms  ·  200"
             android:textSize="11sp"
             android:fontFamily="@font/shabnam"
-            android:textColor="@color/claude_text_hint"
+            android:textColor="@color/text_muted"
             android:layout_marginTop="2dp" />
 
         <!-- Row 4: badges -->
@@ -96,12 +93,14 @@
                 android:id="@+id/tvRetryBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Retry #2"
+                android:text="retry 2/3"
                 android:textSize="10sp"
-                android:fontFamily="@font/shabnam"
-                android:textColor="@color/claude_primary_dark"
-                android:background="@drawable/bg_tag_amber"
-                android:paddingHorizontal="8dp"
+                android:fontFamily="@font/shabnam_bold"
+                android:textColor="@color/primary_dark"
+                android:textAllCaps="true"
+                android:letterSpacing="0.06"
+                android:background="@drawable/bg_badge_primary"
+                android:paddingHorizontal="7dp"
                 android:paddingVertical="2dp"
                 android:layout_marginEnd="6dp"
                 android:visibility="gone" />
@@ -110,12 +109,14 @@
                 android:id="@+id/tvBackupBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Backup"
+                android:text="backup ✓"
                 android:textSize="10sp"
-                android:fontFamily="@font/shabnam"
-                android:textColor="@color/claude_info_text"
-                android:background="@drawable/bg_tag_blue"
-                android:paddingHorizontal="8dp"
+                android:fontFamily="@font/shabnam_bold"
+                android:textColor="@color/info"
+                android:textAllCaps="true"
+                android:letterSpacing="0.06"
+                android:background="@drawable/bg_badge_neutral"
+                android:paddingHorizontal="7dp"
                 android:paddingVertical="2dp"
                 android:visibility="gone" />
 
@@ -126,22 +127,20 @@
             android:id="@+id/tvErrorMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Network error: Connection timeout"
             android:textSize="11sp"
             android:fontFamily="@font/shabnam"
-            android:textColor="@color/claude_error"
+            android:textColor="@color/error"
             android:layout_marginTop="4dp"
             android:visibility="gone" />
 
-        <!-- Response body -->
+        <!-- Response body (monospace, success only) -->
         <TextView
             android:id="@+id/tvResponse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="{&quot;status&quot;:&quot;ok&quot;}"
             android:textSize="10sp"
             android:fontFamily="monospace"
-            android:textColor="@color/claude_success"
+            android:textColor="@color/text_secondary"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="2"

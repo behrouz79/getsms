@@ -82,11 +82,11 @@ public class SmsLogAdapter extends RecyclerView.Adapter<SmsLogAdapter.LogViewHol
         if (log.hasError) {
             holder.tvStatus.setText("Error");
             holder.tvStatus.setTextColor(error);
-            holder.itemView.setBackgroundResource(R.drawable.bg_card_error);
+            holder.itemView.setBackgroundResource(R.drawable.strip_error);
         } else {
             holder.tvStatus.setText("Success");
             holder.tvStatus.setTextColor(success);
-            holder.itemView.setBackgroundResource(R.drawable.bg_card);
+            holder.itemView.setBackgroundResource(R.drawable.strip_success);
         }
 
         holder.itemView.setOnClickListener(v -> {

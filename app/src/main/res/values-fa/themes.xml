@@ -1,13 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.GetSMS" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/claude_primary</item>
-        <item name="colorPrimaryVariant">@color/claude_primary_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/claude_primary</item>
-        <item name="colorSecondaryVariant">@color/claude_primary_dark</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="android:statusBarColor" tools:targetApi="l">@color/claude_bg</item>
+    <style name="Theme.GetSMS" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/text_on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_weak</item>
+        <item name="colorOnPrimaryContainer">@color/primary</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_alt</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/divider</item>
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/background</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="android:windowBackground">@color/claude_bg</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:fontFamily">@font/shabnam</item>
+        <item name="fontFamily">@font/shabnam</item>
+        <item name="shapeAppearanceSmallComponent">@style/Shape.Tight</item>
+        <item name="shapeAppearanceMediumComponent">@style/Shape.Tight</item>
+        <item name="shapeAppearanceLargeComponent">@style/Shape.Tight</item>
     </style>
 </resources>

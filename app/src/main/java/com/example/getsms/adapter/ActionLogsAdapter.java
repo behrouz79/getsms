@@ -43,28 +43,31 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
     @Override
     public void onBindViewHolder(@NonNull LogViewHolder holder, int position) {
         ActionLog log = logs.get(position);
-        int success = context.getResources().getColor(R.color.claude_success);
-        int error = context.getResources().getColor(R.color.claude_error);
+
+        // Strip background: green layer-list for success, red for failure
+        holder.itemView.setBackgroundResource(
+                log.success ? R.drawable.strip_success : R.drawable.strip_error);
+
+        int successColor = context.getResources().getColor(R.color.success);
+        int errorColor = context.getResources().getColor(R.color.error);
 
         if (log.success) {
-            holder.viewStatusStrip.setBackgroundColor(success);
             holder.tvStatus.setText("✓");
-            holder.tvStatus.setTextColor(success);
+            holder.tvStatus.setTextColor(successColor);
         } else {
-            holder.viewStatusStrip.setBackgroundColor(error);
             holder.tvStatus.setText("✕");
-            holder.tvStatus.setTextColor(error);
+            holder.tvStatus.setTextColor(errorColor);
         }
 
         holder.tvActionType.setText(log.actionType);
         holder.tvDestination.setText(truncate(log.actionDestination, 40));
 
         if (log.success) {
-            holder.tvDuration.setText(log.durationMs + "ms  ·  " + log.statusCode);
-            holder.tvDuration.setTextColor(context.getResources().getColor(R.color.claude_text_hint));
+            holder.tvDuration.setText(log.durationMs + " ms  ·  " + log.statusCode);
+            holder.tvDuration.setTextColor(context.getResources().getColor(R.color.text_muted));
         } else {
-            holder.tvDuration.setText(log.durationMs + "ms  ·  " + (log.errorType != null ? log.errorType : "ERROR"));
-            holder.tvDuration.setTextColor(error);
+            holder.tvDuration.setText(log.durationMs + " ms  ·  " + (log.errorType != null ? log.errorType : "ERROR"));
+            holder.tvDuration.setTextColor(errorColor);
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
@@ -72,16 +75,12 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
 
         if (log.isRetry) {
             holder.tvRetryBadge.setVisibility(View.VISIBLE);
-            holder.tvRetryBadge.setText("Retry #" + log.attemptNumber);
+            holder.tvRetryBadge.setText("retry " + log.attemptNumber);
         } else {
             holder.tvRetryBadge.setVisibility(View.GONE);
         }
 
-        if (log.isBackupAction) {
-            holder.tvBackupBadge.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvBackupBadge.setVisibility(View.GONE);
-        }
+        holder.tvBackupBadge.setVisibility(log.isBackupAction ? View.VISIBLE : View.GONE);
 
         if (!log.success && log.errorMessage != null) {
             holder.tvErrorMessage.setVisibility(View.VISIBLE);
@@ -114,7 +113,6 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
     }
 
     static class LogViewHolder extends RecyclerView.ViewHolder {
-        View viewStatusStrip;
         TextView tvStatus;
         TextView tvActionType;
         TextView tvDestination;
@@ -127,7 +125,6 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
 
         LogViewHolder(@NonNull View itemView) {
             super(itemView);
-            viewStatusStrip = itemView.findViewById(R.id.viewStatusStrip);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvActionType = itemView.findViewById(R.id.tvActionType);
             tvDestination = itemView.findViewById(R.id.tvDestination);
