@@ -24,6 +24,7 @@ public class CreditsActivity extends BaseActivity {
     private TextView tvAdStats;
     private TextView tvCooldownTimer;
     private TextView tvResetTimer;
+    private TextView btnBack;
     private Button btnWatchAd;
     private Button btnRedeemToken;
     private ProgressBar progressBar;
@@ -67,13 +68,16 @@ public class CreditsActivity extends BaseActivity {
         creditManager.setBackendUrl("https://smsforwarder.amiriprog.ir/api/");
 
         // Initialize views
-        tvCredits = findViewById(R.id.tvCredits);
-        tvAdStats = findViewById(R.id.tvAdStats);
+        btnBack         = findViewById(R.id.btnBack);
+        tvCredits       = findViewById(R.id.tvCredits);
+        tvAdStats       = findViewById(R.id.tvAdStats);
         tvCooldownTimer = findViewById(R.id.tvCooldownTimer);
-        tvResetTimer = findViewById(R.id.tvResetTimer);
-        btnWatchAd = findViewById(R.id.btnWatchAd);
-        btnRedeemToken = findViewById(R.id.btnRedeemToken);
-        progressBar = findViewById(R.id.progressBar);
+        tvResetTimer    = findViewById(R.id.tvResetTimer);
+        btnWatchAd      = findViewById(R.id.btnWatchAd);
+        btnRedeemToken  = findViewById(R.id.btnRedeemToken);
+        progressBar     = findViewById(R.id.progressBar);
+
+        btnBack.setOnClickListener(v -> finish());
 
         // Display current info
         updateDisplay();

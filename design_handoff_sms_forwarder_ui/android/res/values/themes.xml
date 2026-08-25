@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- ─── New design-system theme (Material3) ─────────────── -->
     <style name="Theme.SmsForwarder" parent="Theme.Material3.Light.NoActionBar">
         <!-- Material 3 color roles -->
         <item name="colorPrimary">@color/primary</item>
@@ -23,7 +23,7 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/background</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
         <!-- Type — Shabnam everywhere -->
         <item name="android:fontFamily">@font/shabnam</item>
@@ -35,7 +35,7 @@
         <item name="textAppearanceBodySmall">@style/Text.Caption</item>
         <item name="textAppearanceLabelSmall">@style/Text.Badge</item>
 
-        <!-- Shape — tight; cards are flat with hairline border -->
+        <!-- Shape — keep it tight; cards are flat with hairline border -->
         <item name="shapeAppearanceSmallComponent">@style/Shape.Tight</item>
         <item name="shapeAppearanceMediumComponent">@style/Shape.Tight</item>
         <item name="shapeAppearanceLargeComponent">@style/Shape.Tight</item>
@@ -44,7 +44,4 @@
     <style name="Shape.Tight" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerSize">4dp</item>
     </style>
-
-    <!-- ─── Legacy theme (kept for reference; manifest now uses Theme.SmsForwarder) -->
-    <style name="Theme.GetSMS" parent="Theme.SmsForwarder"/>
 </resources>

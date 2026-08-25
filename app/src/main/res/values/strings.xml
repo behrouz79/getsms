@@ -306,4 +306,18 @@
 
     <string name="action_logs">Action Logs</string>
     <string name="service_status">Service Status</string>
+
+    <!-- Dashboard stats bar labels -->
+    <string name="stat_forwarded">FORWARDED</string>
+    <string name="stat_failed">FAILED</string>
+    <string name="stat_credits">CREDITS</string>
+    <string name="recent_activity">RECENT ACTIVITY</string>
+    <string name="service_idle">Service stopped</string>
+    <string name="service_running_since">Service running · since %s</string>
+
+    <!-- Overflow menu -->
+    <string name="menu_rules">Rules</string>
+    <string name="menu_credits">Credits</string>
+    <string name="menu_language">Language</string>
+    <string name="menu_clear_logs">Clear old logs</string>
 </resources>

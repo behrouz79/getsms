@@ -1,82 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/claude_bg"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <!-- Statistics Header -->
+    <!-- ── Top app bar (52dp) ─────────────────────────────── -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_card"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingEnd="4dp"
+        android:background="@color/background">
 
         <TextView
-            android:id="@+id/tvStats"
-            android:layout_width="match_parent"
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="←"
+            android:textSize="18sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/shabnam" />
+
+        <!-- Title + subtitle -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Loading statistics..."
-            android:textSize="13sp"
-            android:fontFamily="@font/shabnam"
-            android:textColor="@color/claude_text_secondary" />
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Action logs"
+                style="@style/Text.PageTitle" />
+
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- ↓ export icon — 44dp tap target -->
+        <TextView
+            android:id="@+id/btnExport"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="↓"
+            android:textSize="18sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/shabnam" />
+
+        <!-- ⋮ overflow — 44dp tap target -->
+        <TextView
+            android:id="@+id/btnOverflow"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="⋮"
+            android:textSize="20sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/shabnam" />
 
     </LinearLayout>
 
-    <!-- Filter Buttons -->
+    <!-- hairline -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- ── Stats summary bar ──────────────────────────────── -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="3"
-        android:layout_marginBottom="12dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/btnShowAll"
+        <!-- TOTAL -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="36dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="All Logs"
-            android:textSize="12sp"
-            android:fontFamily="@font/shabnam"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/btn_primary"
-            android:textColor="@android:color/white" />
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TOTAL"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="—"
+                style="@style/Text.StatValue" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btnShowFailed"
+        <!-- SUCCESS -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="36dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Failed Only"
-            android:textSize="12sp"
-            android:fontFamily="@font/shabnam"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/btn_outline"
-            android:textColor="@color/claude_text_primary" />
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SUCCESS"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatSuccess"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="—"
+                style="@style/Text.StatValue"
+                android:textColor="@color/success" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btnClearLogs"
+        <!-- FAILED -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="36dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Clear Old"
-            android:textSize="12sp"
-            android:fontFamily="@font/shabnam"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/btn_outline"
-            android:textColor="@color/claude_text_primary" />
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FAILED"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatFailed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="—"
+                style="@style/Text.StatValue"
+                android:textColor="@color/error" />
+        </LinearLayout>
+
+        <!-- RETRIED -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RETRIED"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatRetried"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="—"
+                style="@style/Text.StatValue" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- RecyclerView for logs -->
+    <!-- hairline below stats -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- ── Tabs: All / Failed ─────────────────────────────── -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        app:tabIndicatorColor="@color/primary"
+        app:tabIndicatorHeight="2dp"
+        app:tabSelectedTextColor="@color/text_primary"
+        app:tabTextColor="@color/text_secondary"
+        app:tabTextAppearance="@style/TextAppearance.SmsForwarder.BodyStrong"
+        app:tabPaddingStart="14dp"
+        app:tabPaddingEnd="14dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabRippleColor="@color/surface_alt">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Failed" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- hairline below tabs -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- ── Log list ──────────────────────────────────────── -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerActionLogs"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false" />
+
+    <!-- ── Bottom action bar ──────────────────────────────── -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <!-- Export (outline) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExportLogs"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:text="EXPORT"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/Button.Outline"
+            app:cornerRadius="4dp" />
+
+        <!-- Clear logs (destructive outline) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClearLogs"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="CLEAR LOGS"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/Button.DestructiveOutline"
+            app:cornerRadius="4dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

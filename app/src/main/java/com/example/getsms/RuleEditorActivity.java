@@ -3,10 +3,12 @@ package com.example.getsms;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -41,7 +43,9 @@ public class RuleEditorActivity extends BaseActivity {
     private List<Action> actions = new ArrayList<>();
 
     // Buttons
-    private Button btnSave, btnAddAction;
+    private Button btnSave;
+    private View btnAddAction, btnCancel;
+    private TextView btnBack, tvSave;
 
     // Data
     private DataBase db;
@@ -77,13 +81,19 @@ public class RuleEditorActivity extends BaseActivity {
         etMessageValue = findViewById(R.id.etMessageValue);
 
         // Buttons and RecyclerView
-        btnSave = findViewById(R.id.btnSave);
+        btnSave      = findViewById(R.id.btnSave);
         btnAddAction = findViewById(R.id.btnAddAction);
+        btnCancel    = findViewById(R.id.btnCancel);
+        btnBack      = findViewById(R.id.btnBack);
+        tvSave       = findViewById(R.id.tvSave);
         recyclerActions = findViewById(R.id.recyclerActions);
     }
 
     private void setupListeners() {
+        btnBack.setOnClickListener(v -> finish());
+        btnCancel.setOnClickListener(v -> finish());
         btnSave.setOnClickListener(v -> saveRule());
+        tvSave.setOnClickListener(v -> saveRule());
         btnAddAction.setOnClickListener(v -> {
             Intent intent = new Intent(RuleEditorActivity.this, ActionEditorActivity.class);
             startActivityForResult(intent, REQUEST_ADD_ACTION);

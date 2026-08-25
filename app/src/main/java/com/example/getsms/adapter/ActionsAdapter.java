@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import com.example.getsms.R;
 import com.example.getsms.model.Action;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionViewHolder> {
 
@@ -43,66 +43,31 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
     public void onBindViewHolder(@NonNull ActionViewHolder holder, int position) {
         Action action = actions.get(position);
 
-        // Display action type with retry/backup indicators
-        StringBuilder typeText = new StringBuilder(action.type.toString());
+        holder.itemView.setAlpha(action.enabled ? 1.0f : 0.65f);
 
-        if (action.enableRetry) {
-            typeText.append(" · Retry");
-        }
-        if (action.enableBackup && action.hasValidBackup()) {
-            typeText.append(" · Backup");
-        }
+        // Action type badge — WEBHOOK / SMS / TELEGRAM etc.
+        StringBuilder typeLine = new StringBuilder(action.type.toString().toUpperCase(Locale.ROOT));
+        if (action.enableRetry) typeLine.append(" · RETRY");
+        if (action.enableBackup && action.hasValidBackup()) typeLine.append(" · BACKUP");
+        holder.tvActionType.setText(typeLine.toString());
 
-        holder.tvActionType.setText(typeText.toString());
-
-        // Display destination based on type
-        StringBuilder destinationText = new StringBuilder();
+        // Destination (monospace, ellipsized)
+        String dest;
         switch (action.type) {
-            case WEBHOOK:
-                destinationText.append("URL: ").append(action.destination);
-                break;
-            case SMS:
-                destinationText.append("Phone: ").append(action.destination);
-                break;
-            case TELEGRAM:
-                destinationText.append("Chat ID: ").append(action.chatId);
-                break;
-            case WHATSAPP:
-                destinationText.append("Phone: ").append(action.destination);
-                break;
+            case WEBHOOK:  dest = action.destination != null ? action.destination : ""; break;
+            case SMS:      dest = action.destination != null ? action.destination : ""; break;
+            case TELEGRAM: dest = action.chatId != null ? action.chatId : ""; break;
+            case WHATSAPP: dest = action.destination != null ? action.destination : ""; break;
+            default:       dest = "";
         }
+        holder.tvDestination.setText(dest);
 
-        // Add retry/backup info
-        if (action.enableRetry) {
-            destinationText.append(" • Retry: ").append(action.maxRetries).append("x");
-        }
-        if (action.enableBackup && action.hasValidBackup()) {
-            destinationText.append(" • Backup: ").append(action.backupType);
-        }
+        // Template preview (caption monospace)
+        String tpl = action.template != null ? action.template : "{message}";
+        holder.tvTemplate.setText(tpl);
 
-        holder.tvDestination.setText(destinationText.toString());
-
-        // Display template (truncated if too long)
-        String template = action.template != null ? action.template : "{message}";
-        if (template.length() > 50) {
-            template = template.substring(0, 47) + "...";
-        }
-        holder.tvTemplate.setText("Template: " + template);
-
-        // Display transformation info if enabled
-        if (action.enableTransform && action.transformType != null) {
-            holder.tvTemplate.setText(holder.tvTemplate.getText() + " · " + action.transformType);
-        }
-
-        // Set enabled/disabled appearance
-        float alpha = action.enabled ? 1.0f : 0.5f;
-        holder.tvActionType.setAlpha(alpha);
-        holder.tvDestination.setAlpha(alpha);
-        holder.tvTemplate.setAlpha(alpha);
-
-        // Click listeners
-        holder.btnEdit.setOnClickListener(v -> listener.onEditClick(action, position));
-        holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(action, position));
+        holder.itemView.setOnClickListener(v -> listener.onEditClick(action, position));
+        holder.tvDeleteAction.setOnClickListener(v -> listener.onDeleteClick(action, position));
     }
 
     @Override
@@ -111,19 +76,19 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
     }
 
     static class ActionViewHolder extends RecyclerView.ViewHolder {
+        TextView tvDragHandle;
         TextView tvActionType;
         TextView tvDestination;
         TextView tvTemplate;
-        Button btnEdit;
-        Button btnDelete;
+        TextView tvDeleteAction;
 
         ActionViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvActionType = itemView.findViewById(R.id.tvActionType);
-            tvDestination = itemView.findViewById(R.id.tvDestination);
-            tvTemplate = itemView.findViewById(R.id.tvTemplate);
-            btnEdit = itemView.findViewById(R.id.btnEditAction);
-            btnDelete = itemView.findViewById(R.id.btnDeleteAction);
+            tvDragHandle   = itemView.findViewById(R.id.tvDragHandle);
+            tvActionType   = itemView.findViewById(R.id.tvActionType);
+            tvDestination  = itemView.findViewById(R.id.tvDestination);
+            tvTemplate     = itemView.findViewById(R.id.tvTemplate);
+            tvDeleteAction = itemView.findViewById(R.id.tvDeleteAction);
         }
     }
 }

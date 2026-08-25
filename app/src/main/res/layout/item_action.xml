@@ -1,76 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<!-- Action card inside Rule Editor. Whole card taps to edit; DELETE in footer. -->
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginVertical="5dp"
-    android:background="@drawable/bg_card"
-    android:padding="14dp">
+    android:layout_marginBottom="8dp"
+    style="@style/Card.Flat">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:padding="12dp"
+        android:gravity="top">
 
+        <!-- Drag grip -->
         <TextView
-            android:id="@+id/tvActionType"
+            android:id="@+id/tvDragHandle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            android:text="⋮⋮"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:textColor="@color/text_muted" />
+
+        <!-- Content column -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/shabnam_bold"
-            android:textColor="@color/claude_primary"
-            android:text="@string/action_type" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnEditAction"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/edit"
-            android:textSize="12sp"
-            android:textColor="@color/claude_text_secondary"
-            android:background="@android:color/transparent"
-            style="@style/Widget.MaterialComponents.Button.TextButton" />
+            <!-- Action type badge -->
+            <TextView
+                android:id="@+id/tvActionType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                style="@style/Text.Badge"
+                android:textColor="@color/primary" />
 
-        <Button
-            android:id="@+id/btnDeleteAction"
+            <!-- Destination — monospace, ellipsized -->
+            <TextView
+                android:id="@+id/tvDestination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Text.Mono"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+            <!-- Template preview — caption monospace -->
+            <TextView
+                android:id="@+id/tvTemplate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+            <!-- DELETE button row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvDeleteAction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="44dp"
+                    android:minHeight="36dp"
+                    android:gravity="center"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp"
+                    android:text="DELETE"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/shabnam_bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.06"
+                    android:textColor="@color/error" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Chevron — tapping card goes to editor -->
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/delete"
-            android:textSize="12sp"
-            android:textColor="@color/claude_error"
-            android:background="@android:color/transparent"
-            style="@style/Widget.MaterialComponents.Button.TextButton" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="2dp"
+            android:text="›"
+            android:textSize="18sp"
+            android:textColor="@color/text_muted" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvDestination"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:textSize="12sp"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/claude_text_secondary"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="@string/destination_hint" />
-
-    <TextView
-        android:id="@+id/tvTemplate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textSize="11sp"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/claude_text_hint"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="@string/template_hint" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

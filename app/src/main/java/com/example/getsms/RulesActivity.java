@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,7 +19,7 @@ import com.example.getsms.adapter.RulesAdapter;
 import com.example.getsms.backup.BackupManager;
 import com.example.getsms.model.Rule;
 import com.example.getsms.roomDB.DataBase;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +32,8 @@ public class RulesActivity extends BaseActivity {
     private RecyclerView recyclerRules;
     private RulesAdapter rulesAdapter;
     private List<Rule> rulesList = new ArrayList<>();
-    private Button btnBackup, btnRestore, fabAddRule;
+    private MaterialButton btnBackup, btnRestore, fabAddRule;
+    private TextView btnBack, btnRefresh, btnOverflow, tvSubtitle;
 
     private DataBase db;
     private ExecutorService executorService;
@@ -48,6 +50,7 @@ public class RulesActivity extends BaseActivity {
 
         initializeComponents();
         setupRecyclerView();
+        setupAppBar();
         setupButtons();
         setupFileOperations();
         loadRules();
@@ -59,9 +62,13 @@ public class RulesActivity extends BaseActivity {
         backupManager = new BackupManager(this);
 
         recyclerRules = findViewById(R.id.recyclerRules);
-        fabAddRule = findViewById(R.id.fabAddRule);
-        btnBackup = findViewById(R.id.btnBackup);
-        btnRestore = findViewById(R.id.btnRestore);
+        fabAddRule    = findViewById(R.id.fabAddRule);
+        btnBackup     = findViewById(R.id.btnBackup);
+        btnRestore    = findViewById(R.id.btnRestore);
+        btnBack       = findViewById(R.id.btnBack);
+        btnRefresh    = findViewById(R.id.btnRefresh);
+        btnOverflow   = findViewById(R.id.btnOverflow);
+        tvSubtitle    = findViewById(R.id.tvSubtitle);
     }
 
     private void setupFileOperations() {
@@ -92,6 +99,23 @@ public class RulesActivity extends BaseActivity {
         );
     }
 
+    private void setupAppBar() {
+        btnBack.setOnClickListener(v -> finish());
+        btnRefresh.setOnClickListener(v -> loadRules());
+        btnOverflow.setOnClickListener(v -> {
+            PopupMenu menu = new PopupMenu(this, btnOverflow);
+            menu.getMenu().add(0, 0, 0, R.string.delete_all_rules);
+            menu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == 0) {
+                    showDeleteAllDialog();
+                    return true;
+                }
+                return false;
+            });
+            menu.show();
+        });
+    }
+
     private void setupRecyclerView() {
         rulesAdapter = new RulesAdapter(this, rulesList, new RulesAdapter.RuleClickListener() {
             @Override
@@ -118,7 +142,6 @@ public class RulesActivity extends BaseActivity {
         recyclerRules.setLayoutManager(new LinearLayoutManager(this));
         recyclerRules.setAdapter(rulesAdapter);
 
-        // Enable drag and drop for reordering
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
             @Override
@@ -138,6 +161,7 @@ public class RulesActivity extends BaseActivity {
             }
         });
         itemTouchHelper.attachToRecyclerView(recyclerRules);
+        rulesAdapter.setItemTouchHelper(itemTouchHelper);
     }
 
     private void setupButtons() {
@@ -270,6 +294,9 @@ public class RulesActivity extends BaseActivity {
                 rulesList.clear();
                 rulesList.addAll(rules);
                 rulesAdapter.notifyDataSetChanged();
+                int enabled = 0;
+                for (Rule r : rulesList) if (r.enabled) enabled++;
+                tvSubtitle.setText(rulesList.size() + " rules · " + enabled + " enabled");
             });
         });
     }

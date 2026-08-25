@@ -1,69 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ─── Type scale · Shabnam · sp values ───────────────── -->
-    <style name="Text.PageTitle" parent="">
+    <style name="Text.PageTitle">
         <item name="android:textSize">22sp</item>
         <item name="android:fontFamily">@font/shabnam_bold</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:letterSpacing">-0.01</item>
     </style>
-    <style name="Text.SectionHeader" parent="">
+    <style name="Text.SectionHeader">
         <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/shabnam_bold</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:letterSpacing">0.08</item>
     </style>
-    <style name="Text.CardTitle" parent="">
+    <style name="Text.CardTitle">
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/shabnam_bold</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
-    <style name="Text.Body" parent="">
+    <style name="Text.Body">
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">@font/shabnam</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
-    <style name="Text.Caption" parent="">
+    <style name="Text.Caption">
         <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">@font/shabnam</item>
         <item name="android:textColor">@color/text_secondary</item>
     </style>
-    <style name="Text.Badge" parent="">
+    <style name="Text.Badge">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">@font/shabnam_bold</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:letterSpacing">0.06</item>
     </style>
-    <!-- 13sp semi-bold — action destinations, emphasized body text -->
-    <style name="Text.BodyStrong" parent="">
-        <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">@font/shabnam_bold</item>
-        <item name="android:textColor">@color/text_primary</item>
-    </style>
-    <!-- 20sp bold tabular — stat values on dashboard / logs -->
-    <style name="Text.StatValue" parent="">
-        <item name="android:textSize">20sp</item>
-        <item name="android:fontFamily">@font/shabnam_bold</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:elegantTextHeight">true</item>
-    </style>
-    <!-- 64sp bold tabular — credits balance hero number -->
-    <style name="Text.Balance" parent="">
-        <item name="android:textSize">64sp</item>
-        <item name="android:fontFamily">@font/shabnam_bold</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:elegantTextHeight">true</item>
-    </style>
-    <!-- 28sp bold tabular — countdown (2d 14h) in Credits reset card -->
-    <style name="Text.Countdown" parent="">
-        <item name="android:textSize">28sp</item>
-        <item name="android:fontFamily">@font/shabnam_bold</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:elegantTextHeight">true</item>
-    </style>
-
-    <style name="Text.Mono" parent="">
+    <style name="Text.Mono">
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">monospace</item>
         <item name="android:textColor">@color/text_primary</item>
@@ -102,27 +74,6 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">@font/shabnam_bold</item>
         <item name="android:letterSpacing">0.04</item>
-    </style>
-
-    <!-- Destructive outline button — error_weak border, error text (e.g. "Clear logs") -->
-    <style name="Button.DestructiveOutline" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="strokeColor">@color/error_weak</item>
-        <item name="android:textColor">@color/error</item>
-        <item name="cornerRadius">4dp</item>
-        <item name="android:minHeight">40dp</item>
-    </style>
-
-    <!-- ThemeOverlay — applied to SwitchMaterial so track uses text_primary not amber -->
-    <!-- Applied via android:theme on SwitchMaterial so track is text_primary, not amber -->
-    <style name="ThemeOverlay.Toggle" parent="ThemeOverlay.Material3">
-        <item name="colorPrimary">@color/text_primary</item>
-    </style>
-
-    <!-- TextAppearance version of BodyStrong for TabLayout tabTextAppearance -->
-    <style name="TextAppearance.SmsForwarder.BodyStrong" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">@font/shabnam_bold</item>
-        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <!-- ─── Card · TextInputLayout ──────────────────────────── -->
