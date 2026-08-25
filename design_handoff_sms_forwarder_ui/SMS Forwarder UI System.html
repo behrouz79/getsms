@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SMS Forwarder — Android UI system</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; height: 100%; }
+  body { font-family: Vazirmatn, "Segoe UI", system-ui, sans-serif; color: #1C1917; }
+  * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tokens.jsx"></script>
+<script type="text/babel" src="ui.jsx"></script>
+<script type="text/babel" src="phone.jsx"></script>
+<script type="text/babel" src="components-showcase.jsx"></script>
+<script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel" src="xml-blocks.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  const PW = PHONE_W, PH = PHONE_H;
+  return (
+    <DesignCanvas>
+      <DCSection id="foundations" title="Foundations" subtitle="Color · type. Warm stone neutrals with amber as a deliberate accent.">
+        <DCArtboard id="palette" label="Palette" width={520} height={760}><PaletteArtboard /></DCArtboard>
+        <DCArtboard id="type"    label="Type scale" width={520} height={760}><TypeArtboard /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="components" title="Components" subtitle="Primitives shared across every screen.">
+        <DCArtboard id="buttons" label="Buttons · badges · strips" width={520} height={760}><ButtonsArtboard /></DCArtboard>
+        <DCArtboard id="forms"   label="Forms · cards · tabs"     width={520} height={760}><FormsArtboard /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="screens" title="Screens" subtitle="All six flows · 360×760dp at 1×.">
+        <DCArtboard id="dashboard"     label="01 · Dashboard"      width={PW} height={PH}><DashboardScreen /></DCArtboard>
+        <DCArtboard id="rules-list"    label="02 · Rules list"     width={PW} height={PH}><RulesListScreen /></DCArtboard>
+        <DCArtboard id="rule-editor"   label="03 · Rule editor"    width={PW} height={PH}><RuleEditorScreen /></DCArtboard>
+        <DCArtboard id="action-editor" label="04 · Action editor"  width={PW} height={PH}><ActionEditorScreen /></DCArtboard>
+        <DCArtboard id="credits"       label="05 · Credits"        width={PW} height={PH}><CreditsScreen /></DCArtboard>
+        <DCArtboard id="action-logs"   label="06 · Action logs"    width={PW} height={PH}><ActionLogsScreen /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="android-xml" title="Android XML" subtitle="Drop-in resource files — colors, theme, drawables.">
+        <DCArtboard id="colors"    label="colors.xml"      width={620} height={760}><ColorsXmlArtboard /></DCArtboard>
+        <DCArtboard id="themes"    label="themes.xml"      width={620} height={760}><ThemesXmlArtboard /></DCArtboard>
+        <DCArtboard id="styles"    label="styles.xml"      width={620} height={760}><StylesXmlArtboard /></DCArtboard>
+        <DCArtboard id="drawables" label="drawable/*.xml"  width={620} height={760}><DrawablesXmlArtboard /></DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

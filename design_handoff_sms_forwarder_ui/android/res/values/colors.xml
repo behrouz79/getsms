@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Surface -->
+    <color name="background">#FAF9F7</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_alt">#F5F4F1</color>
+    <color name="divider">#E7E5E4</color>
+    <color name="divider_light">#F1EFEC</color>
+
+    <!-- Text -->
+    <color name="text_primary">#1C1917</color>
+    <color name="text_secondary">#78716C</color>
+    <color name="text_muted">#A8A29E</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Brand · amber primary -->
+    <color name="primary">#D97706</color>
+    <color name="primary_weak">#FEF3C7</color>
+
+    <!-- Semantic -->
+    <color name="success">#059669</color>
+    <color name="success_weak">#D1FAE5</color>
+    <color name="error">#DC2626</color>
+    <color name="error_weak">#FEE2E2</color>
+    <color name="warning">#D97706</color>
+    <color name="warning_weak">#FEF3C7</color>
+    <color name="info">#1E40AF</color>
+    <color name="info_weak">#DBEAFE</color>
+
+    <!-- Status strip (3dp left border on list rows) -->
+    <color name="strip_success">@color/success</color>
+    <color name="strip_error">@color/error</color>
+    <color name="strip_neutral">@color/text_muted</color>
+</resources>
