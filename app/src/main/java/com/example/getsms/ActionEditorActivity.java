@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.cardview.widget.CardView;
 
 import com.example.getsms.engine.MessageTransformer;
 import com.example.getsms.model.Action;
@@ -27,12 +26,17 @@ import com.google.gson.Gson;
 
 public class ActionEditorActivity extends BaseActivity {
 
+    // App bar
+    private TextView btnBack, tvSave;
+    // Type selector buttons
+    private TextView tvTypeWebhook, tvTypeSms, tvTypeTelegram;
+
     // Basic fields
     private Spinner spinnerActionType;
     private EditText etActionDestination, etActionTemplate;
     private EditText etBotToken, etChatId;
     private LinearLayout telegramFields;
-    private CardView webhookHelpCard;
+    private View webhookHelpCard;
 
     // Transform fields
     private SwitchCompat switchEnableTransform;
@@ -80,6 +84,14 @@ public class ActionEditorActivity extends BaseActivity {
     }
 
     private void initViews() {
+        // App bar
+        btnBack = findViewById(R.id.btnBack);
+        tvSave  = findViewById(R.id.tvSave);
+        // Type selector buttons
+        tvTypeWebhook  = findViewById(R.id.tvTypeWebhook);
+        tvTypeSms      = findViewById(R.id.tvTypeSms);
+        tvTypeTelegram = findViewById(R.id.tvTypeTelegram);
+
         // Basic fields
         spinnerActionType = findViewById(R.id.spinnerActionType);
         etActionDestination = findViewById(R.id.etActionDestination);
@@ -155,10 +167,27 @@ public class ActionEditorActivity extends BaseActivity {
         });
     }
 
+    private void updateTypeButtons(String type) {
+        int active   = getResources().getColor(R.color.text_on_primary);
+        int inactive = getResources().getColor(R.color.text_primary);
+        tvTypeWebhook.setBackgroundResource("WEBHOOK".equals(type)  ? R.drawable.bg_type_btn_active : R.drawable.bg_type_btn_idle);
+        tvTypeSms.setBackgroundResource("SMS".equals(type)           ? R.drawable.bg_type_btn_active : R.drawable.bg_type_btn_idle);
+        tvTypeTelegram.setBackgroundResource("TELEGRAM".equals(type) ? R.drawable.bg_type_btn_active : R.drawable.bg_type_btn_idle);
+        tvTypeWebhook.setTextColor("WEBHOOK".equals(type)  ? active : inactive);
+        tvTypeSms.setTextColor("SMS".equals(type)           ? active : inactive);
+        tvTypeTelegram.setTextColor("TELEGRAM".equals(type) ? active : inactive);
+    }
+
     private void setupListeners() {
+        btnBack.setOnClickListener(v -> finish());
+        tvSave.setOnClickListener(v -> saveAction());
         btnSaveAction.setOnClickListener(v -> saveAction());
         btnCancel.setOnClickListener(v -> finish());
         btnTestTransform.setOnClickListener(v -> showTransformTestDialog());
+
+        tvTypeWebhook.setOnClickListener(v  -> { spinnerActionType.setSelection(0); updateTypeButtons("WEBHOOK"); });
+        tvTypeSms.setOnClickListener(v      -> { spinnerActionType.setSelection(1); updateTypeButtons("SMS"); });
+        tvTypeTelegram.setOnClickListener(v -> { spinnerActionType.setSelection(2); updateTypeButtons("TELEGRAM"); });
 
         switchEnableTransform.setOnCheckedChangeListener((buttonView, isChecked) ->
                 transformSettings.setVisibility(isChecked ? View.VISIBLE : View.GONE));
@@ -229,6 +258,7 @@ public class ActionEditorActivity extends BaseActivity {
 
     private void populateActionForm(Action action) {
         SpinnerHelper.setValue(spinnerActionType, action.type.toString());
+        updateTypeButtons(action.type.toString());
         etActionDestination.setText(action.destination);
         etActionTemplate.setText(action.template);
 

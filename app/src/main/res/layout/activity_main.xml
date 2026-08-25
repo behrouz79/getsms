@@ -1,259 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/claude_bg"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    android:background="@color/background">
 
-    <!-- Top panel: header + controls -->
+    <!-- ── Top app bar (52dp) ─────────────────────────────── -->
     <LinearLayout
-        android:id="@+id/topPanel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp"
+        android:background="@color/background">
 
-        <!-- App header -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/app_name"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/shabnam_bold"
-                android:textColor="@color/claude_text_primary" />
-
-            <Button
-                android:id="@+id/tvCreditsDisplay"
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:background="@drawable/bg_tag_amber"
-                android:fontFamily="@font/shabnam"
-                android:paddingHorizontal="12dp"
-                android:text="@string/credits"
-                android:textColor="@color/claude_primary_dark"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <!-- Service control card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:padding="14dp"
-            android:orientation="vertical"
-            android:layout_marginBottom="10dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="10dp"
-                android:gravity="center_vertical">
+                android:text="@string/app_name"
+                style="@style/Text.PageTitle" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/service_status"
-                    android:textSize="13sp"
-                    android:fontFamily="@font/shabnam"
-                    android:textColor="@color/claude_text_secondary" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnStart"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/btn_success"
-                    android:fontFamily="@font/shabnam"
-                    android:text="@string/start_service"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-
-                <Button
-                    android:id="@+id/btnStart2"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_error"
-                    android:fontFamily="@font/shabnam"
-                    android:text="@string/stop_service"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
+                android:text="@string/service_idle"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary" />
 
         </LinearLayout>
 
-        <!-- Action row: Rules / Language / Credits / Clear -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
-
-            <Button
-                android:id="@+id/btnOpenRules"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/btn_primary"
-                android:fontFamily="@font/shabnam"
-                android:text="@string/manage_rules"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnCredits"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/btn_outline"
-                android:fontFamily="@font/shabnam"
-                android:text="@string/manage_credits"
-                android:textColor="@color/claude_text_primary"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnLanguage"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/btn_outline"
-                android:fontFamily="@font/shabnam"
-                android:text="@string/change_language"
-                android:textColor="@color/claude_text_primary"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_outline"
-                android:fontFamily="@font/shabnam"
-                android:text="@string/cleanup_record"
-                android:textColor="@color/claude_text_primary"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-        <!-- Filter chips -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
-
-            <Button
-                android:id="@+id/btnShowAll"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/btn_primary"
-                android:fontFamily="@font/shabnam"
-                android:text="All"
-                android:textColor="@color/white"
-                android:textSize="13sp" />
-
-            <Button
-                android:id="@+id/btnShowSuccess"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/btn_outline"
-                android:fontFamily="@font/shabnam"
-                android:text="Success"
-                android:textColor="@color/claude_text_primary"
-                android:textSize="13sp" />
-
-            <Button
-                android:id="@+id/btnShowFailed"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_outline"
-                android:fontFamily="@font/shabnam"
-                android:text="Failed"
-                android:textColor="@color/claude_text_primary"
-                android:textSize="13sp" />
-
-        </LinearLayout>
-
-        <!-- Stats bar -->
+        <!-- Overflow menu — 44dp tap target -->
         <TextView
-            android:id="@+id/tvStats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:fontFamily="@font/shabnam"
-            android:padding="10dp"
-            android:text="Loading..."
-            android:textColor="@color/claude_text_secondary"
-            android:textSize="12sp" />
+            android:id="@+id/btnOverflow"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="⋮"
+            android:textSize="20sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/shabnam" />
 
     </LinearLayout>
 
-    <!-- Section label -->
-    <TextView
-        android:id="@+id/tvLogsLabel"
+    <!-- hairline below app bar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- ── Service hero button ───────────────────────────── -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnService"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:text="@string/start_service"
+        android:textColor="#FFFFFF"
+        style="@style/Button.Service"
+        app:backgroundTint="@color/success"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:cornerRadius="4dp" />
+
+    <!-- ── Stats bar ─────────────────────────────────────── -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="4dp"
-        android:text="@string/action_logs"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/claude_text_hint"
-        android:textAllCaps="true"
-        app:layout_constraintTop_toBottomOf="@id/topPanel"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="14dp"
+        android:gravity="center_vertical">
 
-    <!-- Log list -->
+        <!-- FORWARDED -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stat_forwarded"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatForwarded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                style="@style/Text.StatValue" />
+        </LinearLayout>
+
+        <!-- FAILED -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stat_failed"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatFailed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                style="@style/Text.StatValue"
+                android:textColor="@color/error" />
+        </LinearLayout>
+
+        <!-- CREDITS -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stat_credits"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+            <TextView
+                android:id="@+id/tvStatCredits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                style="@style/Text.StatValue" />
+        </LinearLayout>
+
+        <!-- Credits earned badge — hidden until data available -->
+        <!-- TODO: wire when credit-earned-this-period is tracked -->
+        <TextView
+            android:id="@+id/tvCreditsBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="7dp"
+            android:paddingEnd="7dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            style="@style/Text.Badge"
+            android:textColor="@color/primary"
+            android:background="@drawable/bg_badge_primary"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- hairline below stats -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- ── Tabs: All / Success / Failed ──────────────────── -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        app:tabIndicatorColor="@color/primary"
+        app:tabIndicatorHeight="2dp"
+        app:tabSelectedTextColor="@color/text_primary"
+        app:tabTextColor="@color/text_secondary"
+        app:tabTextAppearance="@style/TextAppearance.SmsForwarder.BodyStrong"
+        app:tabPaddingStart="14dp"
+        app:tabPaddingEnd="14dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabRippleColor="@color/surface_alt">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All" />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Success" />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Failed" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- hairline below tabs -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- ── Section header: RECENT ACTIVITY + CLEAR ───────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/recent_activity"
+            style="@style/Text.SectionHeader" />
+
+        <!-- CLEAR — 44dp minimum tap target -->
+        <TextView
+            android:id="@+id/tvClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="44dp"
+            android:minHeight="44dp"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="CLEAR"
+            style="@style/Text.Caption"
+            android:textColor="@color/text_secondary" />
+
+    </LinearLayout>
+
+    <!-- ── Log list ──────────────────────────────────────── -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recRequ"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingHorizontal="12dp"
-        android:paddingBottom="12dp"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/tvLogsLabel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_weight="1"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

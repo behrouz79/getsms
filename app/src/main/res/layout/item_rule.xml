@@ -1,98 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<!-- Rule card. Adapter sets itemView.setAlpha(0.65f) when rule is disabled. -->
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginVertical="5dp"
-    android:background="@drawable/bg_card"
-    android:padding="16dp">
+    android:layout_marginBottom="10dp"
+    style="@style/Card.Flat">
 
-    <!-- Rule name + toggle -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:padding="14dp">
 
+        <!-- Drag grip — monospace ⋮⋮ glyph -->
         <TextView
-            android:id="@+id/tvRuleName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/shabnam_bold"
-            android:textColor="@color/claude_text_primary" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchEnabled"
+            android:id="@+id/tvDragHandle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/shabnam" />
+            android:layout_marginTop="2dp"
+            android:text="⋮⋮"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:textColor="@color/text_muted"
+            android:paddingEnd="10dp" />
+
+        <!-- Content column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Row 1: Rule name + toggle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvRuleName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    style="@style/Text.CardTitle" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchEnabled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/ThemeOverlay.Toggle" />
+
+            </LinearLayout>
+
+            <!-- Row 2: Conditions summary -->
+            <TextView
+                android:id="@+id/tvRuleConditions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                style="@style/Text.Caption"
+                android:textColor="@color/text_secondary" />
+
+            <!-- Row 3: Action count badge + EDIT / COPY / DELETE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp">
+
+                <!-- N actions badge (tone set in adapter) -->
+                <TextView
+                    android:id="@+id/tvActionsBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="7dp"
+                    android:paddingEnd="7dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    style="@style/Text.Badge"
+                    android:background="@drawable/bg_badge_primary"
+                    android:textColor="@color/primary" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- EDIT — min 44dp tap target -->
+                <TextView
+                    android:id="@+id/tvEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="44dp"
+                    android:minHeight="44dp"
+                    android:gravity="center"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="EDIT"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/shabnam_bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.06"
+                    android:textColor="@color/text_secondary" />
+
+                <!-- COPY -->
+                <TextView
+                    android:id="@+id/tvCopy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="44dp"
+                    android:minHeight="44dp"
+                    android:gravity="center"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="COPY"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/shabnam_bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.06"
+                    android:textColor="@color/text_secondary" />
+
+                <!-- DELETE — destructive red -->
+                <TextView
+                    android:id="@+id/tvDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="44dp"
+                    android:minHeight="44dp"
+                    android:gravity="center"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="DELETE"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/shabnam_bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.06"
+                    android:textColor="@color/error" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Conditions summary -->
-    <TextView
-        android:id="@+id/tvRuleConditions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textSize="13sp"
-        android:fontFamily="@font/shabnam"
-        android:textColor="@color/claude_text_secondary" />
-
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/claude_divider"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="10dp" />
-
-    <!-- Action buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnCopy"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/copy"
-            android:textSize="12sp"
-            android:textColor="@color/claude_text_secondary"
-            android:background="@drawable/btn_outline" />
-
-        <Button
-            android:id="@+id/btnEdit"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/edit"
-            android:textSize="12sp"
-            android:background="@drawable/btn_primary"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/shabnam"
-            android:text="@string/delete"
-            android:textSize="12sp"
-            android:textColor="@color/claude_error"
-            android:background="@android:color/transparent"
-            style="@style/Widget.MaterialComponents.Button.TextButton" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

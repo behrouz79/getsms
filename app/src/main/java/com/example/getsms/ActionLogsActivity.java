@@ -1,7 +1,6 @@
 package com.example.getsms;
 
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,14 +12,12 @@ import com.example.getsms.adapter.ActionLogsAdapter;
 import com.example.getsms.engine.ActionLogger;
 import com.example.getsms.model.ActionLog;
 import com.example.getsms.roomDB.DataBase;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Activity to view detailed action execution logs
- * FIXED: Removed 'var' keyword for Java 8 compatibility
- */
 public class ActionLogsActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
@@ -28,10 +25,15 @@ public class ActionLogsActivity extends BaseActivity {
     private List<ActionLog> logsList = new ArrayList<>();
     private ActionLogger actionLogger;
 
-    private TextView tvStats;
-    private Button btnShowFailed;
-    private Button btnShowAll;
-    private Button btnClearLogs;
+    private TextView btnBack;
+    private TextView tvSubtitle;
+    private TextView tvStatTotal;
+    private TextView tvStatSuccess;
+    private TextView tvStatFailed;
+    private TextView tvStatRetried;
+    private TabLayout tabFilter;
+    private MaterialButton btnExportLogs;
+    private MaterialButton btnClearLogs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,26 +49,32 @@ public class ActionLogsActivity extends BaseActivity {
     }
 
     private void initViews() {
-        recyclerView = findViewById(R.id.recyclerActionLogs);
-        tvStats = findViewById(R.id.tvStats);
-        btnShowFailed = findViewById(R.id.btnShowFailed);
-        btnShowAll = findViewById(R.id.btnShowAll);
-        btnClearLogs = findViewById(R.id.btnClearLogs);
+        recyclerView    = findViewById(R.id.recyclerActionLogs);
+        btnBack         = findViewById(R.id.btnBack);
+        tvSubtitle      = findViewById(R.id.tvSubtitle);
+        tvStatTotal     = findViewById(R.id.tvStatTotal);
+        tvStatSuccess   = findViewById(R.id.tvStatSuccess);
+        tvStatFailed    = findViewById(R.id.tvStatFailed);
+        tvStatRetried   = findViewById(R.id.tvStatRetried);
+        tabFilter       = findViewById(R.id.tabFilter);
+        btnExportLogs   = findViewById(R.id.btnExportLogs);
+        btnClearLogs    = findViewById(R.id.btnClearLogs);
 
-        btnShowFailed.setOnClickListener(v -> {
-            loadFailedLogs();
-            btnShowAll.setBackgroundResource(R.drawable.btn_outline);
-            btnShowFailed.setBackgroundResource(R.drawable.btn_error);
-            btnShowAll.setTextColor(getResources().getColor(R.color.claude_text_primary));
-            btnShowFailed.setTextColor(getResources().getColor(R.color.white));
+        btnBack.setOnClickListener(v -> finish());
+
+        tabFilter.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) loadLogs();
+                else loadFailedLogs();
+            }
+            @Override public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override public void onTabReselected(TabLayout.Tab tab) {}
         });
-        btnShowAll.setOnClickListener(v -> {
-            loadLogs();
-            btnShowAll.setBackgroundResource(R.drawable.btn_primary);
-            btnShowFailed.setBackgroundResource(R.drawable.btn_outline);
-            btnShowAll.setTextColor(getResources().getColor(R.color.white));
-            btnShowFailed.setTextColor(getResources().getColor(R.color.claude_text_primary));
-        });
+
+        btnExportLogs.setOnClickListener(v ->
+                Toast.makeText(this, "Export coming soon", Toast.LENGTH_SHORT).show());
+
         btnClearLogs.setOnClickListener(v -> showClearDialog());
     }
 
@@ -85,52 +93,30 @@ public class ActionLogsActivity extends BaseActivity {
         actionLogger.getLogsForSms(-1, new ActionLogger.LogsCallback() {
             @Override
             public void onLogsLoaded(List<ActionLog> logs) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        logsList.clear();
-                        logsList.addAll(logs);
-                        adapter.notifyDataSetChanged();
-
-                        btnShowAll.setBackgroundResource(R.drawable.btn_primary);
-                        btnShowFailed.setBackgroundResource(R.drawable.btn_outline);
-                    }
+                runOnUiThread(() -> {
+                    logsList.clear();
+                    logsList.addAll(logs);
+                    adapter.notifyDataSetChanged();
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(ActionLogsActivity.this, error, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() ->
+                        Toast.makeText(ActionLogsActivity.this, error, Toast.LENGTH_SHORT).show());
             }
         });
     }
 
     private void loadFailedLogs() {
-        // Load only failed actions
-        // FIXED: Removed 'var' keyword, added explicit types, using correct method name
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DataBase db = DataBase.getDbInstance(ActionLogsActivity.this);
-                List<ActionLog> logs = db.actionLogDao().getFailedActionLogs();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        logsList.clear();
-                        logsList.addAll(logs);
-                        adapter.notifyDataSetChanged();
-
-                        btnShowAll.setBackgroundResource(R.drawable.btn_outline);
-                        btnShowFailed.setBackgroundResource(R.drawable.btn_error);
-                    }
-                });
-            }
+        new Thread(() -> {
+            DataBase db = DataBase.getDbInstance(ActionLogsActivity.this);
+            List<ActionLog> logs = db.actionLogDao().getFailedActionLogs();
+            runOnUiThread(() -> {
+                logsList.clear();
+                logsList.addAll(logs);
+                adapter.notifyDataSetChanged();
+            });
         }).start();
     }
 
@@ -138,32 +124,26 @@ public class ActionLogsActivity extends BaseActivity {
         actionLogger.getStatistics(new ActionLogger.StatisticsCallback() {
             @Override
             public void onStatisticsLoaded(ActionLogger.ActionStatistics stats) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvStats.setText(
-                                String.format("%d total  ·  %.1f%% success  ·  %d failed  ·  %d retried",
-                                        stats.total, stats.successRate, stats.failed, stats.retried)
-                        );
-                    }
+                runOnUiThread(() -> {
+                    int success = stats.total - stats.failed;
+                    tvStatTotal.setText(String.valueOf(stats.total));
+                    tvStatSuccess.setText(String.valueOf(success));
+                    tvStatFailed.setText(String.valueOf(stats.failed));
+                    tvStatRetried.setText(String.valueOf(stats.retried));
+                    tvSubtitle.setText(stats.total + " entries");
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tvStats.setText("Error loading stats");
-                    }
-                });
+                runOnUiThread(() -> tvSubtitle.setText("Error loading stats"));
             }
         });
     }
 
     private void showLogDetails(ActionLog log) {
         new AlertDialog.Builder(this)
-                .setTitle("📋 Action Log Details")
+                .setTitle("Action Log Details")
                 .setMessage(log.getSummary())
                 .setPositiveButton(getString(R.string.ok), null)
                 .show();

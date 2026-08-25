@@ -43,58 +43,46 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
     @Override
     public void onBindViewHolder(@NonNull LogViewHolder holder, int position) {
         ActionLog log = logs.get(position);
-        int success = context.getResources().getColor(R.color.claude_success);
-        int error = context.getResources().getColor(R.color.claude_error);
 
-        if (log.success) {
-            holder.viewStatusStrip.setBackgroundColor(success);
-            holder.tvStatus.setText("✓");
-            holder.tvStatus.setTextColor(success);
-        } else {
-            holder.viewStatusStrip.setBackgroundColor(error);
-            holder.tvStatus.setText("✕");
-            holder.tvStatus.setTextColor(error);
-        }
+        // Strip background (green rail = success, red rail = error)
+        holder.itemView.setBackgroundResource(
+                log.success ? R.drawable.strip_success : R.drawable.strip_error);
 
-        holder.tvActionType.setText(log.actionType);
-        holder.tvDestination.setText(truncate(log.actionDestination, 40));
+        // Action type badge — amber, ALLCAPS
+        holder.tvActionType.setText(log.actionType != null ? log.actionType.toUpperCase(Locale.ROOT) : "");
 
-        if (log.success) {
-            holder.tvDuration.setText(log.durationMs + "ms  ·  " + log.statusCode);
-            holder.tvDuration.setTextColor(context.getResources().getColor(R.color.claude_text_hint));
-        } else {
-            holder.tvDuration.setText(log.durationMs + "ms  ·  " + (log.errorType != null ? log.errorType : "ERROR"));
-            holder.tvDuration.setTextColor(error);
-        }
+        // Destination (monospace, ellipsized)
+        holder.tvDestination.setText(log.actionDestination != null ? log.actionDestination : "");
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        // Timestamp — HH:mm
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         holder.tvTime.setText(sdf.format(new Date(log.executionTime)));
 
-        if (log.isRetry) {
+        // Meta line: "142 ms · 200 OK" or "5.0 s · timeout"
+        String meta = buildMetaLine(log);
+        holder.tvDuration.setText(meta);
+        int metaColor = log.success
+                ? context.getResources().getColor(R.color.text_secondary)
+                : context.getResources().getColor(R.color.error);
+        holder.tvDuration.setTextColor(metaColor);
+
+        // Retry badge
+        if (log.isRetry && log.attemptNumber > 1) {
             holder.tvRetryBadge.setVisibility(View.VISIBLE);
-            holder.tvRetryBadge.setText("Retry #" + log.attemptNumber);
+            holder.tvRetryBadge.setText("retry " + log.attemptNumber);
         } else {
             holder.tvRetryBadge.setVisibility(View.GONE);
         }
 
-        if (log.isBackupAction) {
-            holder.tvBackupBadge.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvBackupBadge.setVisibility(View.GONE);
-        }
+        // Backup badge
+        holder.tvBackupBadge.setVisibility(log.isBackupAction ? View.VISIBLE : View.GONE);
 
-        if (!log.success && log.errorMessage != null) {
-            holder.tvErrorMessage.setVisibility(View.VISIBLE);
-            holder.tvErrorMessage.setText(truncate(log.errorMessage, 80));
+        // From / rule name
+        if (log.ruleName != null && !log.ruleName.isEmpty()) {
+            holder.tvFrom.setVisibility(View.VISIBLE);
+            holder.tvFrom.setText("Rule: " + log.ruleName);
         } else {
-            holder.tvErrorMessage.setVisibility(View.GONE);
-        }
-
-        if (log.success && log.responseBody != null && !log.responseBody.isEmpty()) {
-            holder.tvResponse.setVisibility(View.VISIBLE);
-            holder.tvResponse.setText(truncate(log.responseBody, 60));
-        } else {
-            holder.tvResponse.setVisibility(View.GONE);
+            holder.tvFrom.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -102,41 +90,45 @@ public class ActionLogsAdapter extends RecyclerView.Adapter<ActionLogsAdapter.Lo
         });
     }
 
+    private String buildMetaLine(ActionLog log) {
+        if (log.success) {
+            String duration = log.durationMs >= 1000
+                    ? String.format(Locale.ROOT, "%.1f s", log.durationMs / 1000.0)
+                    : log.durationMs + " ms";
+            String code = log.statusCode > 0 ? " · " + log.statusCode : "";
+            return duration + code;
+        } else {
+            String duration = log.durationMs >= 1000
+                    ? String.format(Locale.ROOT, "%.1f s", log.durationMs / 1000.0)
+                    : log.durationMs + " ms";
+            String err = log.errorType != null ? log.errorType.toLowerCase(Locale.ROOT) : "error";
+            return duration + " · " + err;
+        }
+    }
+
     @Override
     public int getItemCount() {
         return logs != null ? logs.size() : 0;
     }
 
-    private String truncate(String text, int maxLength) {
-        if (text == null) return "";
-        if (text.length() <= maxLength) return text;
-        return text.substring(0, maxLength - 3) + "...";
-    }
-
     static class LogViewHolder extends RecyclerView.ViewHolder {
-        View viewStatusStrip;
-        TextView tvStatus;
         TextView tvActionType;
         TextView tvDestination;
-        TextView tvDuration;
         TextView tvTime;
+        TextView tvDuration;
         TextView tvRetryBadge;
         TextView tvBackupBadge;
-        TextView tvErrorMessage;
-        TextView tvResponse;
+        TextView tvFrom;
 
         LogViewHolder(@NonNull View itemView) {
             super(itemView);
-            viewStatusStrip = itemView.findViewById(R.id.viewStatusStrip);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-            tvActionType = itemView.findViewById(R.id.tvActionType);
+            tvActionType  = itemView.findViewById(R.id.tvActionType);
             tvDestination = itemView.findViewById(R.id.tvDestination);
-            tvDuration = itemView.findViewById(R.id.tvDuration);
-            tvTime = itemView.findViewById(R.id.tvTime);
-            tvRetryBadge = itemView.findViewById(R.id.tvRetryBadge);
+            tvTime        = itemView.findViewById(R.id.tvTime);
+            tvDuration    = itemView.findViewById(R.id.tvDuration);
+            tvRetryBadge  = itemView.findViewById(R.id.tvRetryBadge);
             tvBackupBadge = itemView.findViewById(R.id.tvBackupBadge);
-            tvErrorMessage = itemView.findViewById(R.id.tvErrorMessage);
-            tvResponse = itemView.findViewById(R.id.tvResponse);
+            tvFrom        = itemView.findViewById(R.id.tvFrom);
         }
     }
 }
